@@ -15,4 +15,4 @@ set toDirectoryPath=%2
 
 @echo on
 
-hg archive -I "set:added() or modified()" -S -r tip -t files "%toDirectoryPath%" -R "%hgRepoPath%"
+hg archive -I "set:added() or modified()" -S -r tip -t files %toDirectoryPath% -R %hgRepoPath%

@@ -14,9 +14,13 @@ rem --work-tree wouldn't work.
 set hgRepoPath=%1
 set gitRepoPath=%2
 
+rem Replacing double quotes with empty string (i.e. removing double quotes) so if the path needs the quotes (due to
+rem containing spaces) it won't mess up the path concatenation in hg expor.
+set gitRepoPath=%gitRepoPath:"=%
+
 @echo on
 
-hg export --output "%gitRepoPath%/export.patch" --verbose -R "%hgRepoPath%"
+hg export --output "%gitRepoPath%\export.patch" --verbose -R %hgRepoPath%
 cd "%gitRepoPath%"
 git apply "export.patch" --3way --whitespace=fix
 del "export.patch"
