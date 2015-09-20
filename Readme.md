@@ -15,3 +15,4 @@ Scripts in folders:
 
 - Always include appropriate documentation in the header of the script on what the script does.
 - Include usage example(s) in the script's file.
+- Since people can create .bat files pointing to these script (as advised above) only change a script's path if absolutely inevitable, and then communicate the change appropriately.
