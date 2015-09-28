@@ -13,7 +13,7 @@ if (!(Test-Path ($Path)))
     exit 1
 }
 
-if (!(Test-Path ($Path) -PathType Container) -and [System.IO.Path]::GetExtension($Path).ToLowerInvariant() -ne ".csproj")
+if (!(Test-Path ($Path) -PathType Container) -and ![System.IO.Path]::GetExtension($Path).Equals(".csproj", [System.StringComparison]::InvariantCultureIgnoreCase))
 {
     Write-Host ("`n*****`nERROR: THE SPECIFIED PATH IS NOT A FOLDER OR A VISUAL STUDIO PROJECT FILE!`n*****`n")
     exit 1
@@ -24,12 +24,12 @@ $projectFiles = @()
 
 if (Test-Path ($Path) -PathType Container)
 {
-    foreach ($csproj in Get-ChildItem -Path $Path -Recurse -File | ? { [System.IO.Path]::GetExtension($_.FullName).ToLowerInvariant() -eq ".csproj" })
+    foreach ($csproj in Get-ChildItem -Path $Path -Recurse -File | ? { [System.IO.Path]::GetExtension($_.FullName).Equals(".csproj", [System.StringComparison]::InvariantCultureIgnoreCase) })
     {
         $projectFiles += $csproj.FullName
     }
 }
-elseif ([System.IO.Path]::GetExtension($Path).ToLowerInvariant() -eq ".csproj")
+elseif ([System.IO.Path]::GetExtension($Path).Equals(".csproj", [System.StringComparison]::InvariantCultureIgnoreCase))
 {
     $projectFiles += $Path
 }
@@ -65,20 +65,20 @@ foreach ($projectFile in $projectFiles)
 
                 if ($fileExtensions.Contains([System.IO.Path]::GetExtension($fullPath).ToLowerInvariant()))
                 {
-                    $matchingProjectFiles += $fullPath.ToLowerInvariant()
+                    $matchingProjectFiles += $fullPath
                 }
             }
         }
     }
     [Array]::Sort($matchingProjectFiles)
 
-    $directoriesToSkip = @(".hg", ".git", "bin", "obj", "tests")
+    $directoriesToSkip = @("bin", "obj", "tests", "node_modules")
 
 
 
     # ORCHARD-SPECIFIC
 
-    if ([System.IO.Path]::GetFileName($projectFile).ToLowerInvariant() -eq "orchard.web.csproj")
+    if ([System.IO.Path]::GetFileName($projectFile).ToLowerInvariant().Equals("Orchard.Web.csproj", [System.StringComparison]::InvariantCultureIgnoreCase))
     {
         $directoriesToSkip += @("core", "media", "modules", "themes")
     }
@@ -87,11 +87,11 @@ foreach ($projectFile in $projectFiles)
 
 
 
-    foreach ($file in Get-ChildItem -Path $projectFolder -Recurse -File | ? { !$directoriesToSkip.Contains($_.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) })
+    foreach ($file in Get-ChildItem -Path $projectFolder -Recurse -File | ? { $_.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0][0] -eq "." -or !$directoriesToSkip.Contains($_.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) })
     {
         if ($fileExtensions.Contains($file.Extension))
         {
-            $matchingFolderFiles += $file.FullName.Substring($projectFolder.Length).ToLowerInvariant()
+            $matchingFolderFiles += $file.FullName.Substring($projectFolder.Length)
         }
     }
     [Array]::Sort($matchingFolderFiles)
@@ -108,7 +108,7 @@ foreach ($projectFile in $projectFiles)
     if ($missingFilesFromProject)
     {
         $csproj = [System.IO.Path]::GetFileName($projectFile)
-        Write-Host ("`n*****`nNOTIFICATION: THE FOLLOWING FILES ARE NOT ADDED TO $csproj!`n")
+        Write-Host ("`n*****`nTHE FOLLOWING FILES ARE NOT ADDED TO $csproj!`n")
         foreach ($file in $missingFilesFromProject)
         {
             Write-Host $file
@@ -126,7 +126,7 @@ foreach ($projectFile in $projectFiles)
     }
     if ($missingFilesFromFolder)
     {
-        Write-Host ("`n*****`nNOTIFICATION: THE FOLLOWING FILES ARE NOT PRESENT IN $projectFolder!`n")
+        Write-Host ("`n*****`nTHE FOLLOWING FILES ARE NOT PRESENT IN $projectFolder!`n")
         foreach ($file in $missingFilesFromFolder)
         {
             Write-Host $file
