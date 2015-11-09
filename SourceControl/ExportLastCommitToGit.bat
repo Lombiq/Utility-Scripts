@@ -20,7 +20,7 @@ set gitRepoPath=%gitRepoPath:"=%
 
 @echo on
 
-hg export --output "%gitRepoPath%\export.patch" --verbose -R %hgRepoPath%
+hg export --output "%gitRepoPath%\export.patch" --verbose --git -R %hgRepoPath%
 cd /D "%gitRepoPath%"
 git apply "export.patch" --3way --ignore-space-change --ignore-whitespace
 del "export.patch"
