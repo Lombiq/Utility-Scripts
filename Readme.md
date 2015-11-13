@@ -4,11 +4,12 @@
 
 This repo contains some scripts that may come handy during development work. On what the different scripts specifically do take a look at their content, there is inline documentation.
 
-Note that naturally you can create .bat scripts yourself that call these scripts when you repeatedly have to execute them with the same parameters.
+Note that naturally you can create Batch (.bat) or PowerShell (.ps1) scripts yourself that call these scripts when you repeatedly have to execute them with the same parameters.
 
 Scripts in folders:
 
 - SourceControl: scripts related to source control.
+- VisualStudio: scripts related to Visual Studio and files it manages.
 
 
 ## Notes on developing scripts

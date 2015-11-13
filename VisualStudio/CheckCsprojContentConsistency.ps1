@@ -1,3 +1,5 @@
+# Discovers Visual Studio project (.csproj) files in a specific folder to check their content against the file system looking for inconsistencies.
+
 param
 (
     [Parameter(Mandatory = $true, HelpMessage = "The path to a folder or a Visual Studio project file to check.")]
