@@ -27,6 +27,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AddCurrentPathToPSModulePath.ps1" />
     <Compile Include="Readme.md" />
     <Compile Include="SourceControl\ArchiveLastCommitToFolder.bat" />
     <Compile Include="SourceControl\ExportLastCommitToGit.bat" />
