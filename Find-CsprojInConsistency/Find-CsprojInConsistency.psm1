@@ -30,6 +30,31 @@
     Views\JournalItemShapes.cshtml
     
     *****
+.EXAMPLE
+	PS C:\repos\musqle\src\Orchard.Web\Modules\Softival.Musqle.Journal> Find-CsprojInConsistency
+
+	*****
+	THE FOLLOWING FILES ARE NOT ADDED TO Softival.Musqle.Journal.csproj!
+
+	Views\Parts\DietJournalDay.cshtml
+
+	*****
+
+
+	*****
+	THE FOLLOWING FILES ARE NOT PRESENT IN C:\repos\musqle\src\Orchard.Web\Modules\Softival.Musqle.Journal\ folder!
+
+	Views\JournalItemShapesTest.cshtml
+
+	*****
+
+
+	*****
+	THE FOLLOWING FILES ARE DUPLICATED IN Softival.Musqle.Journal.csproj!
+
+	Views\JournalItemShapes.cshtml
+
+	*****
 
 #>
 function Find-CsprojInConsistency
@@ -37,10 +62,9 @@ function Find-CsprojInConsistency
     [CmdletBinding()]
     Param
     (
-        # The path to a folder or a Visual Studio project file to check.
-        [Parameter(Mandatory = $true, HelpMessage = "The path to a folder or a Visual Studio project file to check.")]
+        # The path to a folder or a Visual Studio project file to check. The default path is the current execution path.
         [string] 
-        $Path,
+        $Path = (Get-Item -Path ".\").FullName,
 
         # A comma-separated list of file extensions to also check for in project files. The default file extensions are: .cs, .cshtml, .web.config, .css, .less, .js, .png, .jp(e)g, .gif, .ico.
         [string]
