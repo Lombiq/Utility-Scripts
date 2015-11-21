@@ -93,7 +93,7 @@ function Find-CsprojInConsistency
         # If the path is a folder, then get all the .csprojs inside it.
         if (Test-Path ($Path) -PathType Container)
         {
-            foreach ($csproj in Get-ChildItem -Path $Path -Recurse -File | Where-Object { [System.IO.Path]::GetExtension($_.FullName).Equals(".csproj", [System.StringComparison]::InvariantCultureIgnoreCase) })
+            foreach ($csproj in Get-ChildItem -Path $Path -Recurse -File | Where-Object { [System.IO.Path]::GetExtension($PSItem.FullName).Equals(".csproj", [System.StringComparison]::InvariantCultureIgnoreCase) })
             {
                 $projectFiles += $csproj.FullName
             }
@@ -170,7 +170,7 @@ function Find-CsprojInConsistency
 
 
             
-            foreach ($file in Get-ChildItem -Path $projectFolder -Recurse -File | Where-Object { !$directoriesToSkip.Contains($_.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) -and !$_.FullName.Substring($projectFolder.Length).StartsWith(".") })
+            foreach ($file in Get-ChildItem -Path $projectFolder -Recurse -File | Where-Object { !$directoriesToSkip.Contains($PSItem.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") })
             {
                 if ($fileExtensions.Contains($file.Extension))
                 {
