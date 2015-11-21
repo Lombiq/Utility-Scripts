@@ -159,7 +159,7 @@ function Find-CsprojInConsistency
             $missingFilesFromProject = @()
             foreach ($file in $matchingFolderFiles)
             {
-                if (!$matchingProjectFiles.Contains($file))
+                if (!$matchingProjectFiles.ToLower().Contains($file.ToLower()))
                 {
                     $missingFilesFromProject += $file
                 }
@@ -182,13 +182,13 @@ function Find-CsprojInConsistency
             $helperListForDuplicatadFiles = @()
             foreach ($file in $matchingProjectFiles)
             {
-                if (!$matchingFolderFiles.Contains($file))
+                if (!$matchingFolderFiles.ToLower().Contains($file.ToLower()))
                 {
                     $missingFilesFromFolder += $file
                 }
                 
-                # Checking the duplicates.
-                if($helperListForDuplicatadFiles.Contains($file)) # This means that we have iterated through this file once before. 
+                # Checking the duplicates. The first condition is needed because ToLower() throws error if the list is empty.
+                if($helperListForDuplicatadFiles -and $helperListForDuplicatadFiles.ToLower().Contains($file.ToLower())) # This means that we have iterated through this file once before. 
                 {
                     $duplicatesInProjectFile += $file
                 }
@@ -196,7 +196,7 @@ function Find-CsprojInConsistency
             }
             if ($missingFilesFromFolder)
             {
-                Write-Output ("`n*****`nTHE FOLLOWING FILES ARE NOT PRESENT IN $projectFolder!`n")
+                Write-Output ("`n*****`nTHE FOLLOWING FILES ARE NOT PRESENT IN $projectFolder folder!`n")
                 foreach ($file in $missingFilesFromFolder)
                 {
                     Write-Output $file
