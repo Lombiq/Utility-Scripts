@@ -29,6 +29,7 @@ function Find-CsprojInConsistency
     [CmdletBinding()]
     Param
     (
+        # The path to a folder or a Visual Studio project file to check.
         [Parameter(Mandatory = $true, HelpMessage = "The path to a folder or a Visual Studio project file to check.")]
         [string] 
         $Path,
