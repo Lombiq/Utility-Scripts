@@ -30,29 +30,34 @@ function Find-CsprojInConsistency
     Param
     (
         [Parameter(Mandatory = $true, HelpMessage = "The path to a folder or a Visual Studio project file to check.")]
-        [string] $Path = $(throw "You need to specify a full path or file name with full file path."),
+        [string] 
+        $Path,
 
-        [Parameter(HelpMessage = "A comma-separated list of file extensions to also check for in project files. The default file extensions are: .cs, .cshtml, .web.config, .css, .less, .js, .png, .jp(e)g, .gif, .ico.")]
-        [string] $AdditionalFileExtensions
+        # A comma-separated list of file extensions to also check for in project files. The default file extensions are: .cs, .cshtml, .web.config, .css, .less, .js, .png, .jp(e)g, .gif, .ico.
+        [string]
+        $AdditionalFileExtensions
     )
 
     Process
     {
+        # If the path is invalid, then return an error.
         if (!(Test-Path ($Path)))
         {
-            Write-Output ("`n*****`nERROR: FILE OR FOLDER NOT FOUND!`n*****`n")
+            Write-Error ("File or folder not found!")
             return
         }
 
+        # If the path is a file but not a csproj, then return an error.
         if (!(Test-Path ($Path) -PathType Container) -and ![System.IO.Path]::GetExtension($Path).Equals(".csproj", [System.StringComparison]::InvariantCultureIgnoreCase))
         {
-            Write-Output ("`n*****`nERROR: THE SPECIFIED PATH IS NOT A FOLDER OR A VISUAL STUDIO PROJECT FILE!`n*****`n")
+            Write-Error ("The specified parth is not a folder or a visual studio project file!")
             return
         }
 
+        # The list of project files.
         $projectFiles = @()
 
-
+        # If the path is a folder, then get all the .csprojs inside it.
         if (Test-Path ($Path) -PathType Container)
         {
             foreach ($csproj in Get-ChildItem -Path $Path -Recurse -File | Where-Object { [System.IO.Path]::GetExtension($_.FullName).Equals(".csproj", [System.StringComparison]::InvariantCultureIgnoreCase) })
@@ -60,12 +65,22 @@ function Find-CsprojInConsistency
                 $projectFiles += $csproj.FullName
             }
         }
+        # If the path is a csproj, then check only it.
         elseif ([System.IO.Path]::GetExtension($Path).Equals(".csproj", [System.StringComparison]::InvariantCultureIgnoreCase))
         {
             $projectFiles += $Path
         }
 
+        # If no .csproj in the list, then return an information about it.
+        if($projectFiles.Length -eq 0)
+        {
+            Write-Output "No .csproj in the folder."
+            return
+        }
+
+        # The default whitelist of the extensions search for.
         $fileExtensions = @(".cs", ".cshtml", ".info", ".config", ".css", ".less", ".js", ".png", ".jpg", ".jpeg", ".gif", ".ico")
+        # Adding parameter list to the default whitelist.
         foreach ($extension in $AdditionalFileExtensions.Split(","))
         {
             if (!($extension.StartsWith(".")) -and $extension.Length > 0)
@@ -76,13 +91,16 @@ function Find-CsprojInConsistency
             $fileExtensions += $extension.ToLowerInvariant()
         }
 
+        # Checking .csprojs one by one.
         foreach ($projectFile in $projectFiles)
         {
             $projectFolder = $projectFile.Substring(0, $projectFile.LastIndexOfAny(@('/', '\')) + 1)
 
             $xml = [XML] (Get-Content $projectFile)
 
+            # The files in the project file.
             $matchingProjectFiles = @()
+            # The files in the file system (folder).
             $matchingFolderFiles = @()
 
             foreach ($itemGroup in $xml.Project.ItemGroup)
@@ -128,6 +146,7 @@ function Find-CsprojInConsistency
             [Array]::Sort($matchingFolderFiles)
 
             # Comparing the files included in the project file and the contents of the project folder.
+            # Getting the files missing from the project file.
             $missingFilesFromProject = @()
             foreach ($file in $matchingFolderFiles)
             {
@@ -147,18 +166,39 @@ function Find-CsprojInConsistency
                 Write-Output ("`n*****`n")
             }
 
+            # Getting the files missing from the file system (folder). Also getting the files what are duplicated in the project file.
             $missingFilesFromFolder = @()
+            # The list of duplicated files in the project file.
+            $duplicatesInProjectFile = @()
+            $helperListForDuplicatadFiles = @()
             foreach ($file in $matchingProjectFiles)
             {
                 if (!$matchingFolderFiles.Contains($file))
                 {
                     $missingFilesFromFolder += $file
                 }
+                
+                # Checking the duplicates.
+                if($helperListForDuplicatadFiles.Contains($file)) # This means that we have iterated through this file once before. 
+                {
+                    $duplicatesInProjectFile += $file
+                }
+                $helperListForDuplicatadFiles += $file
             }
             if ($missingFilesFromFolder)
             {
                 Write-Output ("`n*****`nTHE FOLLOWING FILES ARE NOT PRESENT IN $projectFolder!`n")
                 foreach ($file in $missingFilesFromFolder)
+                {
+                    Write-Output $file
+                }
+                Write-Output ("`n*****`n")
+            }
+            if ($duplicatesInProjectFile)
+            {
+                $csproj = [System.IO.Path]::GetFileName($projectFile)
+                Write-Output ("`n*****`nTHE FOLLOWING FILES ARE DUPLICATED IN $csproj!`n")
+                foreach ($file in $duplicatesInProjectFile)
                 {
                     Write-Output $file
                 }
