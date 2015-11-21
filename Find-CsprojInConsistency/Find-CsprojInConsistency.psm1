@@ -130,7 +130,7 @@ function Find-CsprojInConsistency
             }
             [Array]::Sort($matchingProjectFiles)
 
-            $directoriesToSkip = @("bin", "obj", "tests", "node_modules")
+            $directoriesToSkip = @("bin", "obj", "tests", "node_modules", "lib")
 
 
 
@@ -144,8 +144,8 @@ function Find-CsprojInConsistency
             # END ORCHARD-SPECIFIC
 
 
-
-            foreach ($file in Get-ChildItem -Path $projectFolder -Recurse -File | Where-Object { $_.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0][0] -eq "." -or !$directoriesToSkip.Contains($_.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) })
+            
+            foreach ($file in Get-ChildItem -Path $projectFolder -Recurse -File | Where-Object { !$directoriesToSkip.Contains($_.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) -and !$_.FullName.Substring($projectFolder.Length).StartsWith(".") })
             {
                 if ($fileExtensions.Contains($file.Extension))
                 {
