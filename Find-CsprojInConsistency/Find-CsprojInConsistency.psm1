@@ -6,21 +6,29 @@
   Long description
 
 .EXAMPLE
-   PS C:\repos\infrastructure-scripts\Utility\Find-CsprojInConsistency>  Find-CsprojInConsistency -Path C:\repos\musqle\src\Orchard.Web\Modules\Softival.Musqle.Journal\Softival.Musqle.Journal.csproj
+   PS C:\Windows\system32>  Find-CsprojInConsistency -Path C:\repos\musqle\src\Orchard.Web\Modules\Softival.Musqle.Journal   
 
     *****
     THE FOLLOWING FILES ARE NOT ADDED TO Softival.Musqle.Journal.csproj!
-
+    
     Views\Parts\DietJournalDay.cshtml
-
+    
     *****
-
-
+    
+    
     *****
     THE FOLLOWING FILES ARE NOT PRESENT IN C:\repos\musqle\src\Orchard.Web\Modules\Softival.Musqle.Journal\!
-
+    
     Views\JournalItemShapesTest.cshtml
-
+    
+    *****
+    
+    
+    *****
+    THE FOLLOWING FILES ARE DUPLICATED IN Softival.Musqle.Journal.csproj!
+    
+    Views\JournalItemShapes.cshtml
+    
     *****
 
 #>
