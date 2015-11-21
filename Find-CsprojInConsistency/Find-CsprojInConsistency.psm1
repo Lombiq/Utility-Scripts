@@ -123,7 +123,8 @@ function Find-CsprojInConsistency
 
                         if ($fileExtensions.Contains([System.IO.Path]::GetExtension($fullPath).ToLowerInvariant()))
                         {
-                            $matchingProjectFiles += $fullPath
+							# Decoding the encoded MSBuild Special Characters (https://msdn.microsoft.com/en-us/library/bb383819.aspx) 
+                            $matchingProjectFiles += $fullPath -replace "%25", "%" -replace "%24", "$" -replace "%40", "@" -replace "%27", "'" -replace "%3B", ";" -replace "%3F", "?" -replace "%2A", "*"
                         }
                     }
                 }
@@ -174,7 +175,7 @@ function Find-CsprojInConsistency
                 }
                 Write-Output ("`n*****`n")
             }
-
+			
             # Getting the files missing from the file system (folder). Also getting the files what are duplicated in the project file.
             $missingFilesFromFolder = @()
             # The list of duplicated files in the project file.
