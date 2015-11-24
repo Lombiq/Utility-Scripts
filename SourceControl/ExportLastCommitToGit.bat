@@ -22,6 +22,6 @@ set gitRepoPath=%gitRepoPath:"=%
 
 hg export --output "%gitRepoPath%\export.patch" --verbose --git -R %hgRepoPath%
 cd /D "%gitRepoPath%"
-git apply "export.patch" --3way --ignore-space-change --ignore-whitespace
-del "export.patch"
+git apply "export.patch" --3way --ignore-space-change --ignore-whitespace --whitespace=fix
+
 cd "%~dp0%"
