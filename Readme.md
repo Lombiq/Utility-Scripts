@@ -11,8 +11,9 @@ Scripts in folders:
 - SourceControl: scripts related to source control.
 - VisualStudio: scripts related to Visual Studio and files it manages.
 
-Developing and installing modules:
-1. Make a ModuleName folder.
+Developing and installing PowerShell modules:
+
+1.  Make a ModuleName folder.
 2. Inside that folder make a ModuleName script with a ModuleName function (optionally you can use the "Cmdlet (advanced function") snippet).
 3. Run AddCurrentPathToPSModulePath.ps1 script inside the ModuleName folder's parent folder. It will add the current location to the PSModule path so after that you can use your module anywhere like any cmdlet.
 4. Ideally you should put your modules inside the repo's root folder, so anyone who pulls the repo just runs the AddCurrentPathToPSModulePath.ps1 once and then can use all modules.
@@ -22,4 +23,4 @@ Developing and installing modules:
 
 - Always include appropriate documentation in the header of the script on what the script does.
 - Include usage example(s) in the script's file.
-- Since people can create .bat files pointing to these script (as advised above) only change a script's path if absolutely inevitable, and then communicate the change appropriately.
+- Since people can create .bat files pointing to these scripts (as advised above) only change a script's path if absolutely inevitable, and then communicate the change appropriately.
