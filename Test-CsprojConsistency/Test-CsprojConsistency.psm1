@@ -57,7 +57,7 @@
 	*****
 
 #>
-function Find-CsprojInConsistency
+function Test-CsprojConsistency
 {
     [CmdletBinding()]
     Param

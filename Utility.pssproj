@@ -28,13 +28,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AddCurrentPathToPSModulePath.ps1" />
-    <Compile Include="Find-CsprojInConsistency\Find-CsprojInConsistency.psm1" />
+    <Compile Include="Test-CsprojConsistency\Test-CsprojConsistency.psm1" />
     <Compile Include="Readme.md" />
     <Compile Include="SourceControl\ArchiveLastCommitToFolder.bat" />
     <Compile Include="SourceControl\ExportLastCommitToGit.bat" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Find-CsprojInConsistency\" />
+    <Folder Include="Test-CsprojConsistency\" />
     <Folder Include="SourceControl\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
