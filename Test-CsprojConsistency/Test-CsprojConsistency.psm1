@@ -172,7 +172,7 @@ function Test-CsprojConsistency
             
             foreach ($file in Get-ChildItem -Path $projectFolder -Recurse -File | Where-Object { !$directoriesToSkip.Contains($PSItem.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") })
             {
-                if ($fileExtensions.Contains($file.Extension))
+                if ($fileExtensions.Contains($file.Extension.ToLowerInvariant()))
                 {
                     $matchingFolderFiles += $file.FullName.Substring($projectFolder.Length)
                 }
