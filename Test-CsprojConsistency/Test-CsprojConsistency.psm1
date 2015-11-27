@@ -132,9 +132,9 @@ function Test-CsprojConsistency
             $xml = [XML] (Get-Content $projectFile)
 
             # The files in the project file.
-            $matchingProjectFiles = @()
+            $matchingFilesInProjectFile = @()
             # The files in the file system (folder).
-            $matchingFolderFiles = @()
+            $matchingFilesInFolder = @()
 
             foreach ($itemGroup in $xml.Project.ItemGroup)
             {
@@ -148,12 +148,12 @@ function Test-CsprojConsistency
                         if ($fileExtensions.Contains([System.IO.Path]::GetExtension($fullPath).ToLowerInvariant()))
                         {
 							# Decoding the encoded MSBuild Special Characters (https://msdn.microsoft.com/en-us/library/bb383819.aspx) 
-                            $matchingProjectFiles += $fullPath -replace "%25", "%" -replace "%24", "$" -replace "%40", "@" -replace "%27", "'" -replace "%3B", ";" -replace "%3F", "?" -replace "%2A", "*"
+                            $matchingFilesInProjectFile += $fullPath -replace "%25", "%" -replace "%24", "$" -replace "%40", "@" -replace "%27", "'" -replace "%3B", ";" -replace "%3F", "?" -replace "%2A", "*"
                         }
                     }
                 }
             }
-            [Array]::Sort($matchingProjectFiles)
+            [Array]::Sort($matchingFilesInProjectFile)
 
             $directoriesToSkip = @("bin", "obj", "tests", "node_modules", "lib")
 
@@ -174,17 +174,17 @@ function Test-CsprojConsistency
             {
                 if ($fileExtensions.Contains($file.Extension.ToLowerInvariant()))
                 {
-                    $matchingFolderFiles += $file.FullName.Substring($projectFolder.Length)
+                    $matchingFilesInFolder += $file.FullName.Substring($projectFolder.Length)
                 }
             }
-            [Array]::Sort($matchingFolderFiles)
+            [Array]::Sort($matchingFilesInFolder)
 
             # Comparing the files included in the project file and the contents of the project folder.
             # Getting the files missing from the project file.
             $missingFilesFromProject = @()
-            foreach ($file in $matchingFolderFiles)
+            foreach ($file in $matchingFilesInFolder)
             {
-                if (!$matchingProjectFiles.ToLower().Contains($file.ToLower()))
+                if (!$matchingFilesInProjectFile.ToLower().Contains($file.ToLower()))
                 {
                     $missingFilesFromProject += $file
                 }
@@ -205,9 +205,9 @@ function Test-CsprojConsistency
             # The list of duplicated files in the project file.
             $duplicatesInProjectFile = @()
             $helperListForDuplicatadFiles = @()
-            foreach ($file in $matchingProjectFiles)
+            foreach ($file in $matchingFilesInProjectFile)
             {
-                if (!$matchingFolderFiles.ToLower().Contains($file.ToLower()))
+                if (!$matchingFilesInFolder.ToLower().Contains($file.ToLower()))
                 {
                     $missingFilesFromFolder += $file
                 }
