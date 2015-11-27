@@ -135,20 +135,31 @@ function Test-CsprojConsistency
             $matchingFilesInProjectFile = @()
             # The files in the file system (folder).
             $matchingFilesInFolder = @()
-
+			# The files in the project file but with wrong node name. The adding mode is wrong.
+			$matchingFilesInProjectFileButWithWrongNodeName = @()
             foreach ($itemGroup in $xml.Project.ItemGroup)
             {
                 foreach ($node in $itemGroup.ChildNodes)
                 {
+					# The accepted node names.
                     $acceptedNodeNames = @("Content", "Compile")
-                    if ($acceptedNodeNames.Contains($node.Name))
+					# These node names are accepted also, but files added with these node names are added wrongly.
+					$acceptedButWrongNodeName = @("None")
+                    if ($acceptedNodeNames.Contains($node.Name) -or $acceptedButWrongNodeName.Contains($node.Name))
                     {
                         $fullPath = $node.GetAttribute("Include")
 
                         if ($fileExtensions.Contains([System.IO.Path]::GetExtension($fullPath).ToLowerInvariant()))
                         {
-							# Decoding the encoded MSBuild Special Characters (https://msdn.microsoft.com/en-us/library/bb383819.aspx) 
-                            $matchingFilesInProjectFile += $fullPath -replace "%25", "%" -replace "%24", "$" -replace "%40", "@" -replace "%27", "'" -replace "%3B", ";" -replace "%3F", "?" -replace "%2A", "*"
+							# Decoding the encoded MSBuild Special Characters (https://msdn.microsoft.com/en-us/library/bb383819.aspx).
+							$decodedFullPath = $fullPath -replace "%25", "%" -replace "%24", "$" -replace "%40", "@" -replace "%27", "'" -replace "%3B", ";" -replace "%3F", "?" -replace "%2A", "*"
+                            $matchingFilesInProjectFile += $decodedFullPath
+
+							# Filtering the wrong node names.
+							if($acceptedButWrongNodeName.Contains($node.Name))
+							{
+								$matchingFilesInProjectFileButWithWrongNodeName += $decodedFullPath
+							}
                         }
                     }
                 }
@@ -182,18 +193,33 @@ function Test-CsprojConsistency
             # Comparing the files included in the project file and the contents of the project folder.
             # Getting the files missing from the project file.
             $missingFilesFromProject = @()
+			$filesAddedWithWrongNodeName = @()
             foreach ($file in $matchingFilesInFolder)
             {
                 if (!$matchingFilesInProjectFile.ToLower().Contains($file.ToLower()))
                 {
                     $missingFilesFromProject += $file
                 }
+				# If the file doesn't missing form the projectfile, but added with wrong node name.
+				elseif($matchingFilesInProjectFileButWithWrongNodeName -and $matchingFilesInProjectFileButWithWrongNodeName.ToLower().Contains($file.ToLower()))
+				{
+					$filesAddedWithWrongNodeName += $file
+				}
             }
+			$csproj = [System.IO.Path]::GetFileName($projectFile)
             if ($missingFilesFromProject)
             {
-                $csproj = [System.IO.Path]::GetFileName($projectFile)
                 Write-Output ("`n*****`nTHE FOLLOWING FILES ARE NOT ADDED TO $csproj!`n")
                 foreach ($file in $missingFilesFromProject)
+                {
+                    Write-Output $file
+                }
+                Write-Output ("`n*****`n")
+            }
+			if ($filesAddedWithWrongNodeName)
+            {
+                Write-Output ("`n*****`nTHE FOLLOWING FILES ARE ADDED WITH THE WRONG NODE NAME TO $csproj!`n")
+                foreach ($file in $filesAddedWithWrongNodeName)
                 {
                     Write-Output $file
                 }
