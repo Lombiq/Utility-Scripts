@@ -162,6 +162,13 @@ function Test-CsprojConsistency
 							}
                         }
                     }
+
+					# Detecting empty folders in the project file.
+					$emptyFoldersInProjectfile = @()
+					if ($node.Name -eq "Folder")
+                    {
+                        $emptyFoldersInProjectfile += $node.GetAttribute("Include")
+                    }
                 }
             }
             [Array]::Sort($matchingFilesInProjectFile)
@@ -256,9 +263,38 @@ function Test-CsprojConsistency
             }
             if ($duplicatesInProjectFile)
             {
-                $csproj = [System.IO.Path]::GetFileName($projectFile)
                 Write-Output ("`n*****`nTHE FOLLOWING FILES ARE DUPLICATED IN $csproj!`n")
                 foreach ($file in $duplicatesInProjectFile)
+                {
+                    Write-Output $file
+                }
+                Write-Output ("`n*****`n")
+            }
+
+			# Detecting empty folders in the file system.
+			$emptyFoldersInFileSystem = @()
+            foreach ($file in Get-ChildItem -Path $projectFolder -Recurse | Where-Object { !$directoriesToSkip.Contains($PSItem.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") })
+            {
+				if((Test-Path $file.FullName -PathType Container)  -and ((Get-ChildItem $file.FullName | Measure-Object).Count -eq 0))
+				{
+					$emptyFoldersInFileSystem += $file.FullName.Substring($projectFolder.Length)
+				}
+               
+            }
+			if ($emptyFoldersInFileSystem)
+            {
+                Write-Output ("`n*****`nTHE FOLLOWING FOLDERS ARE EMPTY IN THE $projectFolder FOLDER!`n")
+                foreach ($file in $emptyFoldersInFileSystem)
+                {
+                    Write-Output $file
+                }
+                Write-Output ("`n*****`n")
+            }
+
+			if ($emptyFoldersInProjectfile)
+            {
+                Write-Output ("`n*****`nTHE FOLLOWING FOLDERS ARE EMPTY IN THE $csproj!`n")
+                foreach ($file in $emptyFoldersInProjectfile)
                 {
                     Write-Output $file
                 }
