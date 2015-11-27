@@ -27,14 +27,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AddCurrentPathToPSModulePath.ps1" />
+    <Compile Include="Test-CsprojConsistency\Test-CsprojConsistency.psm1" />
     <Compile Include="Readme.md" />
     <Compile Include="SourceControl\ArchiveLastCommitToFolder.bat" />
     <Compile Include="SourceControl\ExportLastCommitToGit.bat" />
-    <Compile Include="VisualStudio\CheckCsprojContentConsistency.ps1" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Test-CsprojConsistency\" />
     <Folder Include="SourceControl\" />
-    <Folder Include="VisualStudio\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="Build" />
