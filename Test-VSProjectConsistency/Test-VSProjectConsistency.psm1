@@ -57,7 +57,7 @@
 	*****
 
 #>
-function Test-CsprojConsistency
+function Test-VSProjectConsistency
 {
     [CmdletBinding()]
     Param
