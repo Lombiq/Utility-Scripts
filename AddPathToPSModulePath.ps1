@@ -1,26 +1,31 @@
 ﻿<#
 .Synopsis
-   Adds the current path to the PSModulePath environment variable.
+   Adds a path to the PSModulePath environment variable.
 
 .DESCRIPTION
-   Only adds the current path if it doesn't exist yet. Also adds it to the $PSModulePath variable so the modules will available in the current console too.
+   Only adds the path if hasn't been added yet. The path will also be added to the $PSModulePath variable so the modules will available in the current console too.
 
 .EXAMPLE
-   .\AddCurrentPathToPSModulePath.ps1
-
+   .\AddPathToPSModulePath.ps1
+   .\AddPathToPSModulePath.ps1 -Path "C:\MyPowerShellScripts"
 #>
 
-$newModulePath = "$PSScriptRoot\"
+Param
+(
+    # The path to a folder that should be added to the list of paths containing PS modules. If not specified, the current path of this script will be added.
+    [string] 
+    $Path = "$PSScriptRoot\"
+)
 
-if($env:PSModulePath -split ';' -notcontains $newModulePath)
+if($env:PSModulePath -split ';' -notcontains $Path)
 {
-    $env:psmodulepath += ";$newModulePath"
-    [System.Environment]::SetEnvironmentVariable("PSModulePath", $env:psmodulepath + ";$newModulePath", "Machine")
-    Write-Information "The path $newModulePath was successfully added to the PSModulePath environment variable."
+    $env:PSModulePath += ";$Path"
+    [System.Environment]::SetEnvironmentVariable("PSModulePath", $env:PSModulePath + ";$Path", "Machine")
+    Write-Information "The path $Path was successfully added to the PSModulePath environment variable."
 }
 else
 {
-    Write-Warning "The PSModulePath path already contains $newModulePath."
+    Write-Warning "The PSModulePath path already contains $Path."
 }
 
 pause
