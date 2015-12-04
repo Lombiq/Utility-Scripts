@@ -28,12 +28,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AddPathToPSModulePath.ps1" />
+    <Compile Include="Reload-Module\Reload-Module.psm1" />
     <Compile Include="Test-CsprojConsistency\Test-CsprojConsistency.psm1" />
     <Compile Include="Readme.md" />
     <Compile Include="SourceControl\ArchiveLastCommitToFolder.bat" />
     <Compile Include="SourceControl\ExportLastCommitToGit.bat" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Reload-Module\" />
     <Folder Include="Test-CsprojConsistency\" />
     <Folder Include="SourceControl\" />
   </ItemGroup>
