@@ -27,10 +27,19 @@ function Reload-Module
     {
         if (Test-Path($Path) -PathType Container)
         {
-            foreach ($module in Get-ChildItem -Path $Path -Recurse -File | Where-Object { [System.IO.Path]::GetExtension($PSItem.FullName).Equals(".psm1", [System.StringComparison]::InvariantCultureIgnoreCase) })
+            $modules = Get-ChildItem -Path $Path -Recurse -File | Where-Object { [System.IO.Path]::GetExtension($PSItem.FullName).Equals(".psm1", [System.StringComparison]::InvariantCultureIgnoreCase) }
+
+            if ($modules.Length -gt 0)
             {
-                Remove-Module ([System.IO.Path]::GetFileNameWithoutExtension($module.FullName))
-                Import-Module ([System.IO.Path]::GetDirectoryName($module.FullName))
+                Write-Host ("`nRELOADING PS MODULES:`n*****")
+
+                foreach ($module in $modules)
+                {
+                    Import-Module ([System.IO.Path]::GetDirectoryName($module.FullName)) -Force
+                    Write-Host ("* " + $module.FullName)
+                }
+
+                Write-Host ("*****`n")
             }
         }
         else
