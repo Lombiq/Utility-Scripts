@@ -27,7 +27,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AddCurrentPathToPSModulePath.ps1" />
+    <Compile Include="AddPathToPSModulePath.ps1" />
+    <Compile Include="Reload-Module\Reload-Module.psm1" />
     <Compile Include="Test-VSProjectConsistency\Test-VSProjectConsistency.psm1" />
     <Compile Include="Readme.md" />
     <Compile Include="SourceControl\ArchiveLastCommitToFolder.bat" />
@@ -35,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Test-VSProjectConsistency\" />
+    <Folder Include="Reload-Module\" />
     <Folder Include="SourceControl\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
