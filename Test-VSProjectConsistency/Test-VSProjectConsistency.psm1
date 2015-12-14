@@ -112,18 +112,19 @@ function Test-VSProjectConsistency
         }
 
         # The default whitelist of the extensions search for.
-        $fileExtensions = @(".cs", ".cshtml", ".info", ".config", ".css", ".less", ".js", ".png", ".jpg", ".jpeg", ".gif", ".ico")
+        $fileExtensions = @(".cs", ".cshtml", ".info", ".config", ".less", ".png", ".jpg", ".jpeg", ".gif", ".ico", ".ts", ".css", ".min.css", ".css.map", ".js", ".min.js", ".js.map")
+		$fileExtensionsForRegex = $fileExtensions -join "|"
         # Adding parameter list to the default whitelist.
-        foreach ($extension in $AdditionalFileExtensions.Split(","))
+        foreach ($extension in $AdditionalFileExtensions)
         {
-            if (!($extension.StartsWith(".")) -and $extension.Length > 0)
+            if (!$extension.StartsWith("."))
             {
                 $extension = "." + $extension
             }
 
             $fileExtensions += $extension.ToLowerInvariant()
         }
-
+		
         # Checking .csprojs one by one.
         foreach ($projectFile in $projectFiles)
         {
@@ -148,8 +149,8 @@ function Test-VSProjectConsistency
                     if ($acceptedNodeNames.Contains($node.Name) -or $acceptedButWrongNodeName.Contains($node.Name))
                     {
                         $fullPath = $node.GetAttribute("Include")
-
-                        if ($fileExtensions.Contains([System.IO.Path]::GetExtension($fullPath).ToLowerInvariant()))
+						# Checking files only with the specified extensions.
+                        if ($fullPath.ToLowerInvariant() -match "($fileExtensionsForRegex)$")
                         {
 							# Decoding the encoded MSBuild Special Characters (https://msdn.microsoft.com/en-us/library/bb383819.aspx).
 							$decodedFullPath = $fullPath -replace "%25", "%" -replace "%24", "$" -replace "%40", "@" -replace "%27", "'" -replace "%3B", ";" -replace "%3F", "?" -replace "%2A", "*"
@@ -190,7 +191,7 @@ function Test-VSProjectConsistency
             
             foreach ($file in Get-ChildItem -Path $projectFolder -Recurse -File | Where-Object { !$directoriesToSkip.Contains($PSItem.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") })
             {
-                if ($fileExtensions.Contains($file.Extension.ToLowerInvariant()))
+				if ($file.FullName.ToLowerInvariant() -match "($fileExtensionsForRegex)$")
                 {
                     $matchingFilesInFolder += $file.FullName.Substring($projectFolder.Length)
                 }
@@ -295,6 +296,32 @@ function Test-VSProjectConsistency
             {
                 Write-Output ("`n*****`nTHE FOLLOWING FOLDERS ARE EMPTY IN THE $csproj!`n")
                 foreach ($file in $emptyFoldersInProjectfile)
+                {
+                    Write-Output $file
+                }
+                Write-Output ("`n*****`n")
+            }
+
+			# Checking min and map files without corresponding parent file.
+			$mapAndMinFilesWithoutParent = @()
+			foreach($mapFile in $matchingFilesInProjectFile | Where-Object {$PSItem -match "\.map$"})
+			{
+				if(!$matchingFilesInProjectFile.Contains($mapFile.Substring(0, $mapFile.Length - 4)))
+				{
+					$mapAndMinFilesWithoutParent += $mapFile
+				}
+			}
+			foreach($minFile in $matchingFilesInProjectFile | Where-Object {$PSItem -match "\.min\."})
+			{
+				if(!$matchingFilesInProjectFile.Contains(($minFile -replace ".min.", ".")))
+				{
+					$mapAndMinFilesWithoutParent += $minFile
+				}
+			}
+			if ($mapAndMinFilesWithoutParent)
+            {
+                Write-Output ("`n*****`nTHE FOLLOWING MAP AND MIN FILES HAVE A MISSING PARENT IN THE $csproj!`n")
+                foreach ($file in $mapAndMinFilesWithoutParent)
                 {
                     Write-Output $file
                 }
