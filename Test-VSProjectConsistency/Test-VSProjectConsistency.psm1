@@ -66,8 +66,8 @@ function Test-VSProjectConsistency
         [string] 
         $Path = (Get-Item -Path ".\").FullName,
 
-        # A comma-separated list of file extensions to also check for in project files. The default file extensions are: .cs, .cshtml, .web.config, .css, .less, .js, .png, .jp(e)g, .gif, .ico.
-        [string]
+        # A of file extensions to also check for in project files. The default file extensions are: ".cs", ".cshtml", ".info", ".config", ".less", ".png", ".jpg", ".jpeg", ".gif", ".ico", ".ts", ".css", ".min.css", ".css.map", ".js", ".min.js", ".js.map".
+        [string[]]
         $AdditionalFileExtensions
     )
 
