@@ -47,6 +47,6 @@ function Reset-AppDataFolder
             Remove-Item $item.FullName -Recurse -Force
         }
 
-        return true
+        return $true
     }
 }
