@@ -66,7 +66,7 @@ function Test-VSProjectConsistency
         [string] 
         $Path = (Get-Item -Path ".\").FullName,
 
-        # A of file extensions to also check for in project files. The default file extensions are: ".cs", ".cshtml", ".info", ".config", ".less", ".png", ".jpg", ".jpeg", ".gif", ".ico", ".ts", ".css", ".min.css", ".css.map", ".js", ".min.js", ".js.map".
+        # A list of file extensions to also check for in project files. The default file extensions are: ".cs", ".cshtml", ".info", ".config", ".less", ".png", ".jpg", ".jpeg", ".gif", ".ico", ".ts", ".css", ".min.css", ".css.map", ".js", ".min.js", ".js.map".
         [string[]]
         $AdditionalFileExtensions
     )
@@ -98,23 +98,23 @@ function Test-VSProjectConsistency
                 $projectFiles += $csproj.FullName
             }
         }
-        # If the path is a csproj, then check only it.
+        # If the path points to a csproj, then check only that.
         elseif ([System.IO.Path]::GetExtension($Path).Equals(".csproj", [System.StringComparison]::InvariantCultureIgnoreCase))
         {
             $projectFiles += $Path
         }
 
-        # If no .csproj in the list, then return an information about it.
+        # Return with a message if there aren't any .csproj files to process.
         if($projectFiles.Length -eq 0)
         {
             Write-Output "No .csproj in the folder."
             return
         }
 
-        # The default whitelist of the extensions search for.
+        # The default whitelist of the extensions to we're interested in.
         $fileExtensions = @(".cs", ".cshtml", ".info", ".config", ".less", ".png", ".jpg", ".jpeg", ".gif", ".ico", ".ts", ".css", ".min.css", ".css.map", ".js", ".min.js", ".js.map")
 		$fileExtensionsForRegex = $fileExtensions -join "|"
-        # Adding parameter list to the default whitelist.
+        # Adding additional whitelisted extensions to the whitelist.
         foreach ($extension in $AdditionalFileExtensions)
         {
             if (!$extension.StartsWith("."))
@@ -144,7 +144,7 @@ function Test-VSProjectConsistency
                 {
 					# The accepted node names.
                     $acceptedNodeNames = @("Content", "Compile")
-					# These node names are accepted also, but files added with these node names are added wrongly.
+					# These node names are accepted also, but files added with these node names are added incorrectly.
 					$acceptedButWrongNodeName = @("None")
                     if ($acceptedNodeNames.Contains($node.Name) -or $acceptedButWrongNodeName.Contains($node.Name))
                     {
@@ -208,7 +208,7 @@ function Test-VSProjectConsistency
                 {
                     $missingFilesFromProject += $file
                 }
-				# If the file doesn't missing form the projectfile, but added with wrong node name.
+				# If the file is added to the .csproj, but with an incorrect node name.
 				elseif($matchingFilesInProjectFileButWithWrongNodeName -and $matchingFilesInProjectFileButWithWrongNodeName.ToLower().Contains($file.ToLower()))
 				{
 					$filesAddedWithWrongNodeName += $file
@@ -234,7 +234,7 @@ function Test-VSProjectConsistency
                 Write-Output ("`n*****`n")
             }
 			
-            # Getting the files missing from the file system (folder). Also getting the files what are duplicated in the project file.
+            # Getting the files missing from the file system (folder) and the files that are duplicated in the project file.
             $missingFilesFromFolder = @()
             # The list of duplicated files in the project file.
             $duplicatesInProjectFile = @()
@@ -302,7 +302,7 @@ function Test-VSProjectConsistency
                 Write-Output ("`n*****`n")
             }
 
-			# Checking min and map files without corresponding parent file.
+			# Checking min and map files without a corresponding parent file.
 			$mapAndMinFilesWithoutParent = @()
 			foreach($mapFile in $matchingFilesInProjectFile | Where-Object {$PSItem -match "\.map$"})
 			{
