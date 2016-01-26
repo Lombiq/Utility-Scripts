@@ -1,0 +1,86 @@
+<#
+.Synopsis
+   Imports a .bacpac file to a database on a local SQL Server instance.
+
+.DESCRIPTION
+   Imports a .bacpac file to a database on a local SQL Server instance.
+
+.EXAMPLE
+   Import-BacpacToSqlServer -BacpacPath "C:\database.bacpac"
+
+.EXAMPLE
+   Import-BacpacToSqlServer -BacpacPath "C:\database.bacpac" -DatabaseName "BetterName"
+
+.EXAMPLE
+   Import-BacpacToSqlServer -BacpacPath "C:\database.bacpac" -SqlServerName "LocalSqlServer" -DatabaseName "BetterName"
+
+.EXAMPLE
+   Import-BacpacToSqlServer -BacpacPath "C:\database.bacpac" -ConnectionString "Data Source=.\SQLEXPRESS;Initial Catalog=NiceDatabase;Integrated Security=True;"
+#>
+
+
+function Import-BacpacToSqlServer
+{
+    [CmdletBinding()]
+    [Alias("ipbpss")]
+    [OutputType([bool])]
+    Param
+    (
+        [Parameter(HelpMessage = "The path to the `"SqlPackage`" executable that performs the import process. The default value references the executable installed with SQL Server 2014.")]
+        [string] $SqlPackageExecutablePath = "C:\Program Files (x86)\Microsoft SQL Server\120\DAC\bin\SqlPackage.exe",
+
+        [Parameter(Mandatory = $true, HelpMessage = "The path to the .bacpac file to import.")]
+        [string] $BacpacPath = $(throw "You need to specify the path to the .bacpac file to import."),
+
+        [Parameter(HelpMessage = "The connection string that defines the server and database to import the .bacpfile to. If not defined, it will be build using the `"SqlServerName`" and `"DatabaseName`" variables.")]
+        [string] $ConnectionString,
+
+        [Parameter(HelpMessage = "The name of the SQL Server instance that will host the imported database. If not defined, it will be determined from the system registry.")]
+        [string] $SqlServerName,
+
+        [Parameter(HelpMessage = "THe name of the database that will be created for the imported .bacpac file. If not defined, it will be the name of the imported file.")]
+        [string] $DatabaseName
+    )
+
+    Process
+    {
+        if (!(Test-Path $SqlPackageExecutablePath))
+        {
+            throw ("The executable for importing the database is not found at `"$SqlPackageExecutablePath`"!")
+        }
+
+        $bacpacFile = Get-Item $BacpacPath
+
+        if ($bacpacFile -eq $null -or !($bacpacFile -is [System.IO.FileInfo]) -or !($bacpacFile.Extension -eq ".bacpac"))
+        {
+            throw ("The .bacpac file is not found at `"$BacpacPath`"!")
+        }
+
+        if ([string]::IsNullOrEmpty($ConnectionString))
+        {
+            if ([string]::IsNullOrEmpty($SqlServerName))
+            {
+                $sqlServerInstances = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server").InstalledInstances
+                if ($sqlServerInstances.Count -ge 0)
+                {
+                    $SqlServerName = $sqlServerInstances[0]
+                }
+                else
+                {
+                    throw ("Could not find any SQL Server instances!")
+                }
+            }
+
+            if ([string]::IsNullOrEmpty($DatabaseName))
+            {
+                $DatabaseName = $bacpacFile.BaseName
+            }
+
+            $ConnectionString = "Data Source=.\$SqlServerName;Initial Catalog=$DatabaseName;Integrated Security=True;"
+        }
+
+        & "$SqlPackageExecutablePath" /Action:Import /SourceFile:"$BacpacPath" /TargetConnectionString:"$ConnectionString"
+
+        return $true
+    }
+}
