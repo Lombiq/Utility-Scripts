@@ -60,14 +60,34 @@ function Import-BacpacToSqlServer
         {
             if ([string]::IsNullOrEmpty($SqlServerName))
             {
-                $sqlServerInstances = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server").InstalledInstances
-                if ($sqlServerInstances.Count -ge 0)
+                $serverServices = (Get-WmiObject win32_Service -Computer $env:COMPUTERNAME | Where-Object { $PSItem.Name -match "MSSQL" -and $PSItem.PathName -match "sqlservr.exe" })
+                $servicePath = ""
+
+                if ($serverServices -eq $null)
                 {
-                    $SqlServerName = $sqlServerInstances[0]
+                    throw ("Could not find any SQL Server services!")
+                }
+                elseif ($serverServices.Count -eq $null)
+                {
+                    $servicePath = $serverServices.PathName
                 }
                 else
                 {
-                    throw ("Could not find any SQL Server instances!")
+                    $servicePath = $serverServices[0].PathName
+                }
+
+                $SqlServerName = $servicePath.Substring($servicePath.LastIndexOf("-s") + 2)
+
+                $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") ".\$SqlServerName"
+
+                if ($server.InstanceName -eq $null)
+                {
+                    if ((New-Object ("Microsoft.SqlServer.Management.Smo.Server") ".\localhost").InstanceName -eq $null)
+                    {
+                        throw ("Could not find any SQL Server instances!")
+                    }
+
+                    $SqlServerName = "localhost"
                 }
             }
 
