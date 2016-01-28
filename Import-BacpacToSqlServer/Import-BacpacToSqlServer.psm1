@@ -83,7 +83,7 @@ function Import-BacpacToSqlServer
 
                 if ($server.InstanceName -eq $null)
                 {
-                    if ((New-Object ("Microsoft.SqlServer.Management.Smo.Server") ".\localhost").InstanceName -eq $null)
+                    if ((New-Object ("Microsoft.SqlServer.Management.Smo.Server") "localhost").InstanceName -eq $null)
                     {
                         throw ("Could not find any SQL Server instances!")
                     }
