@@ -58,6 +58,7 @@ function Import-BacpacToSqlServer
 
         if ([string]::IsNullOrEmpty($ConnectionString))
         {
+            [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
             $DataSource = ""
             
             if ([string]::IsNullOrEmpty($SqlServerName))
@@ -78,26 +79,26 @@ function Import-BacpacToSqlServer
                     $servicePath = $serverServices[0].PathName
                 }
 
-                $SqlServerName = $servicePath.Substring($servicePath.LastIndexOf("-s") + 2)
-                $DataSource = ".\$SqlServerName"
+                $DataSource = ".\" + $servicePath.Substring($servicePath.LastIndexOf(" -s") + 3)
 
-                [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
-                $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") ".\$SqlServerName"
-
-                if ($server.InstanceName -eq $null)
+                if (!(ConfirmSqlServer($DataSource)))
                 {
-                    if ((New-Object ("Microsoft.SqlServer.Management.Smo.Server") "localhost").InstanceName -eq $null)
+                    $DataSource = "localhost"
+
+                    if (!(ConfirmSqlServer($DataSource)))
                     {
                         throw ("Could not find any SQL Server instances!")
                     }
-
-                    $SqlServerName = "localhost"
-                    $DataSource = $SqlServerName
                 }
             }
             else
             {
                 $DataSource = ".\$SqlServerName"
+
+                if (!(ConfirmSqlServer($DataSource)))
+                {
+                    throw ("The specified name of the SQL Server is invalid!")
+                }
             }
 
             if ([string]::IsNullOrEmpty($DatabaseName))
@@ -111,5 +112,18 @@ function Import-BacpacToSqlServer
         & "$SqlPackageExecutablePath" /Action:Import /SourceFile:"$BacpacPath" /TargetConnectionString:"$ConnectionString"
 
         return $true
+    }
+}
+
+
+function ConfirmSqlServer
+{
+    param
+    (
+        [string] $ServerName
+    )
+    process
+    {
+        return (New-Object ("Microsoft.SqlServer.Management.Smo.Server") $ServerName).InstanceName -ne $null
     }
 }
