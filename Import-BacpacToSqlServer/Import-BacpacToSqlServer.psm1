@@ -58,6 +58,8 @@ function Import-BacpacToSqlServer
 
         if ([string]::IsNullOrEmpty($ConnectionString))
         {
+            $DataSource = ""
+            
             if ([string]::IsNullOrEmpty($SqlServerName))
             {
                 $serverServices = (Get-WmiObject win32_Service -Computer $env:COMPUTERNAME | Where-Object { $PSItem.Name -match "MSSQL" -and $PSItem.PathName -match "sqlservr.exe" })
@@ -77,6 +79,7 @@ function Import-BacpacToSqlServer
                 }
 
                 $SqlServerName = $servicePath.Substring($servicePath.LastIndexOf("-s") + 2)
+                $DataSource = ".\$SqlServerName"
 
                 [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
                 $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") ".\$SqlServerName"
@@ -89,7 +92,12 @@ function Import-BacpacToSqlServer
                     }
 
                     $SqlServerName = "localhost"
+                    $DataSource = $SqlServerName
                 }
+            }
+            else
+            {
+                $DataSource = ".\$SqlServerName"
             }
 
             if ([string]::IsNullOrEmpty($DatabaseName))
@@ -97,7 +105,7 @@ function Import-BacpacToSqlServer
                 $DatabaseName = $bacpacFile.BaseName
             }
 
-            $ConnectionString = "Data Source=.\$SqlServerName;Initial Catalog=$DatabaseName;Integrated Security=True;"
+            $ConnectionString = "Data Source=$DataSource;Initial Catalog=$DatabaseName;Integrated Security=True;"
         }
 
         & "$SqlPackageExecutablePath" /Action:Import /SourceFile:"$BacpacPath" /TargetConnectionString:"$ConnectionString"
