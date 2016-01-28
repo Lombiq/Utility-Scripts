@@ -78,6 +78,7 @@ function Import-BacpacToSqlServer
 
                 $SqlServerName = $servicePath.Substring($servicePath.LastIndexOf("-s") + 2)
 
+                [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
                 $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") ".\$SqlServerName"
 
                 if ($server.InstanceName -eq $null)
