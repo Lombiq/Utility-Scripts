@@ -56,9 +56,10 @@ function Import-BacpacToSqlServer
             throw ("The .bacpac file is not found at `"$BacpacPath`"!")
         }
 
+        [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
+
         if ([string]::IsNullOrEmpty($ConnectionString))
         {
-            [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
             $DataSource = ""
             
             if ([string]::IsNullOrEmpty($SqlServerName))
@@ -106,12 +107,42 @@ function Import-BacpacToSqlServer
                 $DatabaseName = $bacpacFile.BaseName
             }
 
+            $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") $DataSource
+
+            $databaseExists = ($server.Databases | Where-Object { $PSItem.Name -eq $DatabaseName }) -ne $null
+
+            if ($databaseExists)
+            {
+                $originalDatabaseName = $DatabaseName
+                $DatabaseName += "-" + [System.Guid]::NewGuid()
+            }
+
             $ConnectionString = "Data Source=$DataSource;Initial Catalog=$DatabaseName;Integrated Security=True;"
         }
 
         & "$SqlPackageExecutablePath" /Action:Import /SourceFile:"$BacpacPath" /TargetConnectionString:"$ConnectionString"
 
-        return $true
+        if ($LASTEXITCODE -eq 0)
+        {
+            if ($databaseExists)
+            {
+                $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") $DataSource
+                $server.KillAllProcesses($originalDatabaseName)
+                $server.Databases[$originalDatabaseName].Drop()
+                $server.Databases[$DatabaseName].Rename($originalDatabaseName)
+
+                Write-Warning ("The original database with the name `"$originalDatabaseName`" has been deleted and the imported one has been renamed to use that name.")
+            }
+        }
+        else
+        {
+            if ($databaseExists)
+            {
+                Write-Warning ("The database `"$originalDatabaseName`" remains intact and depending on the error in the import process, a new database may have been created with the name `"$DatabaseName`"!")
+            }
+
+            throw ("Importing the database failed!")
+        }
     }
 }
 
