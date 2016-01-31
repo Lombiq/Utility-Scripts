@@ -181,14 +181,11 @@ function Test-VSProjectConsistency
 			# Collecting all projectfolders inside the projectfolder, because we want to skip them.
 			# If a file is inside a project folder then it's irrelevant for the current csproj.
 			$projectFoldersInTheProjectFolder = @()
-			foreach ($file in Get-ChildItem -Path $projectFolder -Recurse | Where-Object { !$directoriesToSkip.Contains($PSItem.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") })
+			foreach ($file in Get-ChildItem -Path $projectFolder -Recurse | Where-Object { !$directoriesToSkip.Contains($PSItem.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") -and (FolderContainsCsproj $PSItem.FullName)})
             {
-				if(FolderContainsCsproj $file)
-				{
-					$projectFoldersInTheProjectFolder += $file
-				}            
+				$projectFoldersInTheProjectFolder += $file
             }
-
+			
 
             # ORCHARD-SPECIFIC
 
@@ -360,12 +357,12 @@ function Test-VSProjectConsistency
 function FolderContainsCsproj
 {
 	Param($path)
-	
+
 	if(!(Test-Path ($Path)) -or !(Test-Path($Path) -PathType Container))
 	{
 		return $false
 	}
-
+	
 	foreach($file in Get-ChildItem $path)
 	{
 		if($file.Extension -eq ".csproj")
