@@ -56,18 +56,49 @@ function Import-BacpacToSqlServer
             throw ("The .bacpac file is not found at `"$BacpacPath`"!")
         }
 
+        [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
+
         if ([string]::IsNullOrEmpty($ConnectionString))
         {
+            $DataSource = ""
+            
             if ([string]::IsNullOrEmpty($SqlServerName))
             {
-                $sqlServerInstances = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server").InstalledInstances
-                if ($sqlServerInstances.Count -ge 0)
+                $serverServices = (Get-WmiObject win32_Service -Computer $env:COMPUTERNAME | Where-Object { $PSItem.Name -match "MSSQL" -and $PSItem.PathName -match "sqlservr.exe" })
+                $servicePath = ""
+
+                if ($serverServices -eq $null)
                 {
-                    $SqlServerName = $sqlServerInstances[0]
+                    throw ("Could not find any SQL Server services!")
+                }
+                elseif ($serverServices.Count -eq $null)
+                {
+                    $servicePath = $serverServices.PathName
                 }
                 else
                 {
-                    throw ("Could not find any SQL Server instances!")
+                    $servicePath = $serverServices[0].PathName
+                }
+
+                $DataSource = ".\" + $servicePath.Substring($servicePath.LastIndexOf(" -s") + 3)
+
+                if (!(ConfirmSqlServer($DataSource)))
+                {
+                    $DataSource = "localhost"
+
+                    if (!(ConfirmSqlServer($DataSource)))
+                    {
+                        throw ("Could not find any SQL Server instances!")
+                    }
+                }
+            }
+            else
+            {
+                $DataSource = ".\$SqlServerName"
+
+                if (!(ConfirmSqlServer($DataSource)))
+                {
+                    throw ("The specified name of the SQL Server is invalid!")
                 }
             }
 
@@ -76,11 +107,54 @@ function Import-BacpacToSqlServer
                 $DatabaseName = $bacpacFile.BaseName
             }
 
-            $ConnectionString = "Data Source=.\$SqlServerName;Initial Catalog=$DatabaseName;Integrated Security=True;"
+            $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") $DataSource
+
+            $databaseExists = ($server.Databases | Where-Object { $PSItem.Name -eq $DatabaseName }) -ne $null
+
+            if ($databaseExists)
+            {
+                $originalDatabaseName = $DatabaseName
+                $DatabaseName += "-" + [System.Guid]::NewGuid()
+            }
+
+            $ConnectionString = "Data Source=$DataSource;Initial Catalog=$DatabaseName;Integrated Security=True;"
         }
 
         & "$SqlPackageExecutablePath" /Action:Import /SourceFile:"$BacpacPath" /TargetConnectionString:"$ConnectionString"
 
-        return $true
+        if ($LASTEXITCODE -eq 0)
+        {
+            if ($databaseExists)
+            {
+                $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") $DataSource
+                $server.KillAllProcesses($originalDatabaseName)
+                $server.Databases[$originalDatabaseName].Drop()
+                $server.Databases[$DatabaseName].Rename($originalDatabaseName)
+
+                Write-Warning ("The original database with the name `"$originalDatabaseName`" has been deleted and the imported one has been renamed to use that name.")
+            }
+        }
+        else
+        {
+            if ($databaseExists)
+            {
+                Write-Warning ("The database `"$originalDatabaseName`" remains intact and depending on the error in the import process, a new database may have been created with the name `"$DatabaseName`"!")
+            }
+
+            throw ("Importing the database failed!")
+        }
+    }
+}
+
+
+function ConfirmSqlServer
+{
+    param
+    (
+        [string] $ServerName
+    )
+    process
+    {
+        return (New-Object ("Microsoft.SqlServer.Management.Smo.Server") $ServerName).InstanceName -ne $null
     }
 }

@@ -9,7 +9,7 @@ This repo contains some scripts that may come handy during development work. On 
 
 Run the `AddCurrentPathToPSModulePath.ps1` script (you need admin privileges) to add the root of the respository to the `PSModulePath` environment variable. This will make PowerShell recognise this folder as one of the folders that contain PS modules. You only need to run this once - after that any changes made to these modules will be picked up automatically when a new PS console is opened.
 
-In order to use these PowerShell scripts and modules you need to update to PowerShell 5.
+In order to use these PowerShell scripts and modules you need to update to at least PowerShell 5. You can check the installed version by running the `$PSVersionTable.PSVersion` command. If you have an earlier version you can download version 5 preview from [here](https://www.microsoft.com/en-us/download/details.aspx?id=48729).
 
 
 ## Developing PowerShell modules
