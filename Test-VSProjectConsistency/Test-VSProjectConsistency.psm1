@@ -3,7 +3,9 @@
    Discovers Visual Studio project (.csproj) files in a specific folder to check their content against the file system looking for inconsistencies.
 
 .DESCRIPTION
-  Long description
+  Discovers Visual Studio project (.csproj) files in a specific folder to check their content against the file system looking for inconsistencies.
+  The incostencies can be missing files/folders form the .csproj/folder structure.
+  You can use the script without defining a path, it will use the current folder by default.
 
 .EXAMPLE
    PS C:\Windows\system32>  Find-CsprojInConsistency -Path C:\repos\musqle\src\Orchard.Web\Modules\Softival.Musqle.Journal   
