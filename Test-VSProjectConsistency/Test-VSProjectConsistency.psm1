@@ -178,6 +178,16 @@ function Test-VSProjectConsistency
 
             $directoriesToSkip = @("bin", "obj", "tests", "node_modules", "lib")
 
+			# Collecting all projectfolders inside the projectfolder, because we want to skip them.
+			# If a file is inside a project folder then it's irrelevant for the current csproj.
+			$projectFoldersInTheProjectFolder = @()
+			foreach ($file in Get-ChildItem -Path $projectFolder -Recurse | Where-Object { !$directoriesToSkip.Contains($PSItem.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") })
+            {
+				if(FolderContainsCsproj $file)
+				{
+					$projectFoldersInTheProjectFolder += $file
+				}            
+            }
 
 
             # ORCHARD-SPECIFIC
@@ -206,6 +216,12 @@ function Test-VSProjectConsistency
 			$filesAddedWithWrongNodeName = @()
             foreach ($file in $matchingFilesInFolder)
             {
+				# If the file is inside a project folder then it's irrelevant for the current csproj.
+				if(FileIsInsideAnyOfTheFolders ($projectFolder + $file) $projectFoldersInTheProjectFolder)
+				{
+					continue
+				}
+
                 if (!$matchingFilesInProjectFile.ToLower().Contains($file.ToLower()))
                 {
                     $missingFilesFromProject += $file
@@ -278,6 +294,12 @@ function Test-VSProjectConsistency
 			$emptyFoldersInFileSystem = @()
             foreach ($file in Get-ChildItem -Path $projectFolder -Recurse | Where-Object { !$directoriesToSkip.Contains($PSItem.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") })
             {
+				# If the file is inside a project folder then it's irrelevant for the current csproj.
+				if(FileIsInsideAnyOfTheFolders $file.FullName $projectFoldersInTheProjectFolder)
+				{
+					continue
+				}
+
 				if((Test-Path $file.FullName -PathType Container)  -and ((Get-ChildItem $file.FullName | Measure-Object).Count -eq 0))
 				{
 					$emptyFoldersInFileSystem += $file.FullName.Substring($projectFolder.Length)
@@ -333,4 +355,39 @@ function Test-VSProjectConsistency
 
         return
     }
+}
+
+function FolderContainsCsproj
+{
+	Param($path)
+	
+	if(!(Test-Path ($Path)) -or !(Test-Path($Path) -PathType Container))
+	{
+		return $false
+	}
+
+	foreach($file in Get-ChildItem $path)
+	{
+		if($file.Extension -eq ".csproj")
+		{
+			return $true
+		}
+	}
+	
+	return $false
+}
+
+function FileIsInsideAnyOfTheFolders
+{
+	Param($fileFullPath, $folders)
+	
+	foreach ($folder in $folders)
+	{
+		if($fileFullPath.Contains($folder.FullName))
+		{
+			return $true
+		}
+	}
+	
+	return $false
 }
