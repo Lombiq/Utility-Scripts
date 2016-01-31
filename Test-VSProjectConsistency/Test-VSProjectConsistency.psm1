@@ -181,7 +181,7 @@ function Test-VSProjectConsistency
 			# Collecting all projectfolders inside the projectfolder, because we want to skip them.
 			# If a file is inside a project folder then it's irrelevant for the current csproj.
 			$projectFoldersInTheProjectFolder = @()
-			foreach ($file in Get-ChildItem -Path $projectFolder -Recurse | Where-Object { !$directoriesToSkip.Contains($PSItem.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") -and (FolderContainsCsproj $PSItem.FullName)})
+			foreach ($file in Get-ChildItem -Path $projectFolder -Recurse | Where-Object { !(FolderPathContainsAnyFolder $PSItem.FullName $directoriesToSkip $projectFolder) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") -and (FolderContainsCsproj $PSItem.FullName)})
             {
 				$projectFoldersInTheProjectFolder += $file
             }
@@ -198,7 +198,7 @@ function Test-VSProjectConsistency
 
 
             
-            foreach ($file in Get-ChildItem -Path $projectFolder -Recurse -File | Where-Object { !$directoriesToSkip.Contains($PSItem.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") })
+            foreach ($file in Get-ChildItem -Path $projectFolder -Recurse -File | Where-Object {!(FolderPathContainsAnyFolder $PSItem.FullName $directoriesToSkip $projectFolder) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") })
             {
 				if ($file.FullName.ToLowerInvariant() -match "($fileExtensionsForRegex)$")
                 {
@@ -289,7 +289,7 @@ function Test-VSProjectConsistency
 
 			# Detecting empty folders in the file system.
 			$emptyFoldersInFileSystem = @()
-            foreach ($file in Get-ChildItem -Path $projectFolder -Recurse | Where-Object { !$directoriesToSkip.Contains($PSItem.FullName.Substring($projectFolder.Length).Split(@('/', '\'))[0].ToLowerInvariant()) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") })
+            foreach ($file in Get-ChildItem -Path $projectFolder -Recurse | Where-Object { !(FolderPathContainsAnyFolder $PSItem.FullName $directoriesToSkip $projectFolder) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") })
             {
 				# If the file is inside a project folder then it's irrelevant for the current csproj.
 				if(FileIsInsideAnyOfTheFolders $file.FullName $projectFoldersInTheProjectFolder)
@@ -381,6 +381,21 @@ function FileIsInsideAnyOfTheFolders
 	foreach ($folder in $folders)
 	{
 		if($fileFullPath.Contains($folder.FullName))
+		{
+			return $true
+		}
+	}
+	
+	return $false
+}
+
+function FolderPathContainsAnyFolder
+{
+	Param($folderPath, $folders, $projectFolder)
+
+	foreach($pathFragment in $folderPath.Substring($projectFolder.Length).Split(@('/', '\')))
+	{
+		if($folders.Contains($pathFragment.ToLowerInvariant()))
 		{
 			return $true
 		}
