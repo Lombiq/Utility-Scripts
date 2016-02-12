@@ -329,7 +329,8 @@ function Test-VSProjectConsistency
 			}
 			foreach($minFile in $matchingFilesInProjectFile | Where-Object {$PSItem -match "\.min\."})
 			{
-				if(!$matchingFilesInProjectFile.Contains(($minFile -replace "\.min\.", ".")))
+				$minFileWithoutMin = $minFile -replace "\.min\.", "."
+				if(!($matchingFilesInProjectFile.Contains(($minFileWithoutMin)) -or $matchingFilesInProjectFile.Contains(($minFileWithoutMin -replace "\.map", ""))))
 				{
 					$mapAndMinFilesWithoutParent += $minFile
 				}
