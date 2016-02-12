@@ -127,6 +127,15 @@ function Test-VSProjectConsistency
             $fileExtensions += $extension.ToLowerInvariant()
         }
 		
+		# Skip these directories during the collection of files, both from the csproj and the file system.
+		$directoriesToSkip = @("bin", "obj", "tests", "node_modules", "lib")
+		# ORCHARD-SPECIFIC DIRECTORIES
+        if ([System.IO.Path]::GetFileName($projectFile).ToLowerInvariant().Equals("Orchard.Web.csproj", [System.StringComparison]::InvariantCultureIgnoreCase))
+        {
+            $directoriesToSkip += @("core", "media", "modules", "themes")
+        }
+        # END ORCHARD-SPECIFIC DIRECTORIES
+
         # Checking .csprojs one by one.
         foreach ($projectFile in $projectFiles)
         {
@@ -152,7 +161,7 @@ function Test-VSProjectConsistency
                     {
                         $fullPath = $node.GetAttribute("Include")
 						# Checking files only with the specified extensions.
-                        if ($fullPath.ToLowerInvariant() -match "($fileExtensionsForRegex)$")
+                        if (!(FolderPathContainsAnyFolder ($projectFolder + $fullPath) $directoriesToSkip $projectFolder) -and ($fullPath.ToLowerInvariant() -match "($fileExtensionsForRegex)$"))
                         {
 							# Decoding the encoded MSBuild Special Characters (https://msdn.microsoft.com/en-us/library/bb383819.aspx).
 							$decodedFullPath = $fullPath -replace "%25", "%" -replace "%24", "$" -replace "%40", "@" -replace "%27", "'" -replace "%3B", ";" -replace "%3F", "?" -replace "%2A", "*"
@@ -176,8 +185,6 @@ function Test-VSProjectConsistency
             }
             [Array]::Sort($matchingFilesInProjectFile)
 
-            $directoriesToSkip = @("bin", "obj", "tests", "node_modules", "lib")
-
 			# Collecting all projectfolders inside the projectfolder, because we want to skip them.
 			# If a file is inside a project folder then it's irrelevant for the current csproj.
 			$projectFoldersInTheProjectFolder = @()
@@ -185,19 +192,7 @@ function Test-VSProjectConsistency
             {
 				$projectFoldersInTheProjectFolder += $file
             }
-			
-
-            # ORCHARD-SPECIFIC
-
-            if ([System.IO.Path]::GetFileName($projectFile).ToLowerInvariant().Equals("Orchard.Web.csproj", [System.StringComparison]::InvariantCultureIgnoreCase))
-            {
-                $directoriesToSkip += @("core", "media", "modules", "themes")
-            }
-
-            # END ORCHARD-SPECIFIC
-
-
-            
+			            
             foreach ($file in Get-ChildItem -Path $projectFolder -Recurse -File | Where-Object {!(FolderPathContainsAnyFolder $PSItem.FullName $directoriesToSkip $projectFolder) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") })
             {
 				if ($file.FullName.ToLowerInvariant() -match "($fileExtensionsForRegex)$")
@@ -391,9 +386,10 @@ function FileIsInsideAnyOfTheFolders
 
 function FolderPathContainsAnyFolder
 {
-	Param($folderPath, $folders, $projectFolder)
+	# The projectfolder is necessary because we need the relative path to it.
+	Param($fullFolderPath, $folders, $projectFolder)
 
-	foreach($pathFragment in $folderPath.Substring($projectFolder.Length).Split(@('/', '\')))
+	foreach($pathFragment in $fullFolderPath.Substring($projectFolder.Length).Split(@('/', '\')))
 	{
 		if($folders.Contains($pathFragment.ToLowerInvariant()))
 		{
