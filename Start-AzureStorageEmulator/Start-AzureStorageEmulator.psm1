@@ -28,5 +28,7 @@ function Start-AzureStorageEmulator
         {
             & $path start
         }
+
+        return $true
     }
 }
