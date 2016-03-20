@@ -22,9 +22,9 @@ $paths = [Environment]::GetEnvironmentVariable("PSModulePath", "Machine").Split(
 if(!$paths.Contains($Path))
 {
     [System.Environment]::SetEnvironmentVariable("PSModulePath", [string]::Join(";", $paths + $Path), "Machine")
-    Write-Information "The path $Path was successfully added to the PSModulePath environment variable."
+    Write-Information "The path `"$Path`" was successfully added to the PSModulePath environment variable."
 }
 else
 {
-    Write-Warning "The PSModulePath path already contains $Path."
+    Write-Warning "The PSModulePath environment variable already contains the path `"$Path`"."
 }
