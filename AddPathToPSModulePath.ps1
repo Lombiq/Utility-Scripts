@@ -14,25 +14,17 @@ Param
 (
     # The path to a folder that should be added to the list of paths containing PS modules. If not specified, the current path of this script will be added.
     [string] 
-    $Path = "$PSScriptRoot\",
-
-    # Indicates whether the script has been automatically (not in interactive mode) or manually.
-    [switch][bool]
-    $NonInteractive
+    $Path = "$PSScriptRoot\"
 )
 
-if($env:PSModulePath -split ';' -notcontains $Path)
+$paths = [Environment]::GetEnvironmentVariable("PSModulePath", "Machine").Split(";", [System.StringSplitOptions]::RemoveEmptyEntries)
+
+if(!$paths.Contains($Path))
 {
-    $env:PSModulePath += ";$Path"
-    [System.Environment]::SetEnvironmentVariable("PSModulePath", $env:PSModulePath + ";$Path", "Machine")
+    [System.Environment]::SetEnvironmentVariable("PSModulePath", [string]::Join(";", $paths + $Path), "Machine")
     Write-Information "The path $Path was successfully added to the PSModulePath environment variable."
 }
 else
 {
     Write-Warning "The PSModulePath path already contains $Path."
-}
-
-if(!$NonInteractive)
-{
-    pause
 }
