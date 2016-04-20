@@ -14,17 +14,16 @@ function Reset-AppDataFolder
 {
     [CmdletBinding()]
     [Alias("rsad")]
-    [OutputType([bool])]
     Param
     (
-        [Parameter(Mandatory=$true,
-                   ValueFromPipelineByPropertyName=$true,
-                   Position=0)]
-        $Path = $(throw "You need to specify that path an App_Data folder.")
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $Path = $(throw "You need to specify that path an App_Data folder."),
+
+        [switch] $KeepLogFiles
     )
 
     Process
-    {
+    {        
         if (!(Test-Path $Path))
         {
             throw ("The path `"$Path`" is invalid!")
@@ -42,11 +41,16 @@ function Reset-AppDataFolder
             throw ("The path `"$Path`" is not pointing to an App_Data folder!")
         }
 
-        foreach ($item in Get-ChildItem -Path $Path | Where-Object { $PSItem.Name -ne "Localization" })
+        $whiteList = @("Localization")
+
+        if ($KeepLogFiles.IsPresent)
         {
-            Remove-Item $item.FullName -Recurse -Force
+            $whiteList += "Logs"
+
+            # Removing empty files and files that are not log files in the "Logs" folder.
+            Get-ChildItem -Path "$Path\Logs" | Where-Object { $PSItem.Extension -ne ".log" -or $PSItem.Length -eq 0 } | Remove-Item -Force
         }
 
-        return $true
+        Get-ChildItem -Path $Path | Where-Object { $whiteList -notcontains $PSItem.Name } | Remove-Item -Recurse -Force
     }
 }
