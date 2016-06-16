@@ -22,7 +22,7 @@ set hgRepo2Path=%hgRepo2Path:"=%
 
 hg export --output "%hgRepo2Path%\export.patch" --verbose --git -R %hgRepo1Path%
 cd /D "%hgRepo2Path%"
-hg import "export.patch" --verbose --similarity 80 -R %hgRepo2Path%
+hg import "export.patch" --verbose --similarity 80 --no-commit -R %hgRepo2Path%
 del "export.patch"
 
 cd "%~dp0%"
