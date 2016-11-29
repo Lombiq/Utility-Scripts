@@ -38,7 +38,7 @@ function Copy-ToAzureDevelopmentStorage
         {
             if ($containers -eq $null -or $containers.Count -eq 0 -or !($containers | Select-Object -ExpandProperty "Name").Contains($folder.Name))
             {
-                New-AzureStorageContainer -Context $storageContext -Name $folder.Name
+                New-AzureStorageContainer -Context $storageContext -Name $folder.Name -Permission Blob
             }
 
             foreach ($subFolder in Get-ChildItem $folder.FullName)
