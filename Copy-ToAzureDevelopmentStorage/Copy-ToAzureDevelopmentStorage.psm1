@@ -36,7 +36,7 @@ function Copy-ToAzureDevelopmentStorage
 
         foreach ($folder in Get-ChildItem $Path | Where-Object { $PSItem.PSIsContainer })
         {
-            if (!($containers | Select-Object -ExpandProperty "Name").Contains($folder.Name))
+            if ($containers -eq $null -or $containers.Count -eq 0 -or !($containers | Select-Object -ExpandProperty "Name").Contains($folder.Name))
             {
                 New-AzureStorageContainer -Context $storageContext -Name $folder.Name
             }
