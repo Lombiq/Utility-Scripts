@@ -7,7 +7,7 @@ This repo contains some scripts that may come handy during development work. On 
 
 ## Installing PowerShell modules
 
-Run the `AddCurrentPathToPSModulePath.ps1` script (you need admin privileges) to add the root of the respository to the `PSModulePath` environment variable. This will make PowerShell recognise this folder as one of the folders that contain PS modules. You only need to run this once - after that any changes made to these modules will be picked up automatically when a new PS console is opened.
+Run the `AddPathToPSModulePath.ps1` script (you need admin privileges) to add the root of the respository to the `PSModulePath` environment variable. This will make PowerShell recognise this folder as one of the folders that contain PS modules. You only need to run this once - after that any changes made to these modules will be picked up automatically when a new PS console is opened.
 
 In order to use these PowerShell scripts and modules you need to update to at least PowerShell 5. You can check the installed version by running the `$PSVersionTable.PSVersion` command. If you have an earlier version you can download version 5 preview from [here](https://www.microsoft.com/en-us/download/details.aspx?id=48729).
 
@@ -18,7 +18,7 @@ Note that naturally you can also create Batch (.bat) or PowerShell (.ps1) script
 
 1. Make a ModuleName folder.
 2. Inside that folder make a ModuleName script with a ModuleName function (optionally you can use the `Cmdlet (advanced function)` snippet).
-4. Ideally you should put your modules inside the repository's root folder, so after running `AddCurrentPathToPSModulePath.ps1` once the modules will be available on the system.
+4. Ideally you should put your modules inside the repository's root folder, so after running `AddPathToPSModulePath.ps1` once the modules will be available on the system.
 
 
 ## Notes on developing scripts
