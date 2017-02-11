@@ -33,6 +33,7 @@ function Copy-ToAzureDevelopmentStorage
         $storageContext = New-AzureStorageContext -Local
 
         $containers = Get-AzureStorageContainer -Context $storageContext
+        $pathLength = $Path.Length
 
         foreach ($folder in Get-ChildItem $Path | Where-Object { $PSItem.PSIsContainer })
         {
@@ -48,7 +49,8 @@ function Copy-ToAzureDevelopmentStorage
 
             foreach ($file in Get-ChildItem $folder.FullName -Recurse -File)
             {
-                Set-AzureStorageBlobContent -Context $storageContext -Container $folder.Name -File $file.FullName -Blob $file.FullName.Substring($folder.FullName.Length + 1) -Force
+                Set-AzureStorageBlobContent -Context $storageContext -Container $folder.Name -File $file.FullName -Blob $file.FullName.Substring($folder.FullName.Length + 1) -Force | Out-Null
+                Write-Host ("Importing `"$($file.FullName.Substring($pathLength))`".")
             }
         }
     }
