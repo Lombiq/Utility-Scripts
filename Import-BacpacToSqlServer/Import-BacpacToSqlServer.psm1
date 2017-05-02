@@ -26,7 +26,7 @@ function Import-BacpacToSqlServer
     [OutputType([bool])]
     Param
     (
-        [Parameter(HelpMessage = "The path to the `"SqlPackage`" executable that performs the import process. The default value references the executable installed with SQL Server 2014.")]
+        [Parameter(HelpMessage = "The path to the `"SqlPackage`" executable that performs the import process. When not defined, it will try to find the executable installed with the latest SQL Server.")]
         [string] $SqlPackageExecutablePath,
 
         [Parameter(Mandatory = $true, HelpMessage = "The path to the .bacpac file to import.")]
@@ -38,39 +38,39 @@ function Import-BacpacToSqlServer
         [Parameter(HelpMessage = "The name of the SQL Server instance that will host the imported database. If not defined, it will be determined from the system registry.")]
         [string] $SqlServerName,
 
-        [Parameter(HelpMessage = "THe name of the database that will be created for the imported .bacpac file. If not defined, it will be the name of the imported file.")]
+        [Parameter(HelpMessage = "The name of the database that will be created for the imported .bacpac file. If not defined, it will be the name of the imported file.")]
         [string] $DatabaseName
     )
 
     Process
     {
-        $sqlPackageExecutablePaths = @()
-        if (![string]::IsNullOrEmpty($SqlPackageExecutablePath))
+        $sqlPackageExecutablePath = ""
+        if (![string]::IsNullOrEmpty($SqlPackageExecutablePath) -and (Test-Path $SqlPackageExecutablePath))
         {
-            $sqlPackageExecutablePaths += $SqlPackageExecutablePath
+            $sqlPackageExecutablePath = $SqlPackageExecutablePath
         }
-
-        for ($i = 13; $i -ge 11; $i--)
-        { 
-            $sqlPackageExecutablePaths += "C:\Program Files (x86)\Microsoft SQL Server\$($i)0\DAC\bin\SqlPackage.exe"
-        }
-
-        $SqlPackageExecutablePath = ""
-        foreach ($path in $sqlPackageExecutablePaths)
+        else
         {
-            if (Test-Path $path)
+            if (![string]::IsNullOrEmpty($SqlPackageExecutablePath))
             {
-                $SqlPackageExecutablePath = $path
-                Write-Host ("`nSQL Package executable for importing the database found at `"$path`"!`n")
-                break
+                Write-Warning ("SQL Package executable for importing the database is not found at `"$path`"! Trying to locate default SQL Package executables...")    
             }
-            else
-            {
-                Write-Warning ("SQL Package executable for importing the database is not found at `"$path`"!")
+
+            $defaultSqlPackageExecutablePath = ""
+            for ($i = 20; $i -ge 12; $i--)
+            { 
+                $defaultSqlPackageExecutablePath = "C:\Program Files (x86)\Microsoft SQL Server\$($i)0\DAC\bin\SqlPackage.exe"
+
+                if (Test-Path $defaultSqlPackageExecutablePath)
+                {
+                    $sqlPackageExecutablePath = $defaultSqlPackageExecutablePath
+                    Write-Host ("`nSQL Package executable for importing the database found at `"$sqlPackageExecutablePath`"!`n")
+                    break
+                }
             }
         }
 
-        if ([string]::IsNullOrEmpty($SqlPackageExecutablePath))
+        if ([string]::IsNullOrEmpty($sqlPackageExecutablePath))
         {
             throw ("No SQL Package executable found for importing the database!")
         }
@@ -156,7 +156,7 @@ function Import-BacpacToSqlServer
             $ConnectionString = "Data Source=$DataSource;Initial Catalog=$DatabaseName;Integrated Security=True;"
         }
 
-        & "$SqlPackageExecutablePath" /Action:Import /SourceFile:"$BacpacPath" /TargetConnectionString:"$ConnectionString"
+        & "$sqlPackageExecutablePath" /Action:Import /SourceFile:"$BacpacPath" /TargetConnectionString:"$ConnectionString"
 
         if ($LASTEXITCODE -eq 0)
         {
