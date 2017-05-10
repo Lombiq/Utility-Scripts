@@ -4,6 +4,8 @@
 
 This repo contains some scripts that may come handy during development work. On what the different scripts specifically do take a look at their content, there is inline documentation.
 
+First of all, you need to set the PowerShell script execution policy to Unrestricted in order to use any of the scripts. To achieve this run the `Set-ExecutionPolicy Unrestricted` command.
+
 
 ## Installing PowerShell modules
 
