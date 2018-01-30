@@ -6,10 +6,10 @@
 	Deletes the bin, obj App_Data folders. Restarts the site.
 
 .EXAMPLE
-   PS > Reset-Site -Path C:\pathToOrchardSource -SiteName siteNameInIIS
+   PS > Restart-Site -Path C:\pathToOrchardSource -SiteName siteNameInIIS
 
 #>
-function Reset-Site
+function Restart-Site
 {
 	[CmdletBinding()]
 	Param
