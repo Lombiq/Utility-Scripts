@@ -148,9 +148,7 @@ function Import-BacpacToSqlServer
             $DatabaseName = $bacpacFile.BaseName
         }
 
-        $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") $DataSource
-        $databaseExists = ($server.Databases | Where-Object { $PSItem.Name -eq $DatabaseName }) -ne $null
-
+        $databaseExists = Test-SqlServerDatabase -SqlServerName $DataSource -DatabaseName $DatabaseName
         if ($databaseExists)
         {
             $originalDatabaseName = $DatabaseName
