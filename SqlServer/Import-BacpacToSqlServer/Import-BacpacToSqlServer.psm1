@@ -153,12 +153,12 @@ function Import-BacpacToSqlServer
             $DataSource = ".\$SqlServerName"
         }
 
-        if (!(ConfirmSqlServer($DataSource)))
+        if (!(Test-SqlServer $DataSource))
         {
             Write-Warning ("Could not find SQL Server at `"$DataSource`"!")
             $DataSource = "localhost"
 
-            if (!(ConfirmSqlServer($DataSource)))
+            if (!(Test-SqlServer $DataSource))
             {
                 throw ("Could not find any SQL Server instances!")
             }
@@ -213,18 +213,5 @@ function Import-BacpacToSqlServer
 
             throw ("Importing the database failed!")
         }
-    }
-}
-
-
-function ConfirmSqlServer
-{
-    param
-    (
-        [string] $ServerName
-    )
-    process
-    {
-        return (New-Object ("Microsoft.SqlServer.Management.Smo.Server") $ServerName).InstanceName -ne $null
     }
 }
