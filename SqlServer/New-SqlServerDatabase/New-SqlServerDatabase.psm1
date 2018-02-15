@@ -23,7 +23,7 @@ function New-SqlServerDatabase
             throw ("Could not find SQL Server at `"$SqlServerName`"!")
         }
 
-        $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") $DataSource
+        $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") $SqlServerName
 
         if (Test-SqlServerDatabase -SqlServerName $SqlServerName -DatabaseName $DatabaseName)
         {
