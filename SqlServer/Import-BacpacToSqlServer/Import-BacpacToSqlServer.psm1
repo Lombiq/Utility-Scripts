@@ -66,9 +66,16 @@ function Import-BacpacToSqlServer
 
             $defaultSqlPackageExecutablePath = ""
             for ($i = 20; $i -ge 12; $i--)
-            { 
-                $defaultSqlPackageExecutablePath = "C:\Program Files (x86)\Microsoft SQL Server\$($i)0\DAC\bin\SqlPackage.exe"
+            {
+                $defaultSqlPackageExecutablePath = "C:\Program Files\Microsoft SQL Server\$($i)0\DAC\bin\SqlPackage.exe"
+                if (Test-Path $defaultSqlPackageExecutablePath)
+                {
+                    $sqlPackageExecutablePath = $defaultSqlPackageExecutablePath
+                    Write-Host ("`nSQL Package executable for importing the database found at `"$sqlPackageExecutablePath`"!`n")
+                    break
+                }
 
+                $defaultSqlPackageExecutablePath = "C:\Program Files (x86)\Microsoft SQL Server\$($i)0\DAC\bin\SqlPackage.exe"
                 if (Test-Path $defaultSqlPackageExecutablePath)
                 {
                     $sqlPackageExecutablePath = $defaultSqlPackageExecutablePath
