@@ -64,6 +64,7 @@ function Get-FtpFiles
     {
         $sessionOptions = New-Object WinSCP.SessionOptions -Property @{
             Protocol = [WinSCP.Protocol]::Ftp
+            FtpSecure = [WinSCP.FtpSecure]::Implicit
             HostName = $FtpHostName
             UserName = $FtpUsername
             Password = $FtpPassword
