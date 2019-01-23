@@ -1,4 +1,16 @@
-﻿function Init-OrchardCore
+﻿<#
+.Synopsis
+   Initializes an Orchard Core project.
+
+.DESCRIPTION
+   Initializes an Orchard Core project using the latest Orchard Core NuGet packages. Optionally creates an initial module and/or theme.
+
+.EXAMPLE
+   Init-OrchardCore -Name "FancyWebsite" -Path "D:\Work\FancyWebsite" -ModuleName "FancyWebsite.Core" -ThemeName "FancyWebsite.Theme"
+#>
+
+
+function Init-OrchardCore
 {
     [CmdletBinding()]
     Param
