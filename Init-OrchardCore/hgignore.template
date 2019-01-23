@@ -5,7 +5,6 @@ obj/
 *.sln.cache
 *.orig
 *.user
-*Thumbs.db
 build
 buildazure
 buildtasks
@@ -14,8 +13,7 @@ robots.txt
 
 syntax: regexp
 (?i)src/.*bin/.*
-src/Orchard.Web/App_Data/(?!Localization).+
-src/Orchard.Web/Media/(?!Web.config|OrchardLogo.png).+
+App_Data/(?!Localization).+
 node_modules
 typings/
 src/packages/*
