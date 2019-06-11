@@ -9,6 +9,7 @@
    Copy-ToAzureDevelopmentStorage -Path "D:\StorageBackup"
 #>
 
+Import-Module Az.Storage
 
 function Copy-ToAzureDevelopmentStorage
 {
@@ -30,26 +31,26 @@ function Copy-ToAzureDevelopmentStorage
 
         Start-AzureStorageEmulator | Out-Null
 
-        $storageContext = New-AzureStorageContext -Local
+        $storageContext = New-AzStorageContext -Local
 
-        $containers = Get-AzureStorageContainer -Context $storageContext
+        $containers = Get-AzStorageContainer -Context $storageContext
         $pathLength = $Path.Length
 
         foreach ($folder in Get-ChildItem $Path | Where-Object { $PSItem.PSIsContainer })
         {
             if ($containers -eq $null -or $containers.Count -eq 0 -or !($containers | Select-Object -ExpandProperty "Name").Contains($folder.Name))
             {
-                New-AzureStorageContainer -Context $storageContext -Name $folder.Name -Permission Blob
+                New-AzStorageContainer -Context $storageContext -Name $folder.Name -Permission Blob
             }
 
             foreach ($subFolder in Get-ChildItem $folder.FullName)
             {
-                Get-AzureStorageContainer -Context $storageContext -Name $folder.Name | Get-AzureStorageBlob | Where-Object { $PSItem.Name.StartsWith($folder.Name + "\") } | Remove-AzureStorageBlob
+                Get-AzStorageContainer -Context $storageContext -Name $folder.Name | Get-AzStorageBlob | Where-Object { $PSItem.Name.StartsWith($folder.Name + "\") } | Remove-AzStorageBlob
             }            
 
             foreach ($file in Get-ChildItem $folder.FullName -Recurse -File)
             {
-                Set-AzureStorageBlobContent -Context $storageContext -Container $folder.Name -File $file.FullName -Blob $file.FullName.Substring($folder.FullName.Length + 1) -Force | Out-Null
+                Set-AzStorageBlobContent -Context $storageContext -Container $folder.Name -File $file.FullName -Blob $file.FullName.Substring($folder.FullName.Length + 1) -Force | Out-Null
                 Write-Host ("Importing `"$($file.FullName.Substring($pathLength))`".")
             }
         }
