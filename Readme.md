@@ -13,6 +13,8 @@ Run the `AddPathToPSModulePath.ps1` script (you need admin privileges) to add th
 
 In order to use these PowerShell scripts and modules you need to update to at least PowerShell 5. You can check the installed version by running the `$PSVersionTable.PSVersion` command. If you have an earlier version you can download version 5 preview from [here](https://www.microsoft.com/en-us/download/details.aspx?id=48729).
 
+For the Azure-related scripts you'll need the Azure (the new "Az") PowerShell module, so install as documented [here](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps). If you happen to have the older AzureRM module installed you'll need to [uninstall it](https://docs.microsoft.com/en-us/powershell/azure/uninstall-az-ps?view=azps-2.2.0#uninstall-the-azurerm-module) first.
+
 
 ## Developing PowerShell modules
 
