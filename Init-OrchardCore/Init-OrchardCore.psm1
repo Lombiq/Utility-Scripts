@@ -27,7 +27,7 @@ function Init-OrchardCore
 
     Process
     {
-        dotnet new -i OrchardCore.ProjectTemplates::1.0.0-beta3-* --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
+        dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc1-* --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
         dotnet new occms -o "$Path/src/$Name.Web"
 
         dotnet new sln -o "$Path" -n "$Name"
