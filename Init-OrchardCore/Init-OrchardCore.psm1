@@ -47,6 +47,6 @@ function Init-OrchardCore
             dotnet sln "$Path/$Name.sln" add "$Path/src/Themes/$ThemeName/$ThemeName.csproj"
         }
 
-        Copy-Item "$PSScriptRoot\hgignore.template" -Destination "$Path\.hgignore"
+        Copy-Item "$PSScriptRoot\gitignore.template" -Destination "$Path\.gitignore"
     }
 }
