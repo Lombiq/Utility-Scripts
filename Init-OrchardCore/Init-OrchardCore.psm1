@@ -3,10 +3,10 @@
    Initializes an Orchard Core project.
 
 .DESCRIPTION
-   Initializes an Orchard Core project using the latest Orchard Core NuGet packages. Optionally creates an initial module and/or theme.
+   Initializes an Orchard Core project using the latest released Orchard Core NuGet packages. Optionally creates an initial module and/or theme, and optionally uses a given NuGet source.
 
 .EXAMPLE
-   Init-OrchardCore -Name "FancyWebsite" -Path "D:\Work\FancyWebsite" -ModuleName "FancyWebsite.Core" -ThemeName "FancyWebsite.Theme"
+   Init-OrchardCore -Name "FancyWebsite" -Path "D:\Work\FancyWebsite" -ModuleName "FancyWebsite.Core" -ThemeName "FancyWebsite.Theme" -NuGetSource "https://www.myget.org/F/orchardcore-preview/api/v3/index.json"
 #>
 
 
@@ -17,17 +17,26 @@ function Init-OrchardCore
     (
         [Parameter(Mandatory=$true)]
         [string] $Path,
-		
+
         [Parameter(Mandatory=$true)]
         [string] $Name,
 
         [string] $ModuleName,
-        [string] $ThemeName
+        [string] $ThemeName,
+        [string] $NuGetSource
     )
 
     Process
     {
-        dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc1-* --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json
+        if ([string]::IsNullOrEmpty($NuGetSource))
+        {
+            dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc1-*
+        }
+        else
+        {
+            dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc1-* --nuget-source $NuGetSource
+        }
+        
         dotnet new occms -o "$Path/src/$Name.Web"
 
         dotnet new sln -o "$Path" -n "$Name"
