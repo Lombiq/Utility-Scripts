@@ -35,7 +35,7 @@ function Reset-OrchardCoreApp
         
         # Trying to find IIS Express and .NET host processes that run a Web Project with a matching name and terminate them.
 
-        foreach ($siteHostProcess in Get-WmiObject Win32_Process -Filter "(Name = 'iisexpress.exe' or Name = 'dotnet.exe') and CommandLine like '%$SiteName%'")
+        foreach ($siteHostProcess in Get-WmiObject Win32_Process -Filter "(Name = 'iisexpress.exe' or Name = 'dotnet.exe') and CommandLine like '%$siteName%'")
         {
             "Terminating application host process running `"$($siteHostProcess.CommandLine)`"!`n"
 
@@ -156,16 +156,14 @@ function Reset-OrchardCoreApp
 
             if ($applicationProcess.HasExited)
             {
-                throw "Application host process exited with exit code $($applicationProcess.ExitCode)!"
+                throw "Application host process exited with exit code $($applicationProcess.ExitCode)!`nCheck if another application host process (IIS Express or dotnet) is running under a different user account using the same port and terminate it!"
             }
 
             $setupScreenResponse = Invoke-WebRequest -Uri $applicationUrl -ErrorAction Stop
 
             if ($setupScreenResponse.StatusCode -ne 200)
             {
-                $applicationWindowsProcess.Terminate() | Out-Null
-
-                throw "Application started, but the setup screen returned status code $($setupScreenResponse.StatusCode)!"
+                throw "Application host process started, but the setup screen returned status code $($setupScreenResponse.StatusCode)!"
             }
 
             $applicationRunning = $true
