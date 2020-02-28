@@ -10,7 +10,14 @@ function Reset-OrchardCoreApp
 
         [switch] $Rebuild,
 
-        [switch] $KeepAlive
+        [switch] $KeepAlive,
+
+        [string] $SetupSiteName = "Orchard Core",
+        [string] $SetupDatabaseProvider = "Sqlite",
+        [string] $SetupRecipeName = "Blog",
+        [string] $SetupUserName = "admin",
+        [string] $SetupPassword = "Password1!",
+        [string] $SetupEmail = "admin@localhost"
     )
 
     Process
@@ -109,12 +116,19 @@ function Reset-OrchardCoreApp
             {
                 $applicationUrlsFromSetting = $applicationUrlSetting -split ";"
                 
-                $applicationUrlFromSetting = $applicationUrlsFromSetting | Where-Object { $_.StartsWith("http://") }
+                $applicationUrlFromSetting = $applicationUrlsFromSetting | Where-Object { $_.StartsWith("https://") }
 
                 if (-not [string]::IsNullOrEmpty($applicationUrlFromSetting))
                 {
                     $applicationUrl = $applicationUrlFromSetting.Trim()
                 }
+            }
+
+            $environmentSetting = $launchSettings.profiles."$SiteName".environmentVariables.ASPNETCORE_ENVIRONMENT
+
+            if ([string]::IsNullOrEmpty($environmentSetting))
+            {
+                $environmentSetting = "Development"
             }
         }
 
@@ -124,9 +138,10 @@ function Reset-OrchardCoreApp
 
         $webProjectDllFile = Get-Item -Path $webProjectDllPath
         
-        "Starting .NET application host at `"$applicationUrl`"!"
+        "Starting .NET application host at `"$applicationUrl`"!`n"
                 
-        $applicationProcess = Start-Process -WorkingDirectory $webProjectDllFile.Directory.FullName dotnet -ArgumentList "$($webProjectDllFile.Name) --urls $applicationUrl" -PassThru
+        $applicationProcess = Start-Process -WorkingDirectory $WebProjectPath dotnet -ArgumentList "$($webProjectDllFile.FullName) --urls $applicationUrl --environment $environmentSetting" -PassThru
+        $applicationWindowsProcess = Get-WmiObject Win32_Process -Filter "ProcessId = '$($applicationProcess.Id)'"
 
 
 
@@ -148,12 +163,52 @@ function Reset-OrchardCoreApp
 
             if ($setupScreenResponse.StatusCode -ne 200)
             {
+                $applicationWindowsProcess.Terminate() | Out-Null
+
                 throw "Application started, but the setup screen returned status code $($setupScreenResponse.StatusCode)!"
             }
 
             $applicationRunning = $true
         }
         until ($applicationRunning)
+        
+        
+        
+        # Running setup.
+
+        "Application started, attempting to run setup!`n"
+
+        $tenantSetupSettings = @{
+            SiteName = $SetupSiteName
+            DatabaseProvider = $SetupDatabaseProvider
+            RecipeName = $SetupRecipeName
+            UserName = $SetupUserName
+            Password = $SetupPassword
+            Email = $SetupEmail
+            Name = "Default"
+        }
+
+        $setupRequest = Invoke-WebRequest -Method Post -Uri "$applicationUrl/api/tenants/setup" -Body (ConvertTo-Json($tenantSetupSettings)) -ContentType "application/json"
+
+        if ($setupRequest.StatusCode -ne 200)
+        {
+            $applicationWindowsProcess.Terminate() | Out-Null
+
+            throw "Setup failed with status code $($setupScreenResponse.StatusCode)!"
+        }
+
+        "Setup successful!`n"
+
+        
+        
+        # Terminating the .NET application host process if Keep Alive is not requested.
+
+        if (-not $KeepAlive.IsPresent)
+        {
+            "Keep Alive not requested, shutting down application host process!"
+
+            $applicationWindowsProcess.Terminate() | Out-Null
+        }
     }
 }
 
