@@ -140,8 +140,11 @@ function Reset-OrchardCoreApp
         
         "Starting .NET application host at `"$applicationUrl`"!`n"
                 
-        $applicationProcess = Start-Process -WorkingDirectory $WebProjectPath dotnet -ArgumentList "$($webProjectDllFile.FullName) --urls $applicationUrl --environment $environmentSetting" -PassThru
-        $applicationWindowsProcess = Get-WmiObject Win32_Process -Filter "ProcessId = '$($applicationProcess.Id)'"
+        $applicationProcess = Start-Process `
+            -WorkingDirectory $WebProjectPath `
+            dotnet `
+            -ArgumentList "$($webProjectDllFile.FullName) --urls $applicationUrl --environment $environmentSetting --AuthorizeOrchardApiRequests true" `
+            -PassThru
 
 
 
