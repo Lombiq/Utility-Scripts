@@ -190,7 +190,7 @@ function Reset-OrchardCoreApp
 
         if ($setupRequest.StatusCode -ne 200)
         {
-            $applicationWindowsProcess.Terminate() | Out-Null
+            Stop-Process $applicationProcess
 
             throw "Setup failed with status code $($setupScreenResponse.StatusCode)!"
         }
@@ -205,8 +205,14 @@ function Reset-OrchardCoreApp
         {
             "Keep Alive not requested, shutting down application host process!"
 
-            $applicationWindowsProcess.Terminate() | Out-Null
+            Stop-Process $applicationProcess
         }
+
+
+        
+        pause
+
+        exit 0
     }
 }
 
