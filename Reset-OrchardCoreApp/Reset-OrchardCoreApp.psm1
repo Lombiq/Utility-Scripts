@@ -12,6 +12,8 @@ function Reset-OrchardCoreApp
 
         [switch] $KeepAlive,
 
+        [switch] $Pause,
+
         [string] $SetupSiteName = "Orchard Core",
         [string] $SetupDatabaseProvider = "Sqlite",
         [string] $SetupRecipeName = "Blog",
@@ -213,7 +215,10 @@ function Reset-OrchardCoreApp
 
 
         
-        pause
+        if ($Pause.IsPresent)
+        {
+            pause
+        }
 
         exit 0
     }
