@@ -118,7 +118,7 @@ function Reset-OrchardCoreApp
             {
                 $applicationUrlsFromSetting = $applicationUrlSetting -split ";"
                 
-                $applicationUrlFromSetting = $applicationUrlsFromSetting | Where-Object { $_.StartsWith("https://") }
+                $applicationUrlFromSetting = $applicationUrlsFromSetting | Where-Object { $_.StartsWith("http://") }
 
                 if (-not [string]::IsNullOrEmpty($applicationUrlFromSetting))
                 {
