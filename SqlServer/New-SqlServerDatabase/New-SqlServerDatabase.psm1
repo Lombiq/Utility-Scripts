@@ -29,6 +29,8 @@ function New-SqlServerDatabase
         {
             if ($Force.IsPresent)
             {
+                Write-Warning ("Dropping database `"$SqlServerName\$DatabaseName`"!")
+
                 $server.KillAllProcesses($DatabaseName)
                 $server.Databases[$DatabaseName].Drop()
             }
