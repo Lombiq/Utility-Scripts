@@ -1,25 +1,38 @@
 function Reset-OrchardCoreApp
 {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = "FileDB")]
     Param
     (
-        [Parameter(Mandatory=$true,
-                   ValueFromPipelineByPropertyName=$true,
-                   Position=0)]
-        [string] $WebProjectPath,
-
-        [switch] $Rebuild,
-
-        [switch] $KeepAlive,
-
-        [switch] $Pause,
-
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)]
+        [string] $WebProjectPath,        
+        
         [string] $SetupSiteName = "Orchard Core",
-        [string] $SetupDatabaseProvider = "Sqlite",
+        [string] $SetupTenantName = "Default",
         [string] $SetupRecipeName = "Blog",
         [string] $SetupUserName = "admin",
         [string] $SetupPassword = "Password1!",
-        [string] $SetupEmail = "admin@localhost"
+        [string] $SetupEmail = "admin@localhost",
+
+        
+        [Parameter(ParameterSetName = "ServerDB", Mandatory)]
+        [string] [ValidateSet("SqlConnection")] $SetupDatabaseProvider = "Sqlite",
+
+        [Parameter(ParameterSetName = "ServerDB")]
+        [string] $SetupDatabaseTablePrefix = "",
+        
+        [Parameter(ParameterSetName = "ServerDB")]
+        [string] $SetupDatabaseServerName = ".",
+        
+        [Parameter(ParameterSetName = "ServerDB")]
+        [string] $SetupDatabaseName = "OrchardCore",
+
+        [Parameter(ParameterSetName = "ServerDB")]
+        [switch] $Force,
+
+        
+        [switch] $Rebuild,
+        [switch] $KeepAlive,
+        [switch] $Pause
     )
 
     Process
@@ -99,6 +112,32 @@ function Reset-OrchardCoreApp
         }
 
         "Compiled Web Project DLL found at `"$webProjectDllPath`"!`n"
+
+
+
+        # Validating and setting up database server connection.
+
+        $SetupDatabaseConnectionString = ""
+        if ($PSCmdlet.ParameterSetName -eq "ServerDB")
+        {
+            if (New-SqlServerDatabase -SqlServerName $SetupDatabaseServerName -DatabaseName $SetupDatabaseName -Force:$Force.IsPresent -ErrorAction Stop)
+            {
+                "Database `"$SetupDatabaseServerName\$SetupDatabaseName`" created!"
+            }
+            else
+            {
+                if ([string]::IsNullOrEmpty($SetupDatabaseTablePrefix))
+                {
+                    throw ("Database `"$SetupDatabaseServerName\$SetupDatabaseName`" could not be created!")
+                }
+                else
+                {
+                    "The specified database already exists! Attempting to run setup using the `"$SetupDatabaseTablePrefix`" table prefix."
+                }
+            }
+
+            $SetupDatabaseConnectionString = "Server=$SetupDatabaseServerName;Database=$SetupDatabaseName;Integrated Security=True;"
+        }
 
         
 
@@ -184,11 +223,13 @@ function Reset-OrchardCoreApp
         $tenantSetupSettings = @{
             SiteName = $SetupSiteName
             DatabaseProvider = $SetupDatabaseProvider
+            TablePrefix = $SetupDatabaseTablePrefix
+            ConnectionString = $SetupDatabaseConnectionString
             RecipeName = $SetupRecipeName
             UserName = $SetupUserName
             Password = $SetupPassword
             Email = $SetupEmail
-            Name = "Default"
+            Name = $SetupTenantName
         }
 
         $setupRequest = Invoke-WebRequest -Method Post -Uri "$applicationUrl/api/tenants/setup" -Body (ConvertTo-Json($tenantSetupSettings)) -ContentType "application/json"
