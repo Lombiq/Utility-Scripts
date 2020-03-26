@@ -42,7 +42,14 @@ function New-SqlServerDatabase
             }
         }
 
-        (New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -argumentlist $server, $DatabaseName).Create()
+        try
+        {
+            (New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $server, $DatabaseName).Create()
+        }
+        catch
+        {
+            throw "Could not create `"$SqlServerName\$DatabaseName`"!`n$($_.Exception.Message)"
+        }
 
         return $true
     }
