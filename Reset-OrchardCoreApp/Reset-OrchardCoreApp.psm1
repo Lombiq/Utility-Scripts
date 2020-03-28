@@ -75,6 +75,8 @@ function Reset-OrchardCoreApp
         # Rebuilding the application if the "Rebuild" switch is present or the Web Project DLL is not found.
 
         $webProjectDllPath = GetWebProjectDllPath($WebProjectPath)
+        $gitBranchInfo = if (Test-Path "$webProjectDllPath.git.branch" -PathType Leaf) { Get-Content "$webProjectDllPath.git.branch" } else { $false }
+        $hgBranchInfo = if (Test-Path "$webProjectDllPath.hg.branch" -PathType Leaf) { Get-Content "$webProjectDllPath.hg.branch" } else { $false }
 
         $buildRequired = $false;
         if ($Rebuild.IsPresent)
@@ -86,6 +88,24 @@ function Reset-OrchardCoreApp
         elseif ([string]::IsNullOrEmpty($webProjectDllPath) -or -not (Test-Path $webProjectDllPath -PathType Leaf))
         {
             "Web Project DLL not found, build is required!`n"
+
+            $buildRequired = $true
+        }
+        elseif ($gitBranchInfo -and ($gitBranchInfo.Trim() -ne $(git branch --show-current).Trim()))
+        {
+            # usage: put the following in your post-build script
+            # git branch --show-current > $(OutDir)$(TargetFileName).git.branch
+
+            "The build was made on a different git branch, rebuild is required!`n"
+
+            $buildRequired = $true
+        }
+        elseif ($hgBranchInfo -and ($hgBranchInfo.Trim() -ne $(hg branch).Trim()))
+        {
+            # usage: put the following in your post-build script
+            # hg branch > $(OutDir)$(TargetFileName).hg.branch
+
+            "The build was made on a different mercurial branch, rebuild is required!`n"
 
             $buildRequired = $true
         }
