@@ -238,7 +238,7 @@ function Reset-OrchardCoreApp
         {
             Stop-Process $applicationProcess
 
-            throw "Setup failed with status code $($setupScreenResponse.StatusCode)!"
+            throw "Setup failed with status code $($setupRequest.StatusCode)!"
         }
 
         "Setup successful!`n"
