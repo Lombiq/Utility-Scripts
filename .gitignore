@@ -1,0 +1,14 @@
+desktop.ini
+obj/
+*.suo
+*.sln.cache
+*.orig
+*.user
+*Thumbs.db
+build
+buildazure
+buildtasks
+artifacts
+robots.txt
+syntax: regexp
+(?i)src/.*bin/.*
