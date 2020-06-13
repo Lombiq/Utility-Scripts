@@ -6,7 +6,7 @@
    Initializes an Orchard Core project using the latest released Orchard Core NuGet packages. Optionally creates an initial module and/or theme, and optionally uses a given NuGet source.
 
 .EXAMPLE
-   Init-OrchardCore -Name "FancyWebsite" -Path "D:\Work\FancyWebsite" -ModuleName "FancyWebsite.Core" -ThemeName "FancyWebsite.Theme" -NuGetSource "https://www.myget.org/F/orchardcore-preview/api/v3/index.json"
+   Init-OrchardCore -Name "FancyWebsite" -Path "D:\Work\FancyWebsite" -ModuleName "FancyWebsite.Core" -ThemeName "FancyWebsite.Theme" -NuGetSource "https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json"
 #>
 
 
