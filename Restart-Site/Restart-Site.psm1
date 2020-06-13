@@ -1,9 +1,9 @@
 ﻿<#
 .Synopsis
-   Deletes the bin, obj App_Data folders. Restarts the site.
+   Restarts an Orchard 1.x app in IIS.
 
 .DESCRIPTION
-	Deletes the bin, obj App_Data folders. Restarts the site.
+   For an Orchard 1.x app. Deletes the bin, obj App_Data folders and restarts the site in IIS.
 
 .EXAMPLE
    PS > Restart-Site -Path C:\pathToOrchardSource -SiteName siteNameInIIS
