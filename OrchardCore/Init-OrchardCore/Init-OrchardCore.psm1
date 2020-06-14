@@ -3,7 +3,7 @@
    Initializes an Orchard Core project.
 
 .DESCRIPTION
-   Initializes an Orchard Core project using the latest released Orchard Core NuGet packages. Optionally creates an initial module and/or theme, and optionally uses a given NuGet source.
+   Initializes an Orchard Core project using the latest released Orchard Core NuGet packages at the current location or under the given path. Optionally creates an initial module and/or theme, and optionally uses a given NuGet source.
 
 .EXAMPLE
    Init-OrchardCore -Name "FancyWebsite" -Path "D:\Work\FancyWebsite" -ModuleName "FancyWebsite.Core" -ThemeName "FancyWebsite.Theme" -NuGetSource "https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json"
@@ -15,7 +15,6 @@ function Init-OrchardCore
     [CmdletBinding()]
     Param
     (
-        [Parameter(Mandatory=$true)]
         [string] $Path,
 
         [Parameter(Mandatory=$true)]
@@ -28,6 +27,11 @@ function Init-OrchardCore
 
     Process
     {
+        if ([string]::IsNullOrEmpty($Path))
+        {
+            $Path = (Get-Location).Path;
+        }
+        
         if ([string]::IsNullOrEmpty($NuGetSource))
         {
             dotnet new -i OrchardCore.ProjectTemplates::1.0.0-*
