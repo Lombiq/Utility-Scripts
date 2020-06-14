@@ -3,7 +3,7 @@
    Adds a path to the PSModulePath environment variable.
 
 .DESCRIPTION
-   Only adds the path if hasn't been added yet. The path will also be added to the $PSModulePath variable so the modules will available in the current console too.
+   Only adds the path if hasn't been added yet. The path will also be added to the $PSModulePath variable so the modules will be available in the current console too.
 
 .EXAMPLE
    .\AddPathToPSModulePath.ps1
