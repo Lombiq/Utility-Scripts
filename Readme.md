@@ -1,4 +1,4 @@
-# Utility Scripts
+# Lombiq Utility Scripts
 
 
 
@@ -54,16 +54,19 @@ On what the different scripts do specifically and how to use them take a look at
     - Test-VSProjectConsistency: Checks Visual Studio project files' contents against the file system looking for inconsistencies.
 
 
-## Developing PowerShell modules
+## Contributing and support
 
+Bug reports, feature requests, comments, questions, code contributions, and love letters are warmly welcome, please do so via GitHub issues and pull requests. Please adhere to our [open-source guidelines](https://lombiq.com/open-source-guidelines) while doing so.
+
+This project is developed by [Lombiq Technologies](https://lombiq.com/). Commercial-grade support is available through Lombiq.
+
+### Developing PowerShell modules
 Note that naturally you can also create Batch (.bat) or PowerShell (.ps1) scripts yourself that call these scripts when you repeatedly have to execute them with the same parameters.
 
 1. Make a ModuleName folder in one of the thematic subfolders or create a new one.
 2. Inside that folder make a ModuleName script with a ModuleName function (optionally you can use the `Cmdlet (advanced function)` snippet). See the existing modules for examples.
 
-
-## Notes on developing scripts in general
-
+### Notes on developing scripts in general
 - Always include appropriate documentation and usage examples in the header of the script on what the script does.
 - Since people can create .bat files pointing to the batch scripts (as advised above) only change such a script's path if it's absolutely inevitable, then communicate the change appropriately. (For PowerShell modules their location within this folder doesn't matter.)
 - If your script needs to be run as an administrator always add the below lines to it. This will allow right click / Run as administrator to work.
@@ -71,10 +74,3 @@ Note that naturally you can also create Batch (.bat) or PowerShell (.ps1) script
     @setlocal enableextensions
     @cd /d "%~dp0"
     ```
-
-
-## Contributing and support
-
-Bug reports, feature requests, comments, questions, code contributions, and love letters are warmly welcome, please do so via GitHub issues and pull requests. Please adhere to our [open-source guidelines](https://lombiq.com/open-source-guidelines) while doing so.
-
-This project is developed by [Lombiq Technologies](https://lombiq.com/). Commercial-grade support is available through Lombiq.
