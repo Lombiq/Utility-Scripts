@@ -30,7 +30,7 @@ Note that naturally you can also create Batch (.bat) or PowerShell (.ps1) script
 ## Notes on developing scripts
 
 - Always include appropriate documentation and usage examples in the header of the script on what the script does.
-- Since people can create .bat files pointing to these scripts (as advised above) only change a script's path if it's absolutely inevitable, then communicate the change appropriately.
+- Since people can create .bat files pointing to the batch scripts (as advised above) only change such a script's path if it's absolutely inevitable, then communicate the change appropriately. (For PowerShell modules their location within this folder doesn't matter.)
 - If your script needs to be run as an administrator always add the below lines to it. This will allow right click / Run as administrator to work.
     ```
     @setlocal enableextensions
