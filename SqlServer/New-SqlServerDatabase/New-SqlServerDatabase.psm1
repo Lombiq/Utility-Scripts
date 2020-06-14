@@ -1,3 +1,9 @@
+<#
+.Synopsis
+   Creates a new database on the given SQL Server instance, after dropping it first if it already exists.
+#>
+
+
 [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
 
 function New-SqlServerDatabase

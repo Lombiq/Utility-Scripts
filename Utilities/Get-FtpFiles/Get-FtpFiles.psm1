@@ -1,4 +1,10 @@
-﻿# Session.FileTransferProgress event handler.
+﻿<#
+.Synopsis
+   Downloads all files from a folder on an FTP server.
+#>
+
+
+# Session.FileTransferProgress event handler.
 function FileTransferProgress
 {
     param

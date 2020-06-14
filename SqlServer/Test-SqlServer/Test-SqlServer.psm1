@@ -1,3 +1,9 @@
+<#
+.Synopsis
+   Tests the connection to a local SQL Server instance.
+#>
+
+
 [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
 
 function Test-SqlServer

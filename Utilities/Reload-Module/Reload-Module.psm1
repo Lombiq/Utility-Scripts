@@ -1,9 +1,9 @@
 ﻿<#
 .Synopsis
-    Reloads PowerShell modules in a specified folder.
+    Reloads PowerShell modules from a folder.
 
 .DESCRIPTION
-    Finds PowerShell modules in a folder structure and reloads them.
+    Finds PowerShell modules in the specified folder structure and reloads them.
 
 .EXAMPLE
     Reload-Module

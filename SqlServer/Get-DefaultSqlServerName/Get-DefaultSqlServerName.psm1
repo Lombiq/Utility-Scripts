@@ -1,3 +1,9 @@
+<#
+.Synopsis
+   Gets the name of the default local SQL Server instance.
+#>
+
+
 [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
 
 function Get-DefaultSqlServerName

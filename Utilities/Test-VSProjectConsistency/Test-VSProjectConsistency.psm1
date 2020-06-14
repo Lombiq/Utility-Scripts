@@ -1,6 +1,6 @@
 ﻿<#
 .Synopsis
-   Discovers Visual Studio project (.csproj) files in a specific folder to check their content against the file system looking for inconsistencies.
+   Checks Visual Studio project files' contents against the file system looking for inconsistencies.
 
 .DESCRIPTION
   Discovers Visual Studio project (.csproj) files in a specific folder to check their content against the file system looking for inconsistencies.

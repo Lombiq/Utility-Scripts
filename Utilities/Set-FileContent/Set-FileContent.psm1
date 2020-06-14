@@ -6,7 +6,7 @@
    Replaces all occurrences of a given string with another one in a file.
 
 .EXAMPLE
-   Set-Filecontent -FilePath "C:\file-to-moderate.txt" -Match "damn" -ReplaceWith "cute"
+   Set-FileContent -FilePath "C:\file-to-moderate.txt" -Match "damn" -ReplaceWith "cute"
 #>
 
 

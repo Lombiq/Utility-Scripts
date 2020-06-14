@@ -1,3 +1,15 @@
+<#
+.Synopsis
+   Resets and sets up an Orchard Core application.
+
+.DESCRIPTION
+   Resets an Orchard Core application to its blank state even if it's running, then runs its setup with the given parameters. Note that for the setup to work you'll need to configure the app to accept unauthenticated API requests for the duration of the setup; you can do this with Setup Extensions: https://github.com/Lombiq/Setup-Extensions#logged-in-user-authentication-for-api-requests.
+
+.EXAMPLE
+   Reset-OrchardCoreApp -WebProjectPath "." -SetupSiteName "FancyWebsite" -SetupRecipeName "FancyWebsite.DevelopmentSetup"
+#>
+
+
 function Reset-OrchardCoreApp
 {
     [CmdletBinding(DefaultParameterSetName = "FileDB")]

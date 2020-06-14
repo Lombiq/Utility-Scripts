@@ -1,9 +1,9 @@
 ﻿<#
 .Synopsis
-   Initializes an Orchard Core project.
+   Initializes an Orchard Core solution for a git repository.
 
 .DESCRIPTION
-   Initializes an Orchard Core project using the latest released Orchard Core NuGet packages at the current location or under the given path. Optionally creates an initial module and/or theme, and optionally uses a given NuGet source.
+   Initializes an Orchard Core solution using the latest released Orchard Core NuGet packages at the current location or under the given path, and adds a suitable .gitignore file. Optionally creates an initial module and/or theme, and optionally uses a given NuGet source.
 
 .EXAMPLE
    Init-OrchardCore -Name "FancyWebsite" -Path "D:\Work\FancyWebsite" -ModuleName "FancyWebsite.Core" -ThemeName "FancyWebsite.Theme" -NuGetSource "https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json"

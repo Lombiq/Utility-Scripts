@@ -1,9 +1,9 @@
 <#
 .Synopsis
-   Copies all files in a specified folder to Development Storage.
+   Copies all files from the specified folder to Azure Development Storage.
 
 .DESCRIPTION
-   Copies all files in a specified folder to Development Storage for using with the Azure Storage Emulator.
+   Copies all files from the specified folder to Development Storage when running the Azure Storage Emulator.
 
 .EXAMPLE
    Copy-ToAzureDevelopmentStorage -Path "D:\StorageBackup"

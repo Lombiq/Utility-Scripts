@@ -1,6 +1,6 @@
 ﻿<#
 .Synopsis
-   Reks the script execution.
+   Throws an exception.
 
 .DESCRIPTION
    Reks the script execution by throwing a fatal exception.

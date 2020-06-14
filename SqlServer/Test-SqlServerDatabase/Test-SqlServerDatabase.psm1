@@ -1,3 +1,9 @@
+<#
+.Synopsis
+   Checks whether the given database exists in a local SQL Server instance.
+#>
+
+
 [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
 
 function Test-SqlServerDatabase

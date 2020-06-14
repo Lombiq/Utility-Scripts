@@ -3,7 +3,7 @@
    Imports a .bacpac file to a database on a local SQL Server instance.
 
 .DESCRIPTION
-   Imports a .bacpac file to a database on a local SQL Server instance.
+   Imports a .bacpac file to a database on the default local SQL Server instance. Install the attached Import-BacpacToSqlServer.reg Registry file to add an "Import to SQL Server with PowerShell" right click context menu shortcut for .bacpac files.
 
 .EXAMPLE
    Import-BacpacToSqlServer -BacpacPath "C:\database.bacpac"
