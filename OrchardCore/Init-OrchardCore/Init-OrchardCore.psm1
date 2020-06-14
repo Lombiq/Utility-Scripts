@@ -15,7 +15,7 @@ function Init-OrchardCore
     [CmdletBinding()]
     Param
     (
-        [string] $Path,
+        [string] $Path = (Get-Location).Path,
 
         [Parameter(Mandatory=$true)]
         [string] $Name,
@@ -27,11 +27,6 @@ function Init-OrchardCore
 
     Process
     {
-        if ([string]::IsNullOrEmpty($Path))
-        {
-            $Path = (Get-Location).Path;
-        }
-        
         if ([string]::IsNullOrEmpty($NuGetSource))
         {
             dotnet new -i OrchardCore.ProjectTemplates::1.0.0-*
