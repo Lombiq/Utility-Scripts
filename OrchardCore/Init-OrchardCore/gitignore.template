@@ -155,7 +155,7 @@ $RECYCLE.BIN/
 ## ASP.NET Core and Orchard Core specifics
 
 App_Data/
-glob:*.user
+*.user
 *.patch
 *.hg
 build/
