@@ -155,7 +155,8 @@ function Reset-OrchardCoreApp
                 }
             }
 
-            $SetupDatabaseConnectionString = "Server=$SetupDatabaseServerName;Database=$SetupDatabaseName;Integrated Security=True;"
+            # MARS is necessary for Orchard.
+            $SetupDatabaseConnectionString = "Server=$SetupDatabaseServerName;Database=$SetupDatabaseName;Integrated Security=True;MultipleActiveResultSets=True;"
         }
 
         
