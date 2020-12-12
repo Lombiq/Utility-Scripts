@@ -40,6 +40,9 @@ function Reset-OrchardCoreApp
 
         [Parameter(ParameterSetName = "ServerDB")]
         [switch] $Force,
+        
+        [Parameter(ParameterSetName = "ServerDB")]
+        [switch] $SuffixDatabaseNameWithFolderName,
 
         
         [switch] $Rebuild,
@@ -139,6 +142,15 @@ function Reset-OrchardCoreApp
         $SetupDatabaseConnectionString = ""
         if ($PSCmdlet.ParameterSetName -eq "ServerDB")
         {
+            if ($SuffixDatabaseNameWithFolderName.IsPresent)
+            {
+                $currentPath = (Get-Location).Path
+                $solutionFolder = Split-Path (Split-Path (Split-Path $currentPath -Parent) -Parent) -Leaf
+                
+                $SetupDatabaseName = $SetupDatabaseName +"_" + $solutionFolder
+                "b: $SetupDatabaseName"
+            } 
+            
             if (New-SqlServerDatabase -SqlServerName $SetupDatabaseServerName -DatabaseName $SetupDatabaseName -Force:$Force.IsPresent -ErrorAction Stop)
             {
                 "Database `"$SetupDatabaseServerName\$SetupDatabaseName`" created!"
