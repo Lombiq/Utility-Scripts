@@ -144,13 +144,24 @@ function Reset-OrchardCoreApp
         {
             if ($SuffixDatabaseNameWithFolderName.IsPresent)
             {
-                $currentPath = (Get-Location).Path
-                $solutionFolder = Split-Path (Split-Path (Split-Path $currentPath -Parent) -Parent) -Leaf
+                $solutionPath = (Get-Location).Path
+
+                while (-not [string]::IsNullOrEmpty($solutionPath) -and -not (Test-Path (Join-Path $solutionPath "*.sln")))
+                {
+                    $solutionPath = Split-Path $solutionPath -Parent;
+                }
+
+                if ([string]::IsNullOrEmpty($solutionPath))
+                {
+                    throw ("No solution folder was found to create the database name suffix. Put this script into a folder where there or in a parent folder there is the app's .sln file.")
+                }
+
+                $solutionFolder = Split-Path $solutionPath -Leaf
                 
                 $SetupDatabaseName = $SetupDatabaseName + "_" + $solutionFolder
             }
 
-            "Using the following database name: $SetupDatabaseName"
+            "Using the following database name: `"$SetupDatabaseName`"."
             
             if (New-SqlServerDatabase -SqlServerName $SetupDatabaseServerName -DatabaseName $SetupDatabaseName -Force:$Force.IsPresent -ErrorAction Stop)
             {
