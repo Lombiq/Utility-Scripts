@@ -147,7 +147,7 @@ function Reset-OrchardCoreApp
                 $currentPath = (Get-Location).Path
                 $solutionFolder = Split-Path (Split-Path (Split-Path $currentPath -Parent) -Parent) -Leaf
                 
-                $SetupDatabaseName = $SetupDatabaseName +"_" + $solutionFolder
+                $SetupDatabaseName = $SetupDatabaseName + "_" + $solutionFolder
                 "b: $SetupDatabaseName"
             } 
             
