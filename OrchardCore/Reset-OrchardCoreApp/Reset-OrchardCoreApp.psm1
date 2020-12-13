@@ -148,8 +148,9 @@ function Reset-OrchardCoreApp
                 $solutionFolder = Split-Path (Split-Path (Split-Path $currentPath -Parent) -Parent) -Leaf
                 
                 $SetupDatabaseName = $SetupDatabaseName + "_" + $solutionFolder
-                "b: $SetupDatabaseName"
-            } 
+            }
+
+            "Using the following database name: $SetupDatabaseName"
             
             if (New-SqlServerDatabase -SqlServerName $SetupDatabaseServerName -DatabaseName $SetupDatabaseName -Force:$Force.IsPresent -ErrorAction Stop)
             {
