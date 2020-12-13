@@ -67,6 +67,8 @@ Note that naturally you can also create Batch (.bat) or PowerShell (.ps1) script
 2. Inside that folder make a ModuleName script with a ModuleName function (optionally you can use the `Cmdlet (advanced function)` snippet). See the existing modules for examples.
 
 ### Notes on developing scripts in general
+- Instead of a simple text editor it's better to use an IDE to develop scripts, like [Visual Studio Code](https://code.visualstudio.com/) with the [PowerShell extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.PowerShell) or [PowerShell ISE](https://docs.microsoft.com/en-us/powershell/scripting/windows-powershell/ise/introducing-the-windows-powershell-ise) (though this is not actively maintained any more).
+- Note that PowerShell modules stay in memory once loaded in a session (window) so if you change them you'll only see the changes applied if you e.g. open a new PowerShell console.
 - Always include appropriate documentation and usage examples in the header of the script on what the script does.
 - Since people can create .bat files pointing to the batch scripts (as advised above) only change such a script's path if it's absolutely inevitable, then communicate the change appropriately. (For PowerShell modules their location within this folder doesn't matter.)
 - If your script needs to be run as an administrator always add the below lines to it. This will allow right click / Run as administrator to work.

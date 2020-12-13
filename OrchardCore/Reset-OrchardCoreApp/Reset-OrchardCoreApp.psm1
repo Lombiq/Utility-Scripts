@@ -40,6 +40,9 @@ function Reset-OrchardCoreApp
 
         [Parameter(ParameterSetName = "ServerDB")]
         [switch] $Force,
+        
+        [Parameter(ParameterSetName = "ServerDB")]
+        [switch] $SuffixDatabaseNameWithFolderName,
 
         
         [switch] $Rebuild,
@@ -139,6 +142,27 @@ function Reset-OrchardCoreApp
         $SetupDatabaseConnectionString = ""
         if ($PSCmdlet.ParameterSetName -eq "ServerDB")
         {
+            if ($SuffixDatabaseNameWithFolderName.IsPresent)
+            {
+                $solutionPath = (Get-Location).Path
+
+                while (-not [string]::IsNullOrEmpty($solutionPath) -and -not (Test-Path (Join-Path $solutionPath "*.sln")))
+                {
+                    $solutionPath = Split-Path $solutionPath -Parent;
+                }
+
+                if ([string]::IsNullOrEmpty($solutionPath))
+                {
+                    throw ("No solution folder was found to create the database name suffix. Put this script into a folder where there or in a parent folder there is the app's .sln file.")
+                }
+
+                $solutionFolder = Split-Path $solutionPath -Leaf
+                
+                $SetupDatabaseName = $SetupDatabaseName + "_" + $solutionFolder
+            }
+
+            "Using the following database name: `"$SetupDatabaseName`"."
+            
             if (New-SqlServerDatabase -SqlServerName $SetupDatabaseServerName -DatabaseName $SetupDatabaseName -Force:$Force.IsPresent -ErrorAction Stop)
             {
                 "Database `"$SetupDatabaseServerName\$SetupDatabaseName`" created!"
