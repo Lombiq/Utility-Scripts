@@ -15,6 +15,10 @@ For the Azure-related scripts you'll need the Azure (the new "Az") PowerShell mo
 
 To be able to import SQL Server export files (bacpac files) you'll need to import the *SqlServer\Import-BacpacToSqlServer\Import-BacpacToSqlServer.reg* registry script. Then you'll be able to right click on bacpac files and select "Import to SQL Server with PowerShell".
 
+If you are working on a remote database without SQL Server locally installed (eg. Azure or the [Docker container](https://hub.docker.com/_/microsoft-mssql-server)) you have to install "PowerShell Extensions for Microsoft SQL Server 2012". Despite the name it works with newer versions as well. See [this tutorial](https://sqlpadawan.com/2018/08/01/how-to-install-sql-server-sqlps-powershell-module/).
+
+As of writing this document [SQL Server in Docker doesn't support Windows authentication](https://github.com/microsoft/mssql-docker/issues/165). You can use the commands that support SQL authentication (eg. `Reset-OrchardCoreApp`) by providing a user name and password with the appropriate arguments.
+
 
 ## Installing the PowerShell modules
 
