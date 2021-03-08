@@ -17,17 +17,21 @@ function Test-SqlServerDatabase
         [string] $SqlServerName,
 
         [Parameter(Mandatory = $true)]
-        [string] $DatabaseName
+        [string] $DatabaseName,
+
+        [string] $UserName = $null,
+
+        [string] $Password = $null
     )
 
     Process
     {
-        if (!(Test-SqlServer $SqlServerName))
+        if (!(Test-SqlServer $SqlServerName $UserName $Password))
         {
             throw ("Could not find SQL Server at `"$SqlServerName`"!")
         }
 
-        $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") $SqlServerName
+        $server = New-SqlServerConnection $SqlServerName $UserName $Password
         return ($server.Databases | Where-Object { $PSItem.Name -eq $DatabaseName }) -ne $null
     }
 }

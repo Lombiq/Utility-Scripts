@@ -14,11 +14,17 @@ function Test-SqlServer
     Param
     (
         [Parameter(Mandatory = $true)]
-        [string] $ServerName
+        [string] $ServerName,
+
+        [string] $UserName = $null,
+
+        [string] $Password = $null
     )
 
     Process
     {
-        return (New-Object ("Microsoft.SqlServer.Management.Smo.Server") $ServerName).InstanceName -ne $null
+        $Connection = New-SqlServerConnection $ServerName $UserName $Password
+
+        return (New-Object ("Microsoft.SqlServer.Management.Smo.Server") $Connection).InstanceName -ne $null
     }
 }

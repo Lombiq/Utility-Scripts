@@ -19,19 +19,18 @@ function New-SqlServerDatabase
         [Parameter(Mandatory = $true)]
         [string] $DatabaseName,
 
-        [switch] $Force
+        [switch] $Force,
+        
+        [string] $UserName = $null,
+
+        [string] $Password = $null
     )
 
     Process
     {
-        if (!(Test-SqlServer $SqlServerName))
-        {
-            throw ("Could not find SQL Server at `"$SqlServerName`"!")
-        }
+        $server = New-SqlServerConnection $SqlServerName $UserName $Password
 
-        $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") $SqlServerName
-
-        if (Test-SqlServerDatabase -SqlServerName $SqlServerName -DatabaseName $DatabaseName)
+        if (Test-SqlServerDatabase -SqlServerName $SqlServerName -DatabaseName $DatabaseName -UserName $UserName -Password $Password)
         {
             if ($Force.IsPresent)
             {
