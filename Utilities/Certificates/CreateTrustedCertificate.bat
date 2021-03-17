@@ -17,7 +17,8 @@ IF %ERRORLEVEL% NEQ 0 (
 REM Verify that openssl version is >= 1.1.1.
 REM The /V switch prints the openssl version info in case it does not match the provided regex.
 openssl version | findstr /V /R /C:"[1-9]\.[1-9]\.[1-9]"
-IF %ERRORLEVEL% NEQ 0 (
+REM Ok, this is awkward, but we're checking for a zero errorlevel here, because "findstr" inverts the exit code with /V.
+IF %ERRORLEVEL% EQU 0 (
     ECHO Please update openssl.exe to version 1.1.1 or later.
     ECHO There are several options to install the latest openssl.exe, two of which are:
     ECHO   1. Install Git from https://git-scm.com/download/win
