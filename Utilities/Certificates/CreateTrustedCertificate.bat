@@ -7,7 +7,7 @@ REM The certificate name will be identical to the domain name provided when prom
 REM Check that openssl.exe is accessible.
 openssl version
 IF %ERRORLEVEL% NEQ 0 (
-    ECHO openssl.exe could not be found. Please make sure it is accessible to this script, e.g. in your PATH.
+    ECHO openssl.exe could not be found. Please make sure it is accessible to this script, e.g. its parent directory is in your PATH.
     ECHO You can find an openssl.exe in your Git installation, e.g. under "C:\Program Files\Git\usr\bin" or similar.
     ECHO If you don't have Git installed, yet, there are several options to install openssl.exe, two of which are:
     ECHO   1. Install Git from https://git-scm.com/download/win
