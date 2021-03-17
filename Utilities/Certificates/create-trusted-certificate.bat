@@ -3,15 +3,25 @@
 REM This script creates all necessary files and imports them into the local Certificate Store
 REM so that it can be used to access localhost sites via HTTPS.
 REM The certificate name will be identical to the domain name provided when prompted.
-REM 
-REM Needs at least openssl.exe v1.1.1
 
-ECHO.
-ECHO Please make sure you're using openssl ^>= 1.1.1 and its in your PATH:
-ECHO.
+REM Check that openssl.exe is accessible.
 openssl version
 IF %ERRORLEVEL% NEQ 0 (
-    ECHO openssl.exe could not be found. Please make sure it is accessible to this script, then try again.
+    ECHO openssl.exe could not be found. Please make sure it is accessible to this script, e.g. in your PATH.
+    ECHO You can find an openssl.exe in your Git installation, e.g. under "C:\Program Files\Git\usr\bin" or similar.
+    ECHO If you don't have Git installed, yet, there are several options to install openssl.exe, two of which are:
+    ECHO   1. Install Git from https://git-scm.com/download/win
+    ECHO   2. Use Chocolatey: choco install openssl
+    EXIT /B 1
+)
+REM Verify that openssl version is >= 1.1.1.
+REM The /V switch prints the openssl version info in case it does not match the provided regex.
+openssl version | findstr /V /R /C:"[1-9]\.[1-9]\.[1-9]"
+IF %ERRORLEVEL% NEQ 0 (
+    ECHO Please update openssl.exe to version 1.1.1 or later.
+    ECHO There are several options to install the latest openssl.exe, two of which are:
+    ECHO   1. Install Git from https://git-scm.com/download/win
+    ECHO   2. Use Chocolatey: choco install openssl
     EXIT /B 1
 )
 ECHO.
