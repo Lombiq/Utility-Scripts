@@ -32,11 +32,14 @@ SET /P DOMAIN=Please enter the domain for the certificate: || Set DOMAIN=Nothing
 If "%DOMAIN%"=="NothingChosen" goto prompt
 
 SET CERTNAME=%DOMAIN%
-SET "FILEPATH=%USERPROFILE%\.ssh"
+REM Use a GUID without dashes as the temp folder name to assure it is our own.
+SET "FILEPATH=%TEMP%\a533ec0f6526473186d77b8dd0705366"
 SET "CERTPATHBASE=%FILEPATH%\%CERTNAME%"
 
-REM 0. Create the target directory if it does not exist, but fail silently in case it does
-MKDIR "%FILEPATH% 2> nul
+REM 0. Create the target directory; remove left-over folder, in case it exists.
+ECHO Creating "%FILEPATH%".
+RMDIR /S /Q "%FILEPATH%" 2> nul
+MKDIR "%FILEPATH%" 2> nul
 
 REM 1. Create strong certificate and private key, from https://stackoverflow.com/a/41366949/177710
 openssl.exe req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout "%CERTPATHBASE%.key" -out "%CERTPATHBASE%.crt" -subj "/CN=%DOMAIN%" -addext "subjectAltName=DNS:%DOMAIN%"
