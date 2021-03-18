@@ -29,7 +29,8 @@ ECHO.
 
 :prompt
 SET /P DOMAIN=Please enter the domain for the certificate: || Set DOMAIN=NothingChosen
-If "%DOMAIN%"=="NothingChosen" goto prompt
+If "%DOMAIN%"=="NothingChosen" GOTO prompt
+ECHO.
 
 SET CERTNAME=%DOMAIN%
 REM Use a GUID without dashes as the temp folder name to assure it is our own.
@@ -40,23 +41,35 @@ REM 0. Create the target directory; remove left-over folder, in case it exists.
 ECHO Creating "%FILEPATH%".
 RMDIR /S /Q "%FILEPATH%" 2> nul
 MKDIR "%FILEPATH%" 2> nul
+IF %ERRORLEVEL% NEQ 0 GOTO :error
+ECHO.
 
 REM 1. Create strong certificate and private key, from https://stackoverflow.com/a/41366949/177710
 openssl.exe req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout "%CERTPATHBASE%.key" -out "%CERTPATHBASE%.crt" -subj "/CN=%DOMAIN%" -addext "subjectAltName=DNS:%DOMAIN%"
+IF %ERRORLEVEL% NEQ 0 GOTO :error
 ECHO Created "%CERTPATHBASE%.key".
 ECHO Created "%CERTPATHBASE%.crt".
+ECHO.
 
 REM 2. Create a PFX file from the above two files, from https://stackoverflow.com/a/17284371/177710
 openssl.exe pkcs12 -export -out "%CERTPATHBASE%.pfx" -inkey "%CERTPATHBASE%.key" -in "%CERTPATHBASE%.crt" -name "%DOMAIN%" -passout pass:
+IF %ERRORLEVEL% NEQ 0 GOTO :error
 ECHO Created "%CERTPATHBASE%.pfx".
+ECHO.
 
 REM 3. Import the certificate in the "Local Computer\Personal" store, from https://stackoverflow.com/a/7260297/177710
 REM This is actually the same as: IIS Manager -> Server Certificates -> Import... %CERTNAME%.pfx, into Personal store
 certutil -f -p "" -importpfx "%CERTPATHBASE%.pfx"
+IF %ERRORLEVEL% NEQ 0 GOTO :error
 ECHO Imported "%CERTPATHBASE%.pfx" into "Local Computer\Personal" store.
+ECHO.
 
 ECHO.
 ECHO Done.
 ECHO You can now bind your newly created certificate to your local web site in IIS Manager.
+
+:error
+ECHO An error occurred - exiting.
+EXIT /B 2
 
 @echo on
