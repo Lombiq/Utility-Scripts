@@ -64,6 +64,10 @@ IF %ERRORLEVEL% NEQ 0 GOTO :error
 ECHO Imported "%CERTPATHBASE%.pfx" into "Local Computer\Personal" store.
 ECHO.
 
+REM Remove the temporary folder including all files (/S) and don't ask (/Q).
+RMDIR /S /Q "%FILEPATH%" 2> nul
+ECHO Removed "%FILEPATH%".
+
 ECHO.
 ECHO Done.
 ECHO You can now bind your newly created certificate to your local web site in IIS Manager.
