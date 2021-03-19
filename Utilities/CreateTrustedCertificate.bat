@@ -1,8 +1,8 @@
 @echo off
 
-REM This script creates all necessary files and imports them into the local Certificate Store
-REM so that it can be used to access localhost sites via HTTPS.
-REM The certificate name will be identical to the domain name provided when prompted.
+REM This script creates all necessary files and imports them into the local Certificate Store so that it can be used to
+REM access localhost sites via HTTPS.
+REM The certificate name will be identical to the domain name provided when prompted and cover subdomains too.
 
 REM Check that openssl.exe is accessible.
 openssl version
