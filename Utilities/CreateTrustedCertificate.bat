@@ -1,8 +1,8 @@
 @echo off
 
-REM This script creates all necessary files and imports them into the local Certificate Store
-REM so that it can be used to access localhost sites via HTTPS.
-REM The certificate name will be identical to the domain name provided when prompted.
+REM This script creates all necessary files and imports them into the local Certificate Store so that it can be used to
+REM access localhost sites via HTTPS.
+REM The certificate name will be identical to the domain name provided when prompted and cover subdomains too.
 
 REM Check that openssl.exe is accessible.
 openssl version
@@ -45,7 +45,7 @@ IF %ERRORLEVEL% NEQ 0 GOTO :error
 ECHO.
 
 REM 1. Create strong certificate and private key, from https://stackoverflow.com/a/41366949/177710
-openssl.exe req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout "%CERTPATHBASE%.key" -out "%CERTPATHBASE%.crt" -subj "/CN=%DOMAIN%" -addext "subjectAltName=DNS:%DOMAIN%"
+openssl.exe req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout "%CERTPATHBASE%.key" -out "%CERTPATHBASE%.crt" -subj "/CN=%DOMAIN%" -addext "subjectAltName=DNS:%DOMAIN%,DNS:*.%DOMAIN%"
 IF %ERRORLEVEL% NEQ 0 GOTO :error
 ECHO Created "%CERTPATHBASE%.key".
 ECHO Created "%CERTPATHBASE%.crt".
@@ -71,6 +71,7 @@ ECHO Removed "%FILEPATH%".
 ECHO.
 ECHO Done.
 ECHO You can now bind your newly created certificate to your local web site in IIS Manager.
+GOTO :eof
 
 :error
 ECHO An error occurred - exiting.
