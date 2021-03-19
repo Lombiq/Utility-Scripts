@@ -45,8 +45,8 @@ IF %ERRORLEVEL% NEQ 0 GOTO :error
 ECHO.
 
 REM 1. Create strong certificate and private key, from https://stackoverflow.com/a/41366949/177710
-IF %ERRORLEVEL% NEQ 0 GOTO :error
 openssl.exe req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout "%CERTPATHBASE%.key" -out "%CERTPATHBASE%.crt" -subj "/CN=%DOMAIN%" -addext "subjectAltName=DNS:%DOMAIN%,DNS:*.%DOMAIN%"
+IF %ERRORLEVEL% NEQ 0 GOTO :error
 ECHO Created "%CERTPATHBASE%.key".
 ECHO Created "%CERTPATHBASE%.crt".
 ECHO.
