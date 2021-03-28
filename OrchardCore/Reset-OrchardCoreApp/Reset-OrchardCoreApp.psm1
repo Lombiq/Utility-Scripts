@@ -236,7 +236,7 @@ function Reset-OrchardCoreApp
         $applicationProcess = Start-Process `
             -WorkingDirectory $WebProjectPath `
             dotnet `
-            -ArgumentList "$($webProjectDllFile.FullName) --urls $applicationUrl --environment $environmentSetting --AuthorizeOrchardApiRequests true" `
+            -ArgumentList "$($webProjectDllFile.FullName) --urls $applicationUrl --environment $environmentSetting --webroot=wwwroot --AuthorizeOrchardApiRequests true" `
             -PassThru
 
 
