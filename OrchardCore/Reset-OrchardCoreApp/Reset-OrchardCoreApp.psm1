@@ -54,12 +54,21 @@ function Reset-OrchardCoreApp
     {
         # Checking if the Web Project Path is valid and extracting the name of the Web Project.
 
-        if (-not (Test-Path -Path $WebProjectPath -PathType Container))
+        if (Test-Path -Path $WebProjectPath -PathType Leaf)
+        {
+            $webProjectDllPath = $WebProjectPath;
+            $siteName = (Get-Item $WebProjectPath).BaseName
+            $WebProjectPath = (Get-Item $WebProjectPath).DirectoryName
+        }
+        elseif (-not (Test-Path -Path $WebProjectPath -PathType Container))
         {
             throw "The specified Web Project Path is not found or not accessible!`n$WebProjectPath"
         }
-
-        $siteName = Split-Path $WebProjectPath -Leaf
+        else
+        {
+            $webProjectDllPath = GetWebProjectDllPath($WebProjectPath)
+            $siteName = Split-Path $WebProjectPath -Leaf
+        }
 
         
         
@@ -95,8 +104,6 @@ function Reset-OrchardCoreApp
 
 
         # Rebuilding the application if the "Rebuild" switch is present or the Web Project DLL is not found.
-
-        $webProjectDllPath = GetWebProjectDllPath($WebProjectPath)
 
         $buildRequired = $false;
         if ($Rebuild.IsPresent)
