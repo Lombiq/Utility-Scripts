@@ -197,6 +197,7 @@ function Reset-OrchardCoreApp
 
         $launchSettingsFilePath = $("$WebProjectPath\Properties\launchSettings.json")
         $applicationUrl = "http://localhost:$(Get-Random -Minimum 2000 -Maximum 64000)"
+        $environmentSetting = "Development"
 
         if (Test-Path $launchSettingsFilePath -PathType Leaf)
         {
