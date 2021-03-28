@@ -25,6 +25,9 @@ function Reset-OrchardCoreApp
         [string] $SetupPassword = "Password1!",
         [string] $SetupEmail = "admin@localhost",
 
+
+        [int] $Port = 5000,
+
         
         [Parameter(ParameterSetName = "ServerDB", Mandatory)]
         [string] [ValidateSet("SqlConnection")] $SetupDatabaseProvider = "Sqlite",
@@ -193,11 +196,17 @@ function Reset-OrchardCoreApp
         
 
         # Try to find the Launch Settings file to get the launch URL of the application.
-        # If not found (or the URL is not found in the settings), then using a random port number on localhost instead.
+        # If not found (or the URL is not found in the settings), and the port number is not specified then using a random one on localhost instead.
 
-        $launchSettingsFilePath = $("$WebProjectPath\Properties\launchSettings.json")
-        $applicationUrl = "http://localhost:$(Get-Random -Minimum 2000 -Maximum 64000)"
+        $launchSettingsFilePath = $("$WebProjectPath\Properties\launchSettings.json")       
         $environmentSetting = "Development"
+
+        if ($Port -le 0)
+        {
+            $Port = Get-Random -Minimum 2000 -Maximum 64000
+        }
+
+        $applicationUrl = "http://localhost:$Port"
 
         if (Test-Path $launchSettingsFilePath -PathType Leaf)
         {
