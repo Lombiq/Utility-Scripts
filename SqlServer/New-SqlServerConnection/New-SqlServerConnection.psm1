@@ -1,6 +1,6 @@
 <#
 .Synopsis
-   Creates a new Sql Server connection object.
+   Creates a new SQL Server connection object.
 #>
 
 
