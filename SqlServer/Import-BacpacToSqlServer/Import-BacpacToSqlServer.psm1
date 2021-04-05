@@ -48,7 +48,7 @@ function Import-BacpacToSqlServer
         [Parameter(ParameterSetName = "ByServerAndDatabaseName")]
         [string] $DatabaseName = "",
 
-        [Parameter(HelpMessage = "The user name of the SQL Server instance that will host the imported database.")]
+        [Parameter(HelpMessage = "The user name of a login on the SQL Server's `"master`" database that has the permissions to import a new database.")]
         [Parameter(ParameterSetName = "ByServerAndDatabaseName")]
         [string] $UserName = "",
 
