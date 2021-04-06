@@ -9,11 +9,11 @@ Scripts (mostly PowerShell) that come handy during Orchard Core, Orchard 1.x or 
 
 ## Prerequisites
 
-In order to use these PowerShell scripts and modules you need to update to at least PowerShell 5. You can check the installed version by running the `$PSVersionTable.PSVersion` command. If you have an earlier version you can download version 5 preview from [here](https://www.microsoft.com/en-us/download/details.aspx?id=48729).
+In order to use these PowerShell scripts and modules you need to update to at least PowerShell 5. You can check the installed version by running the `$PSVersionTable.PSVersion` command. If you have an earlier version you can download the current version from [here](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell).
 
 For the Azure-related scripts you'll need the Azure (the new "Az") PowerShell module, so install as documented [here](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps). If you happen to have the older AzureRM module installed you'll need to [uninstall it](https://docs.microsoft.com/en-us/powershell/azure/uninstall-az-ps?view=azps-2.2.0#uninstall-the-azurerm-module) first. You'll need at least v5.9 of the [Azure storage emulator](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-emulator) for the scripts to work.
 
-To be able to import SQL Server export files (bacpac files) you'll need to import the *SqlServer\Import-BacpacToSqlServer\Import-BacpacToSqlServer.reg* registry script. Then you'll be able to right click on bacpac files and select "Import to SQL Server with PowerShell". This needs the DAD Framework so if you get a "No SQL Package executable found for importing the database!" error then install it from [here](https://docs.microsoft.com/en-us/sql/tools/sqlpackage/sqlpackage-download?view=sql-server-ver15).
+To be able to import SQL Server export files (bacpac files) you'll need to import the *SqlServer\Import-BacpacToSqlServer\Import-BacpacToSqlServer.reg* registry script. Then you'll be able to right click on bacpac files and select "Import to SQL Server with PowerShell", or simply double-click on them. This needs the DAC Framework so if you get a "No SQL Package executable found for importing the database!" error then install it from [here](https://docs.microsoft.com/en-us/sql/tools/sqlpackage/sqlpackage-download?view=sql-server-ver15).
 
 
 ## Installing the PowerShell modules
