@@ -28,7 +28,8 @@ function New-SqlServerDatabase
 
     Process
     {
-        $server = New-SqlServerConnection $SqlServerName $UserName $Password
+        $serverConnection = New-SqlServerConnection $SqlServerName $UserName $Password
+        $server = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server -ArgumentList $serverConnection
 
         if (Test-SqlServerDatabase -SqlServerName $SqlServerName -DatabaseName $DatabaseName -UserName $UserName -Password $Password)
         {
