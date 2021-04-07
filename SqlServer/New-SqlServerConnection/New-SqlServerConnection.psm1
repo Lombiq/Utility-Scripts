@@ -3,8 +3,7 @@
    Creates a new SQL Server connection object.
 #>
 
-
-[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
+[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.ConnectionInfo")
 
 function New-SqlServerConnection
 {
@@ -23,11 +22,11 @@ function New-SqlServerConnection
     {
         if (-not $UserName -or -not $Password) 
         {
-            New-Object ("Microsoft.SqlServer.Management.Common.ServerConnection") $ServerName
+            New-Object -TypeName Microsoft.SqlServer.Management.Common.ServerConnection -ArgumentList $ServerName
         }
         else
         {
-            New-Object ("Microsoft.SqlServer.Management.Common.ServerConnection") $ServerName, $UserName, $Password
+            New-Object -TypeName Microsoft.SqlServer.Management.Common.ServerConnection -ArgumentList $ServerName, $UserName, $Password
         }
     }
 }
