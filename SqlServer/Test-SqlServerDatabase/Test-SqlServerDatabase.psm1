@@ -32,6 +32,16 @@ function Test-SqlServerDatabase
         }
 
         $server = New-SqlServerConnection $SqlServerName $UserName $Password
-        return ($server.Databases | Where-Object { $PSItem.Name -eq $DatabaseName }) -ne $null
+        $server.Connect()
+        
+        # This works even for remote servers when $server.Databases returns empty.
+        $databases = New-Object "System.Collections.Generic.HashSet[string]"
+        $reader = $server.ExecuteReader("SELECT name FROM sys.databases")
+        while ($reader.Read()) { $databases.Add($reader.GetString(0).ToUpperInvariant()) }
+        
+        $reader.Close()
+        $server.Disconnect()
+
+        return $databases.Contains($DatabaseName.ToUpperInvariant())
     }
 }

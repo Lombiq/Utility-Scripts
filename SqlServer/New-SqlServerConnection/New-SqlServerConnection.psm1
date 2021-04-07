@@ -9,7 +9,6 @@
 function New-SqlServerConnection
 {
     [CmdletBinding()]
-    [OutputType([bool])]
     Param
     (
         [Parameter(Mandatory = $true)]
