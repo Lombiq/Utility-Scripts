@@ -15,6 +15,10 @@ For the Azure-related scripts you'll need the Azure (the new "Az") PowerShell mo
 
 To be able to import SQL Server export files (bacpac files) you'll need to import the *SqlServer\Import-BacpacToSqlServer\Import-BacpacToSqlServer.reg* registry script. Then you'll be able to right click on bacpac files and select "Import to SQL Server with PowerShell", or simply double-click on them. This needs the DAC Framework so if you get a "No SQL Package executable found for importing the database!" error then install it from [here](https://docs.microsoft.com/en-us/sql/tools/sqlpackage/sqlpackage-download?view=sql-server-ver15).
 
+If you are working on a remote database without SQL Server locally installed (eg. Azure or the [Docker container](https://hub.docker.com/_/microsoft-mssql-server)) you have to install "PowerShell Extensions for Microsoft SQL Server 2012". Despite the name it works with newer versions as well. See [this tutorial](https://sqlpadawan.com/2018/08/01/how-to-install-sql-server-sqlps-powershell-module/).
+
+As of writing this document [SQL Server in Docker doesn't support Windows authentication](https://github.com/microsoft/mssql-docker/issues/165). You can use the commands that support SQL authentication (eg. `Reset-OrchardCoreApp`) by providing a user name and password with the appropriate arguments.
+
 
 ## Installing the PowerShell modules
 
@@ -42,7 +46,7 @@ On what the different scripts do specifically and how to use them take a look at
     - ExportLastCommitToGit: Exports the files changed in the last commit of a hg repo to a git repo as a patch.
 - SqlServer: A lot of scripts for common SQL Server tasks.
     - Get-DefaultSqlServerName: Gets the name of the default local SQL Server instance.
-    - Import-BacpacToSqlServer: Imports a .bacpac file to a database on a local SQL Server instance. With the attached Registry file you can also add an Explorer context menu shortcut to it.
+    - Import-BacpacToSqlServer: Imports a .bacpac file to a database on a local SQL Server instance. With the attached Registry file you can also add an Explorer context menu shortcut to it. Use the Docker version if you need that, but make sure to edit the `-ConnectionString` value first!
     - New-SqlServerDatabase: Creates a new database on the given SQL Server instance, after dropping it first if it already exists.
     - Test-SqlServer: Tests the connection to a local SQL Server instance.
     - Test-SqlServerDatabase: Checks whether the given database exists in a local SQL Server instance.

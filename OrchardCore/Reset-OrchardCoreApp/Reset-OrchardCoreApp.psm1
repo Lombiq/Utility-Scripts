@@ -37,6 +37,12 @@ function Reset-OrchardCoreApp
         
         [Parameter(ParameterSetName = "ServerDB")]
         [string] $SetupDatabaseName = "OrchardCore",
+        
+        [Parameter(ParameterSetName = "ServerDB")]
+        [string] $SetupDatabaseSqlUser = "sa",
+        
+        [Parameter(ParameterSetName = "ServerDB")]
+        [string] $SetupDatabaseSqlPassword = $null,
 
         [Parameter(ParameterSetName = "ServerDB")]
         [switch] $Force,
@@ -163,7 +169,7 @@ function Reset-OrchardCoreApp
 
             "Using the following database name: `"$SetupDatabaseName`"."
             
-            if (New-SqlServerDatabase -SqlServerName $SetupDatabaseServerName -DatabaseName $SetupDatabaseName -Force:$Force.IsPresent -ErrorAction Stop)
+            if (New-SqlServerDatabase -SqlServerName $SetupDatabaseServerName -DatabaseName $SetupDatabaseName -Force:$Force.IsPresent -ErrorAction Stop -UserName $SetupDatabaseSqlUser -Password $SetupDatabaseSqlPassword)
             {
                 "Database `"$SetupDatabaseServerName\$SetupDatabaseName`" created!"
             }
@@ -179,8 +185,17 @@ function Reset-OrchardCoreApp
                 }
             }
 
+            $Security = if (-not $SetupDatabaseSqlPassword) 
+            { 
+                "Integrated Security=True"
+            }
+            else 
+            {
+                "User Id=$SetupDatabaseSqlUser;Password=$SetupDatabaseSqlPassword"    
+            }
+
             # MARS is necessary for Orchard.
-            $SetupDatabaseConnectionString = "Server=$SetupDatabaseServerName;Database=$SetupDatabaseName;Integrated Security=True;MultipleActiveResultSets=True;"
+            $SetupDatabaseConnectionString = "Server=$SetupDatabaseServerName;Database=$SetupDatabaseName;$Security;MultipleActiveResultSets=True;"
         }
 
         

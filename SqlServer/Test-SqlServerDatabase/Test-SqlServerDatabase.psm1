@@ -17,17 +17,31 @@ function Test-SqlServerDatabase
         [string] $SqlServerName,
 
         [Parameter(Mandatory = $true)]
-        [string] $DatabaseName
+        [string] $DatabaseName,
+
+        [string] $UserName = $null,
+
+        [string] $Password = $null
     )
 
     Process
     {
-        if (!(Test-SqlServer $SqlServerName))
+        if (!(Test-SqlServer $SqlServerName $UserName $Password))
         {
             throw ("Could not find SQL Server at `"$SqlServerName`"!")
         }
 
-        $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") $SqlServerName
-        return ($server.Databases | Where-Object { $PSItem.Name -eq $DatabaseName }) -ne $null
+        $server = New-SqlServerConnection $SqlServerName $UserName $Password
+        $server.Connect()
+        
+        # This works even for remote servers when $server.Databases returns empty.
+        $databases = New-Object "System.Collections.Generic.HashSet[string]"
+        $reader = $server.ExecuteReader("SELECT name FROM sys.databases")
+        while ($reader.Read()) { $databases.Add($reader.GetString(0).ToUpperInvariant()) | Out-Null }
+        
+        $reader.Close()
+        $server.Disconnect()
+
+        return $databases.Contains($DatabaseName.ToUpperInvariant())
     }
 }
