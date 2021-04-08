@@ -46,15 +46,7 @@ function Import-BacpacToSqlServer
 
         [Parameter(HelpMessage = "The name of the database that will be created for the imported .bacpac file. If not defined, it will be the name of the imported file.")]
         [Parameter(ParameterSetName = "ByServerAndDatabaseName")]
-        [string] $DatabaseName = "",
-
-        [Parameter(HelpMessage = "The user name of a login on the SQL Server's `"master`" database that has the permissions to import a new database.")]
-        [Parameter(ParameterSetName = "ByServerAndDatabaseName")]
-        [string] $UserName = $null,
-
-        [Parameter(HelpMessage = "The password of the SQL Server instance that will host the imported database.")]
-        [Parameter(ParameterSetName = "ByServerAndDatabaseName")]
-        [string] $Password = $null
+        [string] $DatabaseName = ""
     )
 
     Process
@@ -163,7 +155,7 @@ function Import-BacpacToSqlServer
             $DatabaseName = $bacpacFile.BaseName
         }
 
-        $databaseExists = Test-SqlServerDatabase -SqlServerName $DataSource -DatabaseName $DatabaseName -UserName $UserName -Password $Password
+        $databaseExists = Test-SqlServerDatabase -SqlServerName $DataSource -DatabaseName $DatabaseName
         if ($databaseExists)
         {
             $originalDatabaseName = $DatabaseName
