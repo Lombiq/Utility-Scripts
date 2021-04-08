@@ -46,7 +46,7 @@ On what the different scripts do specifically and how to use them take a look at
     - ExportLastCommitToGit: Exports the files changed in the last commit of a hg repo to a git repo as a patch.
 - SqlServer: A lot of scripts for common SQL Server tasks.
     - Get-DefaultSqlServerName: Gets the name of the default local SQL Server instance.
-    - Import-BacpacToSqlServer: Imports a .bacpac file to a database on a local SQL Server instance. With the attached Registry file you can also add an Explorer context menu shortcut to it.
+    - Import-BacpacToSqlServer: Imports a .bacpac file to a database on a local SQL Server instance. With the attached Registry file you can also add an Explorer context menu shortcut to it. Use the Docker version if you need that, but make sure to edit the `-ConnectionString` value first!
     - New-SqlServerDatabase: Creates a new database on the given SQL Server instance, after dropping it first if it already exists.
     - Test-SqlServer: Tests the connection to a local SQL Server instance.
     - Test-SqlServerDatabase: Checks whether the given database exists in a local SQL Server instance.
