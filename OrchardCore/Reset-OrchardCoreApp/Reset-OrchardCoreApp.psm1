@@ -185,7 +185,7 @@ function Reset-OrchardCoreApp
                 }
             }
 
-            $Security = if ($SetupDatabaseSqlPassword -eq $null) 
+            $Security = if (-not $SetupDatabaseSqlPassword) 
             { 
                 "Integrated Security=True"
             }
