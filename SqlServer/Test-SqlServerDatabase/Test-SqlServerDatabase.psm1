@@ -37,7 +37,7 @@ function Test-SqlServerDatabase
         # This works even for remote servers when $server.Databases returns empty.
         $databases = New-Object "System.Collections.Generic.HashSet[string]"
         $reader = $server.ExecuteReader("SELECT name FROM sys.databases")
-        while ($reader.Read()) { $databases.Add($reader.GetString(0).ToUpperInvariant()) }
+        while ($reader.Read()) { $databases.Add($reader.GetString(0).ToUpperInvariant()) | Out-Null }
         
         $reader.Close()
         $server.Disconnect()
