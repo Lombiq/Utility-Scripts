@@ -196,7 +196,7 @@ function Reset-OrchardCoreApp
         
 
         # Try to find the Launch Settings file to get the launch URL of the application.
-        # If not found (or the URL is not found in the settings), and the port number is not specified then using a random one on localhost instead.
+        # If not found (or the URL is not found in the settings), and the $Port parameter is set to <zero then using a random one on localhost instead.
 
         $launchSettingsFilePath = $("$WebProjectPath\Properties\launchSettings.json")       
         $environmentSetting = "Development"
