@@ -25,6 +25,9 @@ function Reset-OrchardCoreApp
         [string] $SetupPassword = "Password1!",
         [string] $SetupEmail = "admin@localhost",
 
+
+        [int] $Port = 5000,
+
         
         [Parameter(ParameterSetName = "ServerDB", Mandatory)]
         [string] [ValidateSet("SqlConnection")] $SetupDatabaseProvider = "Sqlite",
@@ -60,12 +63,21 @@ function Reset-OrchardCoreApp
     {
         # Checking if the Web Project Path is valid and extracting the name of the Web Project.
 
-        if (-not (Test-Path -Path $WebProjectPath -PathType Container))
+        if (Test-Path -Path $WebProjectPath -PathType Leaf)
+        {
+            $webProjectDllPath = $WebProjectPath;
+            $siteName = (Get-Item $WebProjectPath).BaseName
+            $WebProjectPath = (Get-Item $WebProjectPath).DirectoryName
+        }
+        elseif (-not (Test-Path -Path $WebProjectPath -PathType Container))
         {
             throw "The specified Web Project Path is not found or not accessible!`n$WebProjectPath"
         }
-
-        $siteName = Split-Path $WebProjectPath -Leaf
+        else
+        {
+            $webProjectDllPath = GetWebProjectDllPath($WebProjectPath)
+            $siteName = Split-Path $WebProjectPath -Leaf
+        }
 
         
         
@@ -101,8 +113,6 @@ function Reset-OrchardCoreApp
 
 
         # Rebuilding the application if the "Rebuild" switch is present or the Web Project DLL is not found.
-
-        $webProjectDllPath = GetWebProjectDllPath($WebProjectPath)
 
         $buildRequired = $false;
         if ($Rebuild.IsPresent)
@@ -201,10 +211,17 @@ function Reset-OrchardCoreApp
         
 
         # Try to find the Launch Settings file to get the launch URL of the application.
-        # If not found (or the URL is not found in the settings), then using a random port number on localhost instead.
+        # If not found (or the URL is not found in the settings), and the $Port parameter is set to <=0 then using a random one on localhost instead.
 
-        $launchSettingsFilePath = $("$WebProjectPath\Properties\launchSettings.json")
-        $applicationUrl = "http://localhost:$(Get-Random -Minimum 2000 -Maximum 64000)"
+        $launchSettingsFilePath = $("$WebProjectPath\Properties\launchSettings.json")       
+        $environmentSetting = "Development"
+
+        if ($Port -le 0)
+        {
+            $Port = Get-Random -Minimum 2000 -Maximum 64000
+        }
+
+        $applicationUrl = "http://localhost:$Port"
 
         if (Test-Path $launchSettingsFilePath -PathType Leaf)
         {
@@ -243,7 +260,7 @@ function Reset-OrchardCoreApp
         $applicationProcess = Start-Process `
             -WorkingDirectory $WebProjectPath `
             dotnet `
-            -ArgumentList "$($webProjectDllFile.FullName) --urls $applicationUrl --environment $environmentSetting --AuthorizeOrchardApiRequests true" `
+            -ArgumentList "$($webProjectDllFile.FullName) --urls $applicationUrl --environment $environmentSetting --webroot wwwroot --AuthorizeOrchardApiRequests true" `
             -PassThru
 
 
