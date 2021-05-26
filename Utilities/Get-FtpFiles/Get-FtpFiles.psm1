@@ -9,26 +9,26 @@ function FileTransferProgress
 {
     param
     (
-        [WinSCP.FileTransferProgressEventArgs] $event
+        [WinSCP.FileTransferProgressEventArgs] $transferEvent
     )
 
-    if ($script:lastFileName -ne $null -and $script:lastFileName -ne $event.FileName)
+    if ($null -ne $script:lastFileName -and $script:lastFileName -ne $transferEvent.FileName)
     {
         Write-Host
     }
 
-    $currentFileName = $event.FileName
-    $currentFileProgress = $event.FileProgress
+    $currentFileName = $transferEvent.FileName
+    $currentFileProgress = $transferEvent.FileProgress
 
     # If the progress changed compared to the previous state.
     if ($currentFileName -ne $script:lastFileName -or $currentFileProgress -ne $script:lastFileProgress)
     {
         # Print transfer progress.
-        Write-Host ("$($event.FileName): $($event.FileProgress * 100)%, Overall: $($event.OverallProgress * 100)%")
+        Write-Host ("$($transferEvent.FileName): $($transferEvent.FileProgress * 100)%, Overall: $($transferEvent.OverallProgress * 100)%")
  
         # Remember the name of the last file reported.
-        $script:lastFileName = $event.FileName
-        $script:lastFileProgress = $event.FileProgress        
+        $script:lastFileName = $transferEvent.FileName
+        $script:lastFileProgress = $transferEvent.FileProgress        
     }
 }
 
@@ -40,22 +40,24 @@ function Get-FtpFiles
     Param
     (
         # The path of a folder that contains "WinSCPnet.dll" and "WinSCPnet.exe".
-        [Parameter(Mandatory=$true)]
-        [string] $WinSCPPath = $(throw "You need to provide the path to a folder that contains `"WinSCPnet.dll`" and `"WinSCPnet.exe`"."),
+        [Parameter(
+            Mandatory = $true,
+            HelpMessage = "You need to provide the path to a folder that contains `"WinSCPnet.dll`" and `"WinSCPnet.exe`".")]
+        [string] $WinSCPPath,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string] $FtpHostName,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string] $FtpUsername,
 
-        [Parameter(Mandatory=$true)]
-        [string] $FtpPassword,
+        [Parameter(Mandatory = $true)]
+        [SecureString] $FtpSecurePassword,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string] $DownloadSourcePath,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string] $DownloadDestinationPath
     )
 
@@ -70,10 +72,10 @@ function Get-FtpFiles
     {
         $sessionOptions = New-Object WinSCP.SessionOptions -Property @{
             Protocol = [WinSCP.Protocol]::Ftp
-            FtpSecure = [WinSCP.FtpSecure]::Implicit
+            FtpSecure = [WinSCP.FtpSecure]::Explicit
             HostName = $FtpHostName
             UserName = $FtpUsername
-            Password = $FtpPassword
+            SecurePassword = $FtpSecurePassword
         }
 
         $session = New-Object WinSCP.Session
