@@ -279,7 +279,7 @@ function Reset-OrchardCoreApp
                 throw "Application host process exited with exit code $($applicationProcess.ExitCode)!`nCheck if another application host process (IIS Express or dotnet) is running under a different user account using the same port and terminate it!"
             }
 
-            $setupScreenResponse = Invoke-WebRequest -Uri $applicationUrl -ErrorAction Stop
+            $setupScreenResponse = Invoke-WebRequest -Uri $applicationUrl -UseBasicParsing -ErrorAction Stop
 
             if ($setupScreenResponse.StatusCode -ne 200)
             {
@@ -308,7 +308,7 @@ function Reset-OrchardCoreApp
             Name = $SetupTenantName
         }
 
-        $setupRequest = Invoke-WebRequest -Method Post -Uri "$applicationUrl/api/tenants/setup" -Body (ConvertTo-Json($tenantSetupSettings)) -ContentType "application/json"
+        $setupRequest = Invoke-WebRequest -Method Post -Uri "$applicationUrl/api/tenants/setup" -Body (ConvertTo-Json($tenantSetupSettings)) -ContentType "application/json" -UseBasicParsing
 
         if ($setupRequest.StatusCode -ne 200)
         {
