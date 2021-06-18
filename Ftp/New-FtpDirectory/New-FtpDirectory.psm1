@@ -34,37 +34,36 @@ function New-FtpDirectory
     
     Process
     {
-        $ftpFolderPath = $Url + "/App_Data_new"
         $credentials = New-Object System.Net.NetworkCredential($User, $Password)
 
         $srcEntries = Get-ChildItem $LocalFolderPath -Recurse
         $srcFolders = $srcEntries | Where-Object { $_.PSIsContainer }
         $srcFiles = $srcEntries | Where-Object { !$_.PSIsContainer }
     
-        # Create App_Data_new folder.
+        # Create folder.
         try
         {
-            $makeDirectory = [System.Net.WebRequest]::Create($ftpFolderPath)
+            $makeDirectory = [System.Net.WebRequest]::Create($Url)
             $makeDirectory.Credentials =  $credentials
             $makeDirectory.Method = [System.Net.WebRequestMethods+FTP]::MakeDirectory
             $makeDirectory.GetResponse()
     
-            Write-Host "App_Data_new folder created successfully:" $ftpFolderPath
+            Write-Host "Folder created successfully:" $Url
         }
         catch [Net.WebException]
         {
             try
             {
-                $checkDirectory = [System.Net.WebRequest]::Create($ftpFolderPath)
+                $checkDirectory = [System.Net.WebRequest]::Create($Url)
                 $checkDirectory.Credentials = $credentials
                 $checkDirectory.Method = [System.Net.WebRequestMethods+FTP]::PrintWorkingDirectory
                 $checkDirectory.GetResponse()
     
-                Write-Host "App_Data_new folder already exists:" $ftpFolderPath
+                Write-Host "Folder already exists:" $Url
             }
             catch [Net.WebException]
             {
-                throw "Other error encountered during App_Data_new folder creation."
+                throw "Other error encountered during folder creation."
             }    
         }
     
@@ -72,7 +71,7 @@ function New-FtpDirectory
         foreach ($folder in $srcFolders)
         {
             $srcFolderPath = $LocalFolderPath -replace "\\", "\\" -replace "\:", "\:"
-            $destinationFolder = $folder.Fullname -replace $srcFolderPath, $ftpFolderPath
+            $destinationFolder = $folder.Fullname -replace $srcFolderPath, $Url
             $destinationFolder = $destinationFolder -replace "\\", "/"
          
             try
@@ -105,8 +104,6 @@ function New-FtpDirectory
         }
          
         # Upload files.
-        Write-Host "Beginning FILE UPLOAD phase."
-    
         $webclient = New-Object System.Net.WebClient
         $webclient.Credentials = $credentials
     
@@ -114,7 +111,7 @@ function New-FtpDirectory
         {
             $srcFullPath = $file.fullname
             $srcFilePath = $LocalFolderPath -replace "\\", "\\" -replace "\:", "\:"
-            $destinationFile = $srcFullPath -replace $srcFilePath, $ftpFolderPath
+            $destinationFile = $srcFullPath -replace $srcFilePath, $Url
             $destinationFile = $destinationFile -replace "\\", "/"
          
             $uri = New-Object System.Uri($destinationFile) 
