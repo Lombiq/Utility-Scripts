@@ -34,27 +34,32 @@ function Get-FtpDirectory
 
     Process
     {
-        $credentials = New-Object System.Net.NetworkCredential($User, $Password)
-
-        $listRequest = [Net.WebRequest]::Create($Url)
-        $listRequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectoryDetails
-        $listRequest.Credentials = $credentials
-        
-        $lines = New-Object System.Collections.ArrayList
-        
-        $listResponse = $listRequest.GetResponse()
-        $listStream = $listResponse.GetResponseStream()
-        $listReader = New-Object System.IO.StreamReader($listStream)
-        
-        while (!$listReader.EndOfStream)
+        try
         {
-            $line = $listReader.ReadLine()
-            $lines.Add($line) | Out-Null
+            $credentials = New-Object System.Net.NetworkCredential($User, $Password)
+            
+            $listRequest = [Net.WebRequest]::Create($Url)
+            $listRequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectoryDetails
+            $listRequest.Credentials = $credentials
+            
+            $lines = New-Object System.Collections.ArrayList
+            
+            $listResponse = $listRequest.GetResponse()
+            $listStream = $listResponse.GetResponseStream()
+            $listReader = New-Object System.IO.StreamReader($listStream)
+            
+            while (!$listReader.EndOfStream)
+            {
+                $line = $listReader.ReadLine()
+                $lines.Add($line) | Out-Null
+            }
         }
-        
-        $listReader.Dispose()
-        $listStream.Dispose()
-        $listResponse.Dispose()
+        finally
+        {
+            $listReader.Dispose()
+            $listStream.Dispose()
+            $listResponse.Dispose()
+        }
         
         foreach ($line in $lines)
         {
@@ -77,25 +82,30 @@ function Get-FtpDirectory
             }
             else
             {
-                Write-Host "Downloading $fileUrl to $localFilePath"
-                
-                $downloadRequest = [Net.WebRequest]::Create($fileUrl)
-                $downloadRequest.Method = [System.Net.WebRequestMethods+Ftp]::DownloadFile
-                $downloadRequest.Credentials = $credentials
-                
-                $downloadResponse = $downloadRequest.GetResponse()
-                $sourceStream = $downloadResponse.GetResponseStream()
-                $targetStream = [System.IO.File]::Create($localFilePath)
-                $buffer = New-Object byte[] 10240
-                
-                while (($read = $sourceStream.Read($buffer, 0, $buffer.Length)) -gt 0)
+                try
                 {
-                    $targetStream.Write($buffer, 0, $read)
+                    Write-Host "Downloading $fileUrl to $localFilePath"
+                    
+                    $downloadRequest = [Net.WebRequest]::Create($fileUrl)
+                    $downloadRequest.Method = [System.Net.WebRequestMethods+Ftp]::DownloadFile
+                    $downloadRequest.Credentials = $credentials
+                    
+                    $downloadResponse = $downloadRequest.GetResponse()
+                    $sourceStream = $downloadResponse.GetResponseStream()
+                    $targetStream = [System.IO.File]::Create($localFilePath)
+                    $buffer = New-Object byte[] 10240
+                    
+                    while (($read = $sourceStream.Read($buffer, 0, $buffer.Length)) -gt 0)
+                    {
+                        $targetStream.Write($buffer, 0, $read)
+                    }
                 }
-                
-                $targetStream.Dispose()
-                $sourceStream.Dispose()
-                $downloadResponse.Dispose()
+                finally
+                {
+                    $targetStream.Dispose()
+                    $sourceStream.Dispose()
+                    $downloadResponse.Dispose()
+                }
             }
         }
     }

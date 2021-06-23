@@ -106,49 +106,60 @@ function New-FtpDirectory
         # Upload files.
         $webclient = New-Object System.Net.WebClient
         $webclient.Credentials = $credentials
-    
-        foreach ($file in $srcFiles)
+        
+        try
         {
-            $srcFullPath = $file.fullname
-            $srcFilePath = $LocalFolderPath -replace "\\", "\\" -replace "\:", "\:"
-            $destinationFile = $srcFullPath -replace $srcFilePath, $Url
-            $destinationFile = $destinationFile -replace "\\", "/"
-         
-            $uri = New-Object System.Uri($destinationFile) 
-           
-            Write-Host "Uploading file:" $srcFullPath
-            Write-Host "File uri:" $uri
-            $errorCount = 0
-    
-            do
+
+            foreach ($file in $srcFiles)
             {
-                try
+                $srcFullPath = $file.fullname
+                $srcFilePath = $LocalFolderPath -replace "\\", "\\" -replace "\:", "\:"
+                $destinationFile = $srcFullPath -replace $srcFilePath, $Url
+                $destinationFile = $destinationFile -replace "\\", "/"
+                
+                $uri = New-Object System.Uri($destinationFile) 
+                
+                Write-Host "Uploading file:" $srcFullPath
+                Write-Host "File uri:" $uri
+                $errorCount = 0
+                
+                do
                 {
-                    $webclient.UploadFile($uri, $srcFullPath)
-                    Write-Host "Upload successful."
-    
-                    break
-                }
-                catch
+                    try
+                    {
+                        $webclient.UploadFile($uri, $srcFullPath)
+                        Write-Host "Upload successful."
+                        
+                        break
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            Write-Host "Error caught, trying initializing new webclient object."
+                            $errorCount++
+                            Write-Host "ERROR COUNT:" $errorCount
+                        }
+                        finally
+                        {
+                            $webclient.Dispose()
+                            Start-Sleep -s 5
+                            
+                            $webclient = New-Object System.Net.WebClient 
+                            $webclient.Credentials = $credentials 
+                        }                        
+                    }
+                } while ($errorCount -ne 10)
+                
+                if ($errorCount -eq 10) 
                 {
-                    Write-Host "Error caught, trying initializing new webclient object."
-                    $errorCount++
-                    Write-Host "ERROR COUNT:" $errorCount
-    
-                    $webclient.Dispose()
-                    Start-Sleep -s 5
-    
-                    $webclient = New-Object System.Net.WebClient 
-                    $webclient.Credentials = $credentials 
+                    throw "Maximum error count exceeded."
                 }
-            } while ($errorCount -ne 10)
-    
-            if ($errorCount -eq 10) 
-            {
-                throw "Maximum error count exceeded."
             }
         }
-    
-        $webclient.Dispose()
+        finally
+        {
+            $webclient.Dispose()
+        }
     }
 }

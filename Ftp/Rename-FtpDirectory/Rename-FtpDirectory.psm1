@@ -44,7 +44,7 @@ function Rename-FtpDirectory
         $destinationFolderRelPath = "../" + $DestinationFolder
         $credentials = New-Object System.Net.NetworkCredential($User, $Password)
 
-        # Create App_Data folder.
+        # Create new folder.
         try
         {
             $makeDirectory = [System.Net.WebRequest]::Create($ftpFolderPath)
@@ -52,7 +52,7 @@ function Rename-FtpDirectory
             $makeDirectory.Method = [System.Net.WebRequestMethods+FTP]::MakeDirectory
             $makeDirectory.GetResponse()
 
-            Write-Host "App_Data folder created successfully:" $ftpFolderPath
+            Write-Host "New folder created successfully:" $ftpFolderPath
         }
         catch [Net.WebException]
         {
@@ -63,60 +63,77 @@ function Rename-FtpDirectory
                 $checkDirectory.Method = [System.Net.WebRequestMethods+FTP]::PrintWorkingDirectory
                 $checkDirectory.GetResponse()
 
-                Write-Host "App_Data folder already exists:" $ftpFolderPath
+                Write-Host "New folder already exists:" $ftpFolderPath
             }
             catch [Net.WebException]
             {
-                throw "Other error encountered during App_Data folder creation."
+                throw "Other error encountered during new folder creation."
             }    
         }
 
-        Write-Host "Listing files..."
-
-        $listRequest = [System.Net.FtpWebRequest]::Create($folderToRenamePath)
-        $listRequest.Credentials = $credentials
-        $listRequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectory
-
-        $files = New-Object System.Collections.ArrayList
-
-        $listResponse = $listRequest.GetResponse()
-        $listStream = $listResponse.GetResponseStream()
-        $listReader = New-Object System.IO.StreamReader($listStream)
-
-        while (!$listReader.EndOfStream)
+        try
         {
-            $file = $listReader.ReadLine()
-            $files.Add($file) | Out-Null
+            Write-Host "Listing files..."
+            
+            $listRequest = [System.Net.FtpWebRequest]::Create($folderToRenamePath)
+            $listRequest.Credentials = $credentials
+            $listRequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectory
+            
+            $files = New-Object System.Collections.ArrayList
+            
+            $listResponse = $listRequest.GetResponse()
+            $listStream = $listResponse.GetResponseStream()
+            $listReader = New-Object System.IO.StreamReader($listStream)
+            
+            while (!$listReader.EndOfStream)
+            {
+                $file = $listReader.ReadLine()
+                $files.Add($file) | Out-Null
+            }
         }
-
-        $listReader.Dispose()
-        $listStream.Dispose()
-        $listResponse.Dispose()
+        finally
+        {
+            $listReader.Dispose()
+            $listStream.Dispose()
+            $listResponse.Dispose()
+        }
 
         foreach ($file in $files)
         {
-            Write-Host "Renaming $file..."
-            Write-Host "Destination:" ($destinationFolderRelPath + "/" + $file)
-
-            $renameRequest = [System.Net.FtpWebRequest]::Create($folderToRenamePath + "/" + $file)
-            $renameRequest.Credentials = $credentials
-            $renameRequest.Method = [System.Net.WebRequestMethods+Ftp]::Rename
-            $renameRequest.RenameTo = $destinationFolderRelPath + "/" + $file
-            $renameRequest.GetResponse().Dispose()
+            try
+            {
+                Write-Host "Renaming $file..."
+                Write-Host "Destination:" ($destinationFolderRelPath + "/" + $file)
+                
+                $renameRequest = [System.Net.FtpWebRequest]::Create($folderToRenamePath + "/" + $file)
+                $renameRequest.Credentials = $credentials
+                $renameRequest.Method = [System.Net.WebRequestMethods+Ftp]::Rename
+                $renameRequest.RenameTo = $destinationFolderRelPath + "/" + $file
+                $renameResponse = $renameRequest.GetResponse()
+            }
+            finally
+            {
+                $renameResponse.Dispose()
+            }
         }
 
-        # Remove empty App_Data_new folder.
-        Write-Host "Deleting now empty App_Data_new folder."
+        # Remove empty previous folder.
+        Write-Host "Deleting now empty previous folder."
 
-        $deleteRequest = [Net.WebRequest]::Create($folderToRenamePath)
-        $deleteRequest.Credentials = $credentials
-        $deleteRequest.Method = [System.Net.WebRequestMethods+Ftp]::RemoveDirectory
-        $deleteResponse = $deleteRequest.GetResponse() | Out-Null
-
-        if ($deleteResponse)
+        try
         {
-            Write-Host "Delete response disposed."
-            $deleteResponse.Dispose()
+            $deleteRequest = [Net.WebRequest]::Create($folderToRenamePath)
+            $deleteRequest.Credentials = $credentials
+            $deleteRequest.Method = [System.Net.WebRequestMethods+Ftp]::RemoveDirectory
+            $deleteResponse = $deleteRequest.GetResponse() | Out-Null
+        }
+        finally
+        {
+            if ($deleteResponse)
+            {
+                Write-Host "Delete response disposed."
+                $deleteResponse.Dispose()
+            }
         }
     }
 }

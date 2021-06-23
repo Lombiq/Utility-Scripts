@@ -30,27 +30,32 @@ function Remove-FtpDirectory
     
     Process
     {
-        $credentials = New-Object System.Net.NetworkCredential($User, $Password)
-
-        $listRequest = [Net.WebRequest]::Create($Url)
-        $listRequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectoryDetails
-        $listRequest.Credentials = $credentials
-    
-        $lines = New-Object System.Collections.ArrayList
-    
-        $listResponse = $listRequest.GetResponse()
-        $listStream = $listResponse.GetResponseStream()
-        $listReader = New-Object System.IO.StreamReader($listStream)
-    
-        while (!$listReader.EndOfStream)
+        try
         {
-            $line = $listReader.ReadLine()
-            $lines.Add($line) | Out-Null
+            $credentials = New-Object System.Net.NetworkCredential($User, $Password)
+            
+            $listRequest = [Net.WebRequest]::Create($Url)
+            $listRequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectoryDetails
+            $listRequest.Credentials = $credentials
+            
+            $lines = New-Object System.Collections.ArrayList
+            
+            $listResponse = $listRequest.GetResponse()
+            $listStream = $listResponse.GetResponseStream()
+            $listReader = New-Object System.IO.StreamReader($listStream)
+            
+            while (!$listReader.EndOfStream)
+            {
+                $line = $listReader.ReadLine()
+                $lines.Add($line) | Out-Null
+            }
         }
-    
-        $listReader.Dispose()
-        $listStream.Dispose()
-        $listResponse.Dispose()
+        finally
+        {
+            $listReader.Dispose()
+            $listStream.Dispose()
+            $listResponse.Dispose()
+        }
     
         foreach ($line in $lines)
         {
@@ -66,31 +71,41 @@ function Remove-FtpDirectory
             }
             else
             {
-                Write-Host "Deleting file $name"
-                $deleteRequest = [Net.WebRequest]::Create($fileUrl)
-                $deleteRequest.Credentials = $credentials
-                $deleteRequest.Method = [System.Net.WebRequestMethods+Ftp]::DeleteFile
-                $deleteResponse = $deleteRequest.GetResponse() | Out-Null
-    
-                if ($deleteResponse)
+                try
                 {
-                    Write-Host "Delete response disposed."
-                    $deleteResponse.Dispose()
+                    Write-Host "Deleting file $name"
+                    $deleteRequest = [Net.WebRequest]::Create($fileUrl)
+                    $deleteRequest.Credentials = $credentials
+                    $deleteRequest.Method = [System.Net.WebRequestMethods+Ftp]::DeleteFile
+                    $deleteResponse = $deleteRequest.GetResponse() | Out-Null
+                }
+                finally
+                {
+                    if ($deleteResponse)
+                    {
+                        Write-Host "Delete response disposed."
+                        $deleteResponse.Dispose()
+                    }
                 }
             }
         }
     
-        Write-Host "Deleting folder."
-    
-        $deleteRequest = [Net.WebRequest]::Create($Url)
-        $deleteRequest.Credentials = $credentials
-        $deleteRequest.Method = [System.Net.WebRequestMethods+Ftp]::RemoveDirectory
-        $deleteResponse = $deleteRequest.GetResponse() | Out-Null
-    
-        if ($deleteResponse)
+        try
         {
-            Write-Host "Delete response disposed."
-            $deleteResponse.Dispose()
+            Write-Host "Deleting folder."
+            
+            $deleteRequest = [Net.WebRequest]::Create($Url)
+            $deleteRequest.Credentials = $credentials
+            $deleteRequest.Method = [System.Net.WebRequestMethods+Ftp]::RemoveDirectory
+            $deleteResponse = $deleteRequest.GetResponse() | Out-Null
+        }
+        finally
+        {
+            if ($deleteResponse)
+            {
+                Write-Host "Delete response disposed."
+                $deleteResponse.Dispose()
+            }
         }
     }
 }
