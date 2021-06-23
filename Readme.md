@@ -34,6 +34,12 @@ On what the different scripts do specifically and how to use them take a look at
 - Azure: To help working with the Azure cloud.
     - Copy-ToAzureDevelopmentStorage: Copies all files from the specified folder to Azure Development Storage.
     - Start-AzureStorageEmulator: Starts the Microsoft Azure Storage Emulator.
+- Ftp: For working with FTP directories and files.
+    - Get-FtpDirectory: Recursively downloads a folder from an FTP server.
+    - Get-FtpFiles: Downloads all files from a folder on an FTP server.
+    - New-FtpDirectory: Recursively uploads a folder to an FTP server.
+    - Remove-FtpDirectory: Recursively removes a folder on an FTP server.
+    - Rename-FtpDirectory: Renames a folder on an FTP server.
 - Orchard1: For Orchard 1.x tasks.
     - Reset-AppDataFolder: Clears the App_Data folder from temporary files.
     - Restart-Site: Restarts an Orchard 1.x app in IIS.
@@ -52,10 +58,10 @@ On what the different scripts do specifically and how to use them take a look at
     - Test-SqlServerDatabase: Checks whether the given database exists in a local SQL Server instance.
 - Utilities: The true utilities!
     - CreateTrustedCertificate: Creates all necessary files and imports them into the local Certificate Store so that it can be used to access localhost sites via HTTPS, without the browser showing certificate errors.
-    - Get-FtpFiles: Downloads all files from a folder on an FTP server.
     - Get-Rekt: Reks the script execution by throwing a fatal exception :).
     - Reload-Module: Reloads PowerShell modules from a folder.
     - Set-FileContent: Replaces a string in a file.
+    - Test-Url: Sends a ping request to a URL, returning a boolean value based on the response.
     - Test-VSProjectConsistency: Checks Visual Studio project files' contents against the file system looking for inconsistencies.
 
 
