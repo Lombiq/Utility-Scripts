@@ -92,14 +92,17 @@ function Get-FtpDirectory
                     $downloadRequest.EnableSsl = "true"
                     $downloadRequest.Credentials = $credentials
                     
-                    $downloadResponse = $downloadRequest.GetResponse()
-                    $sourceStream = $downloadResponse.GetResponseStream()
-                    $targetStream = [System.IO.File]::Create($localFilePath)
-                    $buffer = New-Object byte[] 10240
-                    
-                    while (($read = $sourceStream.Read($buffer, 0, $buffer.Length)) -gt 0)
-                    {
-                        $targetStream.Write($buffer, 0, $read)
+                    if ($downloadRequest)
+                    {                       
+                        $downloadResponse = $downloadRequest.GetResponse()
+                        $sourceStream = $downloadResponse.GetResponseStream()
+                        $targetStream = [System.IO.File]::Create($localFilePath)
+                        $buffer = New-Object byte[] 10240
+                        
+                        while (($read = $sourceStream.Read($buffer, 0, $buffer.Length)) -gt 0)
+                        {
+                            $targetStream.Write($buffer, 0, $read)
+                        }
                     }
                 }
                 finally
