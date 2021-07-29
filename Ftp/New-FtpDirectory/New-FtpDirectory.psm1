@@ -46,6 +46,7 @@ function New-FtpDirectory
             $makeDirectory = [System.Net.WebRequest]::Create($Url)
             $makeDirectory.Credentials =  $credentials
             $makeDirectory.Method = [System.Net.WebRequestMethods+FTP]::MakeDirectory
+            $makeDirectory.EnableSsl = "true"
             $makeDirectory.GetResponse()
     
             Write-Host "Folder created successfully:" $Url
@@ -57,6 +58,7 @@ function New-FtpDirectory
                 $checkDirectory = [System.Net.WebRequest]::Create($Url)
                 $checkDirectory.Credentials = $credentials
                 $checkDirectory.Method = [System.Net.WebRequestMethods+FTP]::PrintWorkingDirectory
+                $checkDirectory.EnableSsl = "true"
                 $checkDirectory.GetResponse()
     
                 Write-Host "Folder already exists:" $Url
@@ -79,6 +81,7 @@ function New-FtpDirectory
                 $makeDirectory = [System.Net.WebRequest]::Create($destinationFolder)
                 $makeDirectory.Credentials = $credentials
                 $makeDirectory.Method = [System.Net.WebRequestMethods+FTP]::MakeDirectory
+                $makeDirectory.EnableSsl = "true"
                 $makeDirectory.GetResponse()
     
                 Write-Host "Folder created successfully."
@@ -91,6 +94,7 @@ function New-FtpDirectory
                     $checkDirectory = [System.Net.WebRequest]::Create($destinationFolder)
                     $checkDirectory.Credentials = $credentials
                     $checkDirectory.Method = [System.Net.WebRequestMethods+FTP]::PrintWorkingDirectory
+                    $checkDirectory.EnableSsl = "true"
                     $checkDirectory.GetResponse()
                     
                     Write-Host "Folder already exists."
@@ -109,7 +113,6 @@ function New-FtpDirectory
         
         try
         {
-
             foreach ($file in $srcFiles)
             {
                 $srcFullPath = $file.fullname
