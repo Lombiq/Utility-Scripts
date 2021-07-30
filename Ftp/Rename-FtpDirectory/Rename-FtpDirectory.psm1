@@ -50,7 +50,7 @@ function Rename-FtpDirectory
             $makeDirectory = [System.Net.WebRequest]::Create($ftpFolderPath)
             $makeDirectory.Credentials = $credentials
             $makeDirectory.Method = [System.Net.WebRequestMethods+FTP]::MakeDirectory
-            $makeDirectory.EnableSsl = "true"
+            $makeDirectory.EnableSsl = $true
             $makeDirectory.GetResponse()
 
             Write-Host "New folder created successfully:" $ftpFolderPath
@@ -62,7 +62,7 @@ function Rename-FtpDirectory
                 $checkDirectory = [System.Net.WebRequest]::Create($ftpFolderPath)
                 $checkDirectory.Credentials = $credentials
                 $checkDirectory.Method = [System.Net.WebRequestMethods+FTP]::PrintWorkingDirectory
-                $checkDirectory.EnableSsl = "true"
+                $checkDirectory.EnableSsl = $true
                 $checkDirectory.GetResponse()
 
                 Write-Host "New folder already exists:" $ftpFolderPath
@@ -80,7 +80,7 @@ function Rename-FtpDirectory
             $listRequest = [System.Net.FtpWebRequest]::Create($folderToRenamePath)
             $listRequest.Credentials = $credentials
             $listRequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectory
-            $listRequest.EnableSsl = "true"
+            $listRequest.EnableSsl = $true
             
             $files = New-Object System.Collections.ArrayList
             
@@ -111,7 +111,7 @@ function Rename-FtpDirectory
                 $renameRequest = [System.Net.FtpWebRequest]::Create($folderToRenamePath + "/" + $file)
                 $renameRequest.Credentials = $credentials
                 $renameRequest.Method = [System.Net.WebRequestMethods+Ftp]::Rename
-                $renameRequest.EnableSsl = "true"
+                $renameRequest.EnableSsl = $true
                 $renameRequest.RenameTo = $destinationFolderRelPath + "/" + $file
                 $renameResponse = $renameRequest.GetResponse()
             }
@@ -129,7 +129,7 @@ function Rename-FtpDirectory
             $deleteRequest = [Net.WebRequest]::Create($folderToRenamePath)
             $deleteRequest.Credentials = $credentials
             $deleteRequest.Method = [System.Net.WebRequestMethods+Ftp]::RemoveDirectory
-            $deleteRequest.EnableSsl = "true"
+            $deleteRequest.EnableSsl = $true
             $deleteResponse = $deleteRequest.GetResponse() | Out-Null
         }
         finally

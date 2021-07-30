@@ -40,7 +40,7 @@ function Get-FtpDirectory
             
             $listRequest = [Net.WebRequest]::Create($Url)
             $listRequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectoryDetails
-            $listRequest.EnableSsl = "true"
+            $listRequest.EnableSsl = $true
             $listRequest.Credentials = $credentials
             
             $lines = New-Object System.Collections.ArrayList
@@ -89,7 +89,7 @@ function Get-FtpDirectory
                     
                     $downloadRequest = [Net.WebRequest]::Create($fileUrl)
                     $downloadRequest.Method = [System.Net.WebRequestMethods+Ftp]::DownloadFile
-                    $downloadRequest.EnableSsl = "true"
+                    $downloadRequest.EnableSsl = $true
                     $downloadRequest.Credentials = $credentials
                     
                     $downloadResponse = $downloadRequest.GetResponse()

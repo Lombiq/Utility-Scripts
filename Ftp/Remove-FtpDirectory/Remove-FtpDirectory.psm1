@@ -36,7 +36,7 @@ function Remove-FtpDirectory
             
             $listRequest = [Net.WebRequest]::Create($Url)
             $listRequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectoryDetails
-            $listRequest.EnableSsl = "true"
+            $listRequest.EnableSsl = $true
             $listRequest.Credentials = $credentials
             
             $lines = New-Object System.Collections.ArrayList
@@ -78,7 +78,7 @@ function Remove-FtpDirectory
                     $deleteRequest = [Net.WebRequest]::Create($fileUrl)
                     $deleteRequest.Credentials = $credentials
                     $deleteRequest.Method = [System.Net.WebRequestMethods+Ftp]::DeleteFile
-                    $deleteRequest.EnableSsl = "true"
+                    $deleteRequest.EnableSsl = $true
                     $deleteResponse = $deleteRequest.GetResponse() | Out-Null
                 }
                 finally
@@ -99,7 +99,7 @@ function Remove-FtpDirectory
             $deleteRequest = [Net.WebRequest]::Create($Url)
             $deleteRequest.Credentials = $credentials
             $deleteRequest.Method = [System.Net.WebRequestMethods+Ftp]::RemoveDirectory
-            $deleteRequest.EnableSsl = "true"
+            $deleteRequest.EnableSsl = $true
             $deleteResponse = $deleteRequest.GetResponse() | Out-Null
         }
         finally
