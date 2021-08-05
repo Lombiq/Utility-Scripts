@@ -1,8 +1,6 @@
-﻿using System;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
+﻿using System.Management.Automation;
 
-namespace Orchard_Core
+namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
 {
     [Cmdlet(VerbsDiagnostic.Test,"SampleCmdlet")]
     [OutputType(typeof(FavoriteStuff))]

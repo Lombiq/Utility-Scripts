@@ -2,13 +2,22 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Orchard_Core</AssemblyName>
+    <AssemblyName>Lombiq.UtilityScripts.OrchardCore</AssemblyName>
+    <RootNamespace>Lombiq.UtilityScripts.OrchardCore</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CliWrap" Version="3.3.2" />
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.0-preview-06">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="gitignore.template" />
+    <Resource Include="gitignore.template">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

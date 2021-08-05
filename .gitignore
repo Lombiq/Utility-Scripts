@@ -13,3 +13,4 @@ robots.txt
 syntax: regexp
 (?i)src/.*bin/.*
 .idea
+/src/Orchard-Core/bin
