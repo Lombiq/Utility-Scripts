@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Management.Automation;
 using CliWrap;
 using Lombiq.UtilityScripts.OrchardCore.Constants;
+using IoPath = System.IO.Path;
 using static Lombiq.UtilityScripts.OrchardCore.Helpers.FormerlyScriptHelper;
 
 namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
@@ -31,7 +33,7 @@ namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
     /// </example>
     [Cmdlet(VerbsData.Initialize, NounNames.OrchardCoreSolution)]
     [Alias(VerbsData.Initialize + "-" + NounNames.OrchardCore)]
-    [OutputType(typeof(FavoriteStuff))]
+    [OutputType(typeof(FileInfo))]
     public class InitializeOrchardCoreSolutionCmdletCommand : PSCmdlet
     {
         [Parameter(Position = 0)]
@@ -56,6 +58,7 @@ namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
             if (string.IsNullOrWhiteSpace(Path)) Path = Environment.CurrentDirectory;
 
             _dotnetPath = "dotnet";
+            var solutionFilePath = $"{Path}/{Name}.sln";
 
             var installArguments = new List<string> { "new", "-i", "OrchardCore.ProjectTemplates::1.0.0-*" };
             if (!string.IsNullOrWhiteSpace(NuGetSource)) installArguments.Add(NuGetSource);
@@ -68,19 +71,21 @@ namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
             {
                 Dotnet("new", "ocmodulecms", "-n", ModuleName, "-o", $"{Path}/src/Modules/{ModuleName}");
                 Dotnet("add", $"{Path}/src/{Name}.Web/{Name}.Web.csproj", "reference", $"{Path}/src/Modules/{ModuleName}/{ModuleName}.csproj");
-                Dotnet("sln", $"{Path}/{Name}.sln", "add", $"{Path}/src/Modules/{ModuleName}/{ModuleName}.csproj");
+                Dotnet("sln", solutionFilePath, "add", $"{Path}/src/Modules/{ModuleName}/{ModuleName}.csproj");
             }
 
             if (!string.IsNullOrWhiteSpace(ThemeName))
             {
                 Dotnet("new", "octheme", "-n", ThemeName, "-o", $"{Path}/src/Themes/{ThemeName}");
                 Dotnet("add", $"{Path}/src/{Name}.Web/{Name}.Web.csproj", "reference", $"{Path}/src/Themes/{ThemeName}/{ThemeName}.csproj");
-                Dotnet("sln", $"{Path}/{Name}.sln", "add", $"{Path}/src/Themes/{ThemeName}/{ThemeName}.csproj");
+                Dotnet("sln", solutionFilePath, "add", $"{Path}/src/Themes/{ThemeName}/{ThemeName}.csproj");
             }
             
-            System.IO.File.Copy(
-                System.IO.Path.Combine(PSScriptRoot, "gitignore.template"),
-                System.IO.Path.Combine(Path, ".gitignore"));
+            File.Copy(
+                IoPath.Combine(PSScriptRoot, "gitignore.template"),
+                IoPath.Combine(Path, ".gitignore"));
+            
+            WriteObject(new FileInfo(solutionFilePath));
         }
 
         private void Dotnet(params string[] arguments) =>
