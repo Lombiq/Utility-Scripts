@@ -14,3 +14,4 @@ syntax: regexp
 (?i)src/.*bin/.*
 .idea
 /src/Orchard-Core/bin
+/src/*/bin

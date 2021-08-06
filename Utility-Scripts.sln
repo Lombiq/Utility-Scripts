@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8EA34D28-4D2E-4E4E-BDE7-AC8E8C10AD18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchard-Core", "src\Orchard-Core\Orchard-Core.csproj", "{D3BA3D61-C374-4881-905C-43819676D5B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lombiq.UtilityScripts.OrchardCore", "src\Lombiq.UtilityScripts.OrchardCore\Lombiq.UtilityScripts.OrchardCore.csproj", "{9A0D4EAC-EFCE-4BDA-A698-A179898C1C37}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,20 +20,20 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D3BA3D61-C374-4881-905C-43819676D5B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3BA3D61-C374-4881-905C-43819676D5B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D3BA3D61-C374-4881-905C-43819676D5B2}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D3BA3D61-C374-4881-905C-43819676D5B2}.Debug|x64.Build.0 = Debug|Any CPU
-		{D3BA3D61-C374-4881-905C-43819676D5B2}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D3BA3D61-C374-4881-905C-43819676D5B2}.Debug|x86.Build.0 = Debug|Any CPU
-		{D3BA3D61-C374-4881-905C-43819676D5B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D3BA3D61-C374-4881-905C-43819676D5B2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D3BA3D61-C374-4881-905C-43819676D5B2}.Release|x64.ActiveCfg = Release|Any CPU
-		{D3BA3D61-C374-4881-905C-43819676D5B2}.Release|x64.Build.0 = Release|Any CPU
-		{D3BA3D61-C374-4881-905C-43819676D5B2}.Release|x86.ActiveCfg = Release|Any CPU
-		{D3BA3D61-C374-4881-905C-43819676D5B2}.Release|x86.Build.0 = Release|Any CPU
+		{9A0D4EAC-EFCE-4BDA-A698-A179898C1C37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A0D4EAC-EFCE-4BDA-A698-A179898C1C37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A0D4EAC-EFCE-4BDA-A698-A179898C1C37}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9A0D4EAC-EFCE-4BDA-A698-A179898C1C37}.Debug|x64.Build.0 = Debug|Any CPU
+		{9A0D4EAC-EFCE-4BDA-A698-A179898C1C37}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9A0D4EAC-EFCE-4BDA-A698-A179898C1C37}.Debug|x86.Build.0 = Debug|Any CPU
+		{9A0D4EAC-EFCE-4BDA-A698-A179898C1C37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A0D4EAC-EFCE-4BDA-A698-A179898C1C37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A0D4EAC-EFCE-4BDA-A698-A179898C1C37}.Release|x64.ActiveCfg = Release|Any CPU
+		{9A0D4EAC-EFCE-4BDA-A698-A179898C1C37}.Release|x64.Build.0 = Release|Any CPU
+		{9A0D4EAC-EFCE-4BDA-A698-A179898C1C37}.Release|x86.ActiveCfg = Release|Any CPU
+		{9A0D4EAC-EFCE-4BDA-A698-A179898C1C37}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{D3BA3D61-C374-4881-905C-43819676D5B2} = {8EA34D28-4D2E-4E4E-BDE7-AC8E8C10AD18}
+		{9A0D4EAC-EFCE-4BDA-A698-A179898C1C37} = {8EA34D28-4D2E-4E4E-BDE7-AC8E8C10AD18}
 	EndGlobalSection
 EndGlobal
