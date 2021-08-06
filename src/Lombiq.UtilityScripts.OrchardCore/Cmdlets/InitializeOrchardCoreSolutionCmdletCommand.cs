@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Management.Automation;
-using CliWrap;
+using System.Threading.Tasks;
 using Lombiq.UtilityScripts.OrchardCore.Constants;
 using IoPath = System.IO.Path;
 using static Lombiq.UtilityScripts.OrchardCore.Helpers.FormerlyScriptHelper;
@@ -34,8 +34,11 @@ namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
     [Cmdlet(VerbsData.Initialize, NounNames.OrchardCoreSolution)]
     [Alias(VerbsData.Initialize + "-" + NounNames.OrchardCore)]
     [OutputType(typeof(FileInfo))]
-    public class InitializeOrchardCoreSolutionCmdletCommand : PSCmdlet
+    public class InitializeOrchardCoreSolutionCmdletCommand : AsyncCmdletBase
     {
+        private const string _cmdletName = VerbsData.Initialize + "-" + NounNames.OrchardCore;
+        protected override string CmdletName => _cmdletName;
+        
         [Parameter(Position = 0)]
         public string Path { get; set; }
 
@@ -51,34 +54,32 @@ namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
         [Parameter(Position = 4)]
         public string NuGetSource { get; set; }
 
-        private string _dotnetPath = null;
 
-        protected override void ProcessRecord()
+        protected override async Task ProcessRecordAsync()
         {
             if (string.IsNullOrWhiteSpace(Path)) Path = Environment.CurrentDirectory;
 
-            _dotnetPath = "dotnet";
             var solutionFilePath = $"{Path}/{Name}.sln";
 
             var installArguments = new List<string> { "new", "-i", "OrchardCore.ProjectTemplates::1.0.0-*" };
             if (!string.IsNullOrWhiteSpace(NuGetSource)) installArguments.Add(NuGetSource);
-            Dotnet(installArguments.ToArray());
+            await DotnetAsync(installArguments.ToArray());
             
-            Dotnet("occms", "-o", $"{Path}/src/$Name.Web");
-            Dotnet("new", "sln", "-o", Path, "-n", Name);
+            await DotnetAsync("occms", "-o", $"{Path}/src/$Name.Web");
+            await DotnetAsync("new", "sln", "-o", Path, "-n", Name);
 
             if (!string.IsNullOrWhiteSpace(ModuleName))
             {
-                Dotnet("new", "ocmodulecms", "-n", ModuleName, "-o", $"{Path}/src/Modules/{ModuleName}");
-                Dotnet("add", $"{Path}/src/{Name}.Web/{Name}.Web.csproj", "reference", $"{Path}/src/Modules/{ModuleName}/{ModuleName}.csproj");
-                Dotnet("sln", solutionFilePath, "add", $"{Path}/src/Modules/{ModuleName}/{ModuleName}.csproj");
+                await DotnetAsync("new", "ocmodulecms", "-n", ModuleName, "-o", $"{Path}/src/Modules/{ModuleName}");
+                await DotnetAsync("add", $"{Path}/src/{Name}.Web/{Name}.Web.csproj", "reference", $"{Path}/src/Modules/{ModuleName}/{ModuleName}.csproj");
+                await DotnetAsync("sln", solutionFilePath, "add", $"{Path}/src/Modules/{ModuleName}/{ModuleName}.csproj");
             }
 
             if (!string.IsNullOrWhiteSpace(ThemeName))
             {
-                Dotnet("new", "octheme", "-n", ThemeName, "-o", $"{Path}/src/Themes/{ThemeName}");
-                Dotnet("add", $"{Path}/src/{Name}.Web/{Name}.Web.csproj", "reference", $"{Path}/src/Themes/{ThemeName}/{ThemeName}.csproj");
-                Dotnet("sln", solutionFilePath, "add", $"{Path}/src/Themes/{ThemeName}/{ThemeName}.csproj");
+                await DotnetAsync("new", "octheme", "-n", ThemeName, "-o", $"{Path}/src/Themes/{ThemeName}");
+                await DotnetAsync("add", $"{Path}/src/{Name}.Web/{Name}.Web.csproj", "reference", $"{Path}/src/Themes/{ThemeName}/{ThemeName}.csproj");
+                await DotnetAsync("sln", solutionFilePath, "add", $"{Path}/src/Themes/{ThemeName}/{ThemeName}.csproj");
             }
             
             File.Copy(
@@ -87,10 +88,5 @@ namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
             
             WriteObject(new FileInfo(solutionFilePath));
         }
-
-        private void Dotnet(params string[] arguments) =>
-            Cli
-                .Wrap(_dotnetPath)
-                .WithArguments(arguments);
     }
 }

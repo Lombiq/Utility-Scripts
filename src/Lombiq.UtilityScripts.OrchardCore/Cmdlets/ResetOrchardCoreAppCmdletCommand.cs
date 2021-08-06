@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Threading;
+using System.Threading.Tasks;
 using Lombiq.UtilityScripts.OrchardCore.Constants;
 using static Lombiq.UtilityScripts.OrchardCore.Constants.ParameterSetNames;
+using static Lombiq.UtilityScripts.OrchardCore.Helpers.FormerlyScriptHelper;
 
 namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
 {
@@ -14,9 +15,11 @@ namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
     [Cmdlet(VerbsCommon.Reset, NounNames.OrchardCoreApp)]
     [Alias(VerbsCommon.Reset + "-" + NounNames.OrchardCore)]
     [OutputType(typeof(FileInfo))]
-    public class ResetOrchardCoreAppCmdletCommand : PSCmdlet
+    public class ResetOrchardCoreAppCmdletCommand : AsyncCmdletBase
     {
-        private const string Name = VerbsCommon.Reset + "-" + NounNames.OrchardCoreApp;
+        private const string _cmdletName = VerbsCommon.Reset + "-" + NounNames.OrchardCoreApp;
+
+        protected override string CmdletName => _cmdletName;
         
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, Position = 0)]
         public string WebProjectPath { get; set; }
@@ -75,7 +78,7 @@ namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
         [Parameter]
         public SwitchParameter Pause { get; set; }
 
-        protected override void ProcessRecord()
+        private async Task ProcessRecordAsync()
         {
             string webProjectDllPath;
             string siteName;
@@ -109,7 +112,7 @@ namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
             // terminate them.
             var siteHostProcesses = Process.GetProcessesByName("iisexpress.exe")
                 .Concat(Process.GetProcessesByName("dotnet.exe"))
-                .Where(process => process.StartInfo?.Arguments?.Contains("$siteName", StringComparer.OrdinalIgnoreCase) == true)
+                .Where(process => process.StartInfo?.Arguments?.Contains("$siteName") == true)
                 .ToList();
 
             if (siteHostProcesses.Any())
@@ -133,48 +136,94 @@ namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
                 appData.Delete(recursive: true);
             }
 
-            /*
-        # Rebuilding the application if the "Rebuild" switch is present or the Web Project DLL is not found.
-
-        $buildRequired = $false;
-        if ($Rebuild.IsPresent)
-        {
-            "Rebuild switch active!`n"
-
-            $buildRequired = $true
-        }
-        elseif ([string]::IsNullOrEmpty($webProjectDllPath) -or -not (Test-Path $webProjectDllPath -PathType Leaf))
-        {
-            "Web Project DLL not found, build is required!`n"
-
-            $buildRequired = $true
-        }
-
-        if ($buildRequired)
-        {
-            dotnet build "$WebProjectPath" --configuration Debug
-
-            if ($LASTEXITCODE -ne 0)
+            // Rebuilding the application if the "Rebuild" switch is present or the Web Project DLL is not found.
+            var buildRequired = false;
+            if (Rebuild.IsPresent)
             {
-                pause
-
-                exit $LASTEXITCODE
+                Info("Rebuild switch active!");
+                buildRequired = true;
             }
-            else
+            else if (string.IsNullOrEmpty(webProjectDllPath) || !File.Exists(webProjectDllPath))
             {
-                $webProjectDllPath = GetWebProjectDllPath($WebProjectPath)
+                Info("Web Project DLL not found, build is required!");
+                buildRequired = true;
+            }
+            
+            if (buildRequired)
+            {
+                await DotnetAsync("build", WebProjectPath, "--configuration", "Debug");
+                
+                // The `if ($LASTEXITCODE -ne 0)` is not needed because CliWrap does that on its own and it should
+                // happen everywhere anyway, not just here.
 
-                if ([string]::IsNullOrEmpty($webProjectDllPath))
+                webProjectDllPath = GetWebProjectDllPath(WebProjectPath);
+
+                if (string.IsNullOrEmpty(webProjectDllPath))
                 {
-                    throw "Project was successfully built at `"$WebProjectPath`", but the compiled Web Project DLL was not found!"
+                    throw new InvalidOperationException(
+                        $"Project was successfully built at \"{WebProjectPath}\", but the compiled Web Project DLL was not found!");
                 }
             }
-        }
+            
+            Info($"Compiled Web Project DLL found at \"{webProjectDllPath}\"!");
+            
+            // Validating and setting up database server connection.
 
-        "Compiled Web Project DLL found at `"$webProjectDllPath`"!`n"
+            var SetupDatabaseConnectionString = "";
+            if (ParameterSetName == ServerDB)
+            {
+                if (SuffixDatabaseNameWithFolderName.IsPresent)
+                {
+                    var solutionPath = Environment.CurrentDirectory;
 
+                    while (!string.IsNullOrEmpty(solutionPath) && !Directory.GetFiles(solutionPath, "*.sln").Any())
+                    {
+                        solutionPath = Path.GetDirectoryName(solutionPath);
+                    }
 
+                    if (string.IsNullOrEmpty(solutionPath))
+                    {
+                        throw new DirectoryNotFoundException(
+                            "No solution folder was found to create the database name suffix. Put this script into a " +
+                            "folder where there or in a parent folder there is the app's .sln file.");
+                    }
 
+                    var solutionFolder = Path.GetFileName(solutionPath);
+                    SetupDatabaseName = $"{SetupDatabaseName}_{solutionFolder}";
+                }
+                
+                Info($"Using the following database name: \"{SetupDatabaseName}\".");
+                
+                if (New-SqlServerDatabase -SqlServerName SetupDatabaseServerName -DatabaseName SetupDatabaseName -Force:Force.IsPresent -ErrorAction Stop -UserName SetupDatabaseSqlUser -Password SetupDatabaseSqlPassword)
+                {
+                    "Database `"SetupDatabaseServerName\SetupDatabaseName`" created!"
+                }
+                else
+                {
+                    if ([string]::IsNullOrEmpty(SetupDatabaseTablePrefix))
+                    {
+                        throw ("Database `"SetupDatabaseServerName\SetupDatabaseName`" could not be created!")
+                    }
+                    else
+                    {
+                        "The specified database already exists! Attempting to run setup using the `"SetupDatabaseTablePrefix`" table prefix."
+                    }
+                }
+
+                Security = if (-not SetupDatabaseSqlPassword) 
+                { 
+                    "Integrated Security=True"
+                }
+                else 
+                {
+                    "User Id=SetupDatabaseSqlUser;Password=SetupDatabaseSqlPassword"    
+                }
+
+                # MARS is necessary for Orchard.
+                SetupDatabaseConnectionString = "Server=SetupDatabaseServerName;Database=SetupDatabaseName;Security;MultipleActiveResultSets=True;"
+            }
+            
+            /*
         # Validating and setting up database server connection.
 
         $SetupDatabaseConnectionString = ""
@@ -381,7 +430,5 @@ namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
                 ? webProjectDllPath
                 : string.Empty;
         }
-        
-        private void Info(string message) => WriteInformation(new InformationRecord(message, Name));
     }
 }

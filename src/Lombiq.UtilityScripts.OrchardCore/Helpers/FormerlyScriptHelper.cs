@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using CliWrap;
 using Lombiq.UtilityScripts.OrchardCore.Cmdlets;
 
 namespace Lombiq.UtilityScripts.OrchardCore.Helpers
@@ -9,6 +10,8 @@ namespace Lombiq.UtilityScripts.OrchardCore.Helpers
     public static class FormerlyScriptHelper
     {
         private static string _psScriptRoot = null;
+
+        public static string DotnetPath { get; set; } = "dotnet";
 
         /// <summary>
         /// Gets the string that behaves like the Powershell builtin <c>$PSScriptRoot</c>.
@@ -26,5 +29,11 @@ namespace Lombiq.UtilityScripts.OrchardCore.Helpers
                 return _psScriptRoot;
             }
         }
+
+        public static CommandTask<CommandResult> DotnetAsync(params string[] arguments) =>
+            Cli
+                .Wrap(DotnetPath)
+                .WithArguments(arguments)
+                .ExecuteAsync();
     }
 }
