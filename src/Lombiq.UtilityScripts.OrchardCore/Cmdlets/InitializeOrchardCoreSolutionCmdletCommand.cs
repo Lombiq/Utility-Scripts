@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Management.Automation;
 using System.Threading.Tasks;
+using Lombiq.UtilityScripts.Common.Cmdlets;
 using Lombiq.UtilityScripts.OrchardCore.Constants;
 using IoPath = System.IO.Path;
-using static Lombiq.UtilityScripts.OrchardCore.Helpers.FormerlyScriptHelper;
+using static Lombiq.UtilityScripts.Common.Helpers.FormerlyScriptHelper;
 
 namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
 {

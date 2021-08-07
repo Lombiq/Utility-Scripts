@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>Lombiq.UtilityScripts.OrchardCore</AssemblyName>
     <RootNamespace>Lombiq.UtilityScripts.OrchardCore</RootNamespace>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +19,10 @@
     <Resource Include="gitignore.template">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lombiq.UtilityScripts.Common\Lombiq.UtilityScripts.Common.csproj" />
   </ItemGroup>
 
 </Project>

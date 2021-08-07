@@ -2,7 +2,7 @@
 using System.Management.Automation;
 using System.Threading.Tasks;
 
-namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
+namespace Lombiq.UtilityScripts.Common.Cmdlets
 {
     public abstract class AsyncCmdletBase : PSCmdlet
     {

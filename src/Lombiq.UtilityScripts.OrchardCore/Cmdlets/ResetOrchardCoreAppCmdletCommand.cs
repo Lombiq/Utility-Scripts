@@ -5,9 +5,10 @@ using System.Linq;
 using System.Management.Automation;
 using System.Threading;
 using System.Threading.Tasks;
+using Lombiq.UtilityScripts.Common.Cmdlets;
 using Lombiq.UtilityScripts.OrchardCore.Constants;
 using static Lombiq.UtilityScripts.OrchardCore.Constants.ParameterSetNames;
-using static Lombiq.UtilityScripts.OrchardCore.Helpers.FormerlyScriptHelper;
+using static Lombiq.UtilityScripts.Common.Helpers.FormerlyScriptHelper;
 
 namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
 {
@@ -78,7 +79,7 @@ namespace Lombiq.UtilityScripts.OrchardCore.Cmdlets
         [Parameter]
         public SwitchParameter Pause { get; set; }
 
-        private async Task ProcessRecordAsync()
+        protected override async Task ProcessRecordAsync()
         {
             string webProjectDllPath;
             string siteName;

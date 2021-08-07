@@ -1,15 +1,16 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using CliWrap;
-using Lombiq.UtilityScripts.OrchardCore.Cmdlets;
+using Lombiq.UtilityScripts.Common.Cmdlets;
 
-namespace Lombiq.UtilityScripts.OrchardCore.Helpers
+namespace Lombiq.UtilityScripts.Common.Helpers
 {
     /// <summary>
     /// Helper to ease transition from the scripts.
     /// </summary>
     public static class FormerlyScriptHelper
     {
-        private static string _psScriptRoot = null;
+        private static string? _psScriptRoot = null;
 
         public static string DotnetPath { get; set; } = "dotnet";
 
@@ -22,8 +23,8 @@ namespace Lombiq.UtilityScripts.OrchardCore.Helpers
             {
                 if (_psScriptRoot == null)
                 {
-                    var assemblyLocation = typeof(InitializeOrchardCoreSolutionCmdletCommand).Assembly.Location;
-                    _psScriptRoot = Path.GetDirectoryName(assemblyLocation);
+                    var assemblyLocation = typeof(AsyncCmdletBase).Assembly.Location;
+                    _psScriptRoot = Path.GetDirectoryName(assemblyLocation) ?? Environment.CurrentDirectory;
                 }
 
                 return _psScriptRoot;
