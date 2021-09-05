@@ -35,10 +35,10 @@ namespace Lombiq.UtilityScripts.Utilities.Cmdlets
         
         private IEnumerable<Process> ProcessWindows()
         {
-            var nameWhere = string.IsNullOrWhiteSpace(ProcessName) ? string.Empty : $"(Name = '{ProcessName}.exe') and";
+            var nameWhere = string.IsNullOrWhiteSpace(ProcessName) ? string.Empty : $"Name LIKE '{ProcessName}' AND";
             var query = 
                 $"SELECT ProcessId, Name, CommandLine FROM Win32_Process " +
-                $"WHERE {nameWhere} CommandLine like '%{Argument}%'";
+                $"WHERE {nameWhere} CommandLine LIKE '%{Argument}%'";
 
             var list = new List<Process>();
             using (var searcher = new ManagementObjectSearcher(query))
