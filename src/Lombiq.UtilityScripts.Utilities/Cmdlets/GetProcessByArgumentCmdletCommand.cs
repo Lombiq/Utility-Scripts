@@ -4,11 +4,12 @@ using System.Diagnostics;
 using System.Management;
 using System.Management.Automation;
 using System.Runtime.InteropServices;
+using Lombiq.UtilityScripts.Utilities.Models;
 
 namespace Lombiq.UtilityScripts.Utilities.Cmdlets
 {
     [Cmdlet(VerbsCommon.Get, "ProcessByArgument")]
-    [OutputType(typeof(Process))]
+    [OutputType(typeof(ExternalProcessWithArguments))]
     public class GetProcessByArgumentCmdletCommand : Cmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
@@ -33,14 +34,14 @@ namespace Lombiq.UtilityScripts.Utilities.Cmdlets
             }
         }
         
-        private IEnumerable<Process> ProcessWindows()
+        private IEnumerable<ExternalProcessWithArguments> ProcessWindows()
         {
             var nameWhere = string.IsNullOrWhiteSpace(ProcessName) ? string.Empty : $"Name LIKE '{ProcessName}' AND";
             var query = 
-                $"SELECT ProcessId, Name, CommandLine FROM Win32_Process " +
+                $"SELECT ProcessId, CommandLine FROM Win32_Process " +
                 $"WHERE {nameWhere} CommandLine LIKE '%{Argument}%'";
 
-            var list = new List<Process>();
+            var list = new List<ExternalProcessWithArguments>();
             using (var searcher = new ManagementObjectSearcher(query))
             {
                 foreach (var result in searcher.Get())
@@ -52,14 +53,18 @@ namespace Lombiq.UtilityScripts.Utilities.Cmdlets
                     
                     if (process == null) continue;
                     
-                    list.Add(process);
+                    list.Add(new ExternalProcessWithArguments
+                    {
+                        Process = process,
+                        CommandLine = result["CommandLine"]?.ToString() ?? string.Empty
+                    });
                 }
             }
 
             return list;
         }
 
-        private IEnumerable<Process> ProcessLinux() =>
+        private IEnumerable<ExternalProcessWithArguments> ProcessLinux() =>
             throw new NotSupportedException("Linux support is coming soon. See GitHub issue here: TODO");
     }
 }
