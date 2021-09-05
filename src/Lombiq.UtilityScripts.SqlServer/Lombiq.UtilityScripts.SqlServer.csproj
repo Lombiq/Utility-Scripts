@@ -10,7 +10,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.SqlServer.Smo.dll" Version="1.0.1" />
       <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     </ItemGroup>
 
