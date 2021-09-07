@@ -91,7 +91,7 @@ function Reset-OrchardCoreApp
             {
                 "Terminating application host process running `"$($siteHostProcess.CommandLine)`"!`n"
 
-                $siteHostProcess | Stop-Process
+                $siteHostProcess.Process | Stop-Process
             }
 
             Start-Sleep 1
