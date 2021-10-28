@@ -1,12 +1,12 @@
 <#
 .Synopsis
-   Copies all files from the specified folder to Azure Development Storage.
+    Copies all files from the specified folder to Azure Development Storage.
 
 .DESCRIPTION
-   Copies all files from the specified folder to Development Storage when running the Azure Storage Emulator.
+    Copies all files from the specified folder to Development Storage when running the Azure Storage Emulator.
 
 .EXAMPLE
-   Copy-ToAzureDevelopmentStorage -Path "D:\StorageBackup"
+    Copy-ToAzureDevelopmentStorage -Path "D:\StorageBackup"
 #>
 
 Import-Module Az.Storage
@@ -19,7 +19,7 @@ function Copy-ToAzureDevelopmentStorage
     Param
     (
         [Parameter(Mandatory = $true, HelpMessage = "The path to the folder to copy the content from to the Development Storage. The first level of subfolders will be handled as Storage Containers.")]
-        [string] $Path = $(throw "You need to provide the path to copy the content from.")
+        [string] $Path
     )
 
     Process
@@ -38,7 +38,7 @@ function Copy-ToAzureDevelopmentStorage
 
         foreach ($folder in Get-ChildItem $Path | Where-Object { $PSItem.PSIsContainer })
         {
-            if ($containers -eq $null -or $containers.Count -eq 0 -or !($containers | Select-Object -ExpandProperty "Name").Contains($folder.Name))
+            if ($null -eq $containers -or $containers.Count -eq 0 -or !($containers | Select-Object -ExpandProperty "Name").Contains($folder.Name))
             {
                 New-AzStorageContainer -Context $storageContext -Name $folder.Name -Permission Blob
             }
