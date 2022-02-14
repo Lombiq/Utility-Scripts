@@ -23,7 +23,16 @@ function Get-GitHubPullRequest
         [Parameter(
             Mandatory = $true,
             HelpMessage = "You need to provide a password to access the GitHub repository through the API.")]
-        [SecureString] $ApiPassword
+        [SecureString] $ApiPassword,
+
+        [Parameter(HelpMessage = "Throws exception if the pull request is not mergeable.")]
+        [Switch] $ThrowIfNotMergeable,
+
+        [Parameter(HelpMessage = "When used together with the ThrowIfNotMergeable switch, closed pull requests will not cause an exception.")]
+        [Switch] $IgnoreClosed,
+
+        [Parameter(HelpMessage = "When used together with the ThrowIfNotMergeable switch, draft pull requests will not cause an exception.")]
+        [Switch] $IgnoreDraft
     )
     
     process
@@ -50,7 +59,7 @@ function Get-GitHubPullRequest
         $repositoryPath = [string]::Join([string]::Empty, $repositoryUri.Segments[1..2])
         $networkCredentials = New-Object System.Net.NetworkCredential($ApiUserName, $ApiPassword)
         $apiCredentials = "$($networkCredentials.UserName):$($networkCredentials.Password)"
-        $pullRequestData = $null
+        $pullRequest = $null
         $retryCount = 0
 
         do
@@ -62,18 +71,55 @@ function Get-GitHubPullRequest
 
             $retryCount += 1
 
-            $pullRequestData = Invoke-WebRequest `
+            $pullRequest = Invoke-WebRequest `
                 -Uri "https://api.github.com/repos/$repositoryPath/pulls/$pullRequestId" `
                 -Headers @{ Authorization = "Basic $([System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($apiCredentials)))" } `
                 -UseBasicParsing `
             | ConvertFrom-Json
-        } while ($null -eq $pullRequestData -and $retryCount -lt 3)
+        } while ($null -eq $pullRequest -and $retryCount -lt 3)
 
-        if ($null -eq $pullRequestData)
+        if ($null -eq $pullRequest)
         {
-            throw "Could not fetch the pull request with ID `"$pullRequestId`" from the `"$repositoryPath`" repository!"
+            throw "Could not fetch the `"https://github.com/$repositoryPath/pull/$pullRequestId`" pull request!"
         }
 
-        return $pullRequestData
+        # Control flow is constructed this way for better readability.
+        if ($ThrowIfNotMergeable.IsPresent -and -not $pullRequest.merged -and -not $pullRequest.mergeable)
+        {
+            $successful = $false
+
+            if ($IgnoreClosed.IsPresent)
+            {
+                if ($null -eq $pullRequest.state)
+                {
+                    Write-Warning "Could not determine pull request status!"
+                }
+
+                if ($null -eq $pullRequest.state -or $pullRequest.state -eq "closed")
+                {
+                    $successful = $true
+                }
+            }
+            
+            if ($IgnoreDraft.IsPresent)
+            {
+                if ($null -eq $pullRequest.draft)
+                {
+                    Write-Warning "Could not determine if the pull request is draft or not!"
+                }
+
+                if ($null -eq $pullRequest.draft -or $pullRequest.draft)
+                {
+                    $successful = $true
+                }
+            }
+
+            if (-not $successful)
+            {
+                throw "The pull request `"$($pullRequest.html_url)`" is not mergeable!"
+            }
+        }
+        
+        return $pullRequest
     }
 }
