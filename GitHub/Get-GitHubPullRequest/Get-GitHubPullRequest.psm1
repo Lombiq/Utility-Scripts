@@ -37,15 +37,34 @@ function Get-GitHubPullRequest
     
     process
     {
-        $repositoryUri = [System.Uri]$RepositoryUrl
-        if ($repositoryUri.Host -ne "github.com")
+        $repositoryPath = ""
+        
+        if ($RepositoryUrl -like "git@github.com:*")
         {
-            throw "`"$RepositoryUrl`" must be a valid GitHub URL!"
-        }
+            $repositoryPathSegments = $RepositoryUrl.TrimStart("git@github.com:").TrimEnd(".git").Split('/', [System.StringSplitOptions]::RemoveEmptyEntries)
 
-        if ($repositoryUri.Segments.Count -lt 3)
+            if ($repositoryPathSegments.Count -ne 2)
+            {
+                throw "`"$RepositoryUrl`" must be a valid SSH URL of a GitHub repository!"
+            }
+
+            $repositoryPath = [string]::Join('/', $repositoryPathSegments[0..1])
+        }
+        else
         {
-            throw "`"$RepositoryUrl`" must be a valid GitHub repository URL!"
+            $repositoryUri = [System.Uri]$RepositoryUrl
+    
+            if ($repositoryUri.Host -ne "github.com")
+            {
+                throw "`"$RepositoryUrl`" must be a valid HTTPS URL of a GitHub repository!"
+            }
+    
+            if ($repositoryUri.Segments.Count -lt 3)
+            {
+                throw "`"$RepositoryUrl`" must be a valid URL of a repository!"
+            }
+
+            $repositoryPath = [string]::Join([string]::Empty, $repositoryUri.Segments[1..2])
         }
 
         $pullRequestId = 0
@@ -56,7 +75,6 @@ function Get-GitHubPullRequest
         }
 
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        $repositoryPath = [string]::Join([string]::Empty, $repositoryUri.Segments[1..2])
         $networkCredentials = New-Object System.Net.NetworkCredential($ApiUserName, $ApiPassword)
         $apiCredentials = "$($networkCredentials.UserName):$($networkCredentials.Password)"
         $pullRequest = $null
