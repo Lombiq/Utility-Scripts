@@ -82,22 +82,20 @@ function Reset-OrchardCoreApp
         
         
         # Trying to find IIS Express and .NET host processes that run a Web Project with a matching name and terminate them.
-        $siteHostProcessFilter = "(Name = 'iisexpress.exe' or Name = 'dotnet.exe') and CommandLine like '%$siteName%'"
-        $siteHostProcesses = Get-WmiObject Win32_Process -Filter $siteHostProcessFilter
+        Import-Module "$env:LOMBIQ_UTILITY_SCRIPTS_PATH\src\Lombiq.UtilityScripts.Utilities\bin\Debug\netstandard2.0\Lombiq.UtilityScripts.Utilities.dll"
+        $siteHostProcesses = Get-ProcessByArgument $siteName
 
-        if ($siteHostProcesses -ne $null -or $siteHostProcesses.Count -gt 0)
+        if ($siteHostProcesses.Count -gt 0)
         {
             foreach ($siteHostProcess in $siteHostProcesses)
             {
                 "Terminating application host process running `"$($siteHostProcess.CommandLine)`"!`n"
 
-                $siteHostProcess.Terminate() | Out-Null
+                $siteHostProcess.Process | Stop-Process
             }
 
             Start-Sleep 1
         }
-
-
 
         # Delete App_Data if exists.
 

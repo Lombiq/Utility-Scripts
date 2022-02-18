@@ -22,6 +22,7 @@ $paths = [Environment]::GetEnvironmentVariable("PSModulePath", "Machine").Split(
 if(!$paths.Contains($Path))
 {
     [System.Environment]::SetEnvironmentVariable("PSModulePath", [string]::Join(";", $paths + $Path), "Machine")
+    [System.Environment]::SetEnvironmentVariable("LOMBIQ_UTILITY_SCRIPTS_PATH", $pwd.Path, "Machine")
     Write-Information "The path `"$Path`" was successfully added to the PSModulePath environment variable."
 }
 else
