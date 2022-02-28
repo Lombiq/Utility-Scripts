@@ -5,7 +5,8 @@ function Update-DotNetDevelopmentCertificateHttps
     
     process
     {
-        # Purge current certificates.
+        # Purge current certificates. Note that deleting certificates that were trusted through the "dotnet dev-certs
+        # https --trust" command still require a confirmation.
         dotnet dev-certs https --clean
 
         # Generate new certificate.
@@ -15,7 +16,8 @@ function Update-DotNetDevelopmentCertificateHttps
         $pfxPath = "$(Get-Location)\dotnet-dev-cert-https.pfx"
         dotnet dev-certs https --export-path $pfxPath
         
-        # Import the certificate into the user's trusted certificate store.
+        # Import the certificate into the user's trusted certificate store. Not using "dotnet dev-certs https --trust"
+        # here so that there's no confirmation popup, allowing to process to run in non-interactive mode.
         Add-Type -AssemblyName System.Security
         $certificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
         $certificate.Import($pfxPath)
@@ -27,7 +29,8 @@ function Update-DotNetDevelopmentCertificateHttps
         # Clean up.
         Remove-Item $pfxPath -Force
         
-        # Validate new certificate.
+        # Validate new certificate. Unfortunately, "dotnet dev-certs https --check --trust" still reports the
+        # certificate as not trusted.
         dotnet dev-certs https --check --verbose
     }
 }
