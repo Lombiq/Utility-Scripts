@@ -101,6 +101,8 @@ function Get-GitHubPullRequest
             throw "Could not fetch the `"https://github.com/$repositoryPath/pull/$pullRequestId`" pull request!"
         }
 
+        $successful = $true
+
         # Control flow is constructed this way for better readability.
         if ($ThrowIfNotMergeable.IsPresent -and -not $pullRequest.merged -and -not $pullRequest.mergeable)
         {
@@ -131,13 +133,13 @@ function Get-GitHubPullRequest
                     $successful = $true
                 }
             }
-
-            if (-not $successful)
-            {
-                throw "The pull request `"$($pullRequest.html_url)`" is not mergeable!"
-            }
         }
         
-        return $pullRequest
+        Write-Output $pullRequest
+
+        if (-not $successful)
+        {
+            throw "The pull request `"$($pullRequest.html_url)`" is not mergeable!"
+        }
     }
 }
