@@ -27,13 +27,64 @@ function Stop-Processes
 
         [string] $Path,
 
-        [string] $CommandLine
+        [string] $CommandLine,
+
+        [Parameter(HelpMessage = "The number of seconds to wait between the attepmts to shut down the matching processes. Default value is 5.")]
+        [int] $RetryInterval = 5,
+
+        [Parameter(HelpMessage = "The number of attempts to shut down the matching processes. The default value is 3.")]
+        [int] $RetryCount = 3
     )
     
     process
     {
         $ProcessNames = $ProcessNames | ForEach-Object { "$($_).exe" }
 
+        if ($ProcessNames -contains "dotnet")
+        {
+            dotnet build-server shutdown
+        }
+
+        $finished = $false
+        $retryCounter = 0
+
+        do
+        {
+            if ($retryCounter -gt 0)
+            {
+                Start-Sleep -Seconds $RetryInterval
+            }
+
+            Get-Processes -ProcessNames $ProcessNames -Path $Path -CommandLine $CommandLine | Select-Object { $_.Terminate() } | Out-Null
+
+            if ($null -eq (Get-Processes -ProcessNames $ProcessNames -Path $Path -CommandLine $CommandLine))
+            {
+                $finished = $true
+            }
+            else
+            {
+                $retryCounter++
+
+                $finished = $retryCounter -gt $RetryCount
+            }
+        } until ($finished)
+    }
+}
+
+function Get-Processes
+{
+    [CmdletBinding()]
+    param
+    (
+        [string[]] $ProcessNames,
+
+        [string] $Path,
+
+        [string] $CommandLine
+    )
+
+    Process
+    {
         $processes = Get-WmiObject Win32_Process | Where-Object { $ProcessNames -contains $_.Name }
 
         if (-not [string]::IsNullOrEmpty($Path))
@@ -46,6 +97,6 @@ function Stop-Processes
             $processes = $processes | Where-Object { $_.CommandLine.Contains($CommandLine) }
         }
 
-        $processes | Select-Object { $_.Terminate() } | Out-Null
+        return $processes
     }
 }
