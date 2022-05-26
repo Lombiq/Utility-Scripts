@@ -43,7 +43,7 @@ function Test-Url
         {
             try
             {
-                Invoke-WebRequest -Uri $Url -TimeoutSec $Timeout
+                Invoke-WebRequest -UseBasicParsing -Uri $Url -TimeoutSec $Timeout
 
                 $success = $true
             }
