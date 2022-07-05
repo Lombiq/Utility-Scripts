@@ -17,12 +17,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
     
     - name: PowerShell 7+ Static Code Analysis
       shell: pwsh
-      run: pwsh .\Analyzers\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
+      run: .\Analyzers\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
     
     - name: Windows PowerShell Static Code Analysis
       shell: powershell
       if: ${{ matrix.machine-type }} == 'windows-latest'
-      run: powershell .\Analyzers\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
+      run: .\Analyzers\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
