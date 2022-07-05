@@ -1,0 +1,4 @@
+[submodule "Analyzers"]
+	path = Analyzers
+	url = https://github.com/Lombiq/PowerShell-Analyzers.git
+	branch = issue/OSOE-150
