@@ -12,7 +12,7 @@ jobs:
     name: PowerShell Static Code Analysis
     strategy:
       matrix:
-        machine-type: [ubuntu-latest, windows-latest]
+        machine-type: [windows-latest]
     runs-on: ${{ matrix.machine-type }}
 
     steps:
@@ -20,11 +20,11 @@ jobs:
       with:
         submodules: 'recursive'
     
-    - name: PowerShell 7+ Static Code Analysis
-      shell: pwsh
-      run: .\Analyzers\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
-    
     - name: Windows PowerShell Static Code Analysis
       shell: powershell
       if: ${{ matrix.machine-type }} == 'windows-latest'
+      run: .\Analyzers\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
+    
+    - name: PowerShell 7+ Static Code Analysis
+      shell: pwsh
       run: .\Analyzers\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
