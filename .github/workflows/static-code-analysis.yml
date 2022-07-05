@@ -1,0 +1,28 @@
+name: Static Code Analysis
+
+# Runs for PRs opened for any branch, and pushes to the dev branch.
+on:
+  pull_request:
+  push:
+    branches:
+      - dev
+
+jobs:
+  powershell-static-code-analysis:
+    name: PowerShell Static Code Analysis
+    strategy:
+      matrix:
+        machine-type: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.machine-type }}
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: PowerShell 7+ Static Code Analysis
+      shell: pwsh
+      run: .\Analyzers\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1
+    
+    - name: Windows PowerShell Static Code Analysis
+      shell: powershell
+      if: ${{ matrix.machine-type }} == 'windows-latest'
+      run: .\Analyzers\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1
