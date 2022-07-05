@@ -12,7 +12,7 @@ jobs:
     name: PowerShell Static Code Analysis
     strategy:
       matrix:
-        machine-type: [windows-latest]
+        machine-type: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.machine-type }}
 
     steps:
