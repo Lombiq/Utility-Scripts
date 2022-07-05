@@ -7,6 +7,10 @@ on:
     branches:
       - dev
 
+defaults:
+  run:
+    shell: pwsh
+
 jobs:
   powershell-static-code-analysis:
     name: PowerShell Static Code Analysis
@@ -21,10 +25,8 @@ jobs:
         submodules: 'recursive'
     
     - name: Windows PowerShell Static Code Analysis
-      shell: powershell
       if: ${{ matrix.machine-type }} == 'windows-latest'
-      run: .\Analyzers\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
+      run: powershell .\Analyzers\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
     
     - name: PowerShell 7+ Static Code Analysis
-      shell: pwsh
       run: .\Analyzers\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
