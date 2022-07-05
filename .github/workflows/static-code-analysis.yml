@@ -25,8 +25,10 @@ jobs:
         submodules: 'recursive'
     
     - name: Windows PowerShell Static Code Analysis
-      if: ${{ matrix.machine-type }} == 'windows-latest'
-      run: powershell .\Analyzers\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
+      run: |
+        if ($Env:RUNNER_OS -ne 'Windows') { exit 0 }
+        powershell .\Analyzers\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
     
     - name: PowerShell 7+ Static Code Analysis
+      if: always() # Even if the above fails, let's check both.
       run: .\Analyzers\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
