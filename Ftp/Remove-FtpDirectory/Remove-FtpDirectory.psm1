@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
    Removes FTP folder.
 .DESCRIPTION
@@ -27,24 +27,24 @@ function Remove-FtpDirectory
                    HelpMessage = "Provide password in SecureString format.")]
         [securestring] $Password
     )
-    
+
     Process
     {
         try
         {
             $credentials = New-Object System.Net.NetworkCredential($User, $Password)
-            
+
             $listRequest = [Net.WebRequest]::Create($Url)
             $listRequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectoryDetails
             $listRequest.EnableSsl = $true
             $listRequest.Credentials = $credentials
-            
+
             $lines = New-Object System.Collections.ArrayList
-            
+
             $listResponse = $listRequest.GetResponse()
             $listStream = $listResponse.GetResponseStream()
             $listReader = New-Object System.IO.StreamReader($listStream)
-            
+
             while (!$listReader.EndOfStream)
             {
                 $line = $listReader.ReadLine()
@@ -57,15 +57,15 @@ function Remove-FtpDirectory
             $listStream.Dispose()
             $listResponse.Dispose()
         }
-    
+
         foreach ($line in $lines)
         {
             $tokens = $line.Split(" ", 9, [StringSplitOptions]::RemoveEmptyEntries)
             $name = $tokens[3]
             $isDirectory = $tokens[2] -eq "<DIR>"
-    
+
             $fileUrl = ($Url + "/" + $name)
-    
+
             if ($isDirectory)
             {
                 Remove-FtpDirectory ($fileUrl + "/") $User $Password
@@ -91,11 +91,11 @@ function Remove-FtpDirectory
                 }
             }
         }
-    
+
         try
         {
             Write-Host "Deleting folder."
-            
+
             $deleteRequest = [Net.WebRequest]::Create($Url)
             $deleteRequest.Credentials = $credentials
             $deleteRequest.Method = [System.Net.WebRequestMethods+Ftp]::RemoveDirectory

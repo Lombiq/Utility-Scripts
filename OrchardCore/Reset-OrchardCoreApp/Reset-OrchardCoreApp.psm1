@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
    Resets and sets up an Orchard Core application.
 
@@ -16,44 +16,44 @@ function Reset-OrchardCoreApp
     Param
     (
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)]
-        [string] $WebProjectPath,        
-        
+        [string] $WebProjectPath,
+
         [string] $SetupSiteName = "Orchard Core",
         [string] $SetupTenantName = "Default",
         [string] $SetupRecipeName = "Blog",
         [string] $SetupUserName = "admin",
-        [string] $SetupPassword = "Password1!",
+        [SecureString] $SetupPassword = "Password1!",
         [string] $SetupEmail = "admin@localhost",
 
 
         [int] $Port = 5000,
 
-        
+
         [Parameter(ParameterSetName = "ServerDB", Mandatory)]
         [string] [ValidateSet("SqlConnection")] $SetupDatabaseProvider = "Sqlite",
 
         [Parameter(ParameterSetName = "ServerDB")]
         [string] $SetupDatabaseTablePrefix = "",
-        
+
         [Parameter(ParameterSetName = "ServerDB")]
         [string] $SetupDatabaseServerName = ".",
-        
+
         [Parameter(ParameterSetName = "ServerDB")]
         [string] $SetupDatabaseName = "OrchardCore",
-        
+
         [Parameter(ParameterSetName = "ServerDB")]
         [string] $SetupDatabaseSqlUser = "sa",
-        
+
         [Parameter(ParameterSetName = "ServerDB")]
-        [string] $SetupDatabaseSqlPassword = $null,
+        [SecureString] $SetupDatabaseSqlPassword = $null,
 
         [Parameter(ParameterSetName = "ServerDB")]
         [switch] $Force,
-        
+
         [Parameter(ParameterSetName = "ServerDB")]
         [switch] $SuffixDatabaseNameWithFolderName,
 
-        
+
         [switch] $Rebuild,
         [switch] $KeepAlive,
         [switch] $Pause
@@ -79,13 +79,13 @@ function Reset-OrchardCoreApp
             $siteName = Split-Path $WebProjectPath -Leaf
         }
 
-        
-        
+
+
         # Trying to find IIS Express and .NET host processes that run a Web Project with a matching name and terminate them.
         $siteHostProcessFilter = "(Name = 'iisexpress.exe' or Name = 'dotnet.exe') and CommandLine like '%$siteName%'"
         $siteHostProcesses = Get-WmiObject Win32_Process -Filter $siteHostProcessFilter
 
-        if ($siteHostProcesses -ne $null -or $siteHostProcesses.Count -gt 0)
+        if ($null -ne $siteHostProcesses -or $siteHostProcesses.Count -gt 0)
         {
             foreach ($siteHostProcess in $siteHostProcesses)
             {
@@ -108,8 +108,8 @@ function Reset-OrchardCoreApp
             "Deleting App_Data folder found in `"$WebProjectPath`"!`n"
 
             Remove-Item $appDataPath -Force -Recurse
-        }        
-        
+        }
+
 
 
         # Rebuilding the application if the "Rebuild" switch is present or the Web Project DLL is not found.
@@ -173,12 +173,12 @@ function Reset-OrchardCoreApp
                 }
 
                 $solutionFolder = Split-Path $solutionPath -Leaf
-                
+
                 $SetupDatabaseName = $SetupDatabaseName + "_" + $solutionFolder
             }
 
             "Using the following database name: `"$SetupDatabaseName`"."
-            
+
             if (New-SqlServerDatabase -SqlServerName $SetupDatabaseServerName -DatabaseName $SetupDatabaseName -Force:$Force.IsPresent -ErrorAction Stop -UserName $SetupDatabaseSqlUser -Password $SetupDatabaseSqlPassword)
             {
                 "Database `"$SetupDatabaseServerName\$SetupDatabaseName`" created!"
@@ -195,25 +195,25 @@ function Reset-OrchardCoreApp
                 }
             }
 
-            $Security = if (-not $SetupDatabaseSqlPassword) 
-            { 
+            $Security = if (-not $SetupDatabaseSqlPassword)
+            {
                 "Integrated Security=True"
             }
-            else 
+            else
             {
-                "User Id=$SetupDatabaseSqlUser;Password=$SetupDatabaseSqlPassword"    
+                "User Id=$SetupDatabaseSqlUser;Password=$SetupDatabaseSqlPassword"
             }
 
             # MARS is necessary for Orchard.
             $SetupDatabaseConnectionString = "Server=$SetupDatabaseServerName;Database=$SetupDatabaseName;$Security;MultipleActiveResultSets=True;"
         }
 
-        
+
 
         # Try to find the Launch Settings file to get the launch URL of the application.
         # If not found (or the URL is not found in the settings), and the $Port parameter is set to <=0 then using a random one on localhost instead.
 
-        $launchSettingsFilePath = $("$WebProjectPath\Properties\launchSettings.json")       
+        $launchSettingsFilePath = $("$WebProjectPath\Properties\launchSettings.json")
         $environmentSetting = "Development"
 
         if ($Port -le 0)
@@ -228,11 +228,11 @@ function Reset-OrchardCoreApp
             $launchSettings = Get-Content $launchSettingsFilePath | ConvertFrom-Json
 
             $applicationUrlSetting = $launchSettings.profiles."$SiteName".applicationUrl
-            
+
             if (-not [string]::IsNullOrEmpty($applicationUrlSetting))
             {
                 $applicationUrlsFromSetting = $applicationUrlSetting -split ";"
-                
+
                 $applicationUrlFromSetting = $applicationUrlsFromSetting | Where-Object { $_.StartsWith("http://") }
 
                 if (-not [string]::IsNullOrEmpty($applicationUrlFromSetting))
@@ -249,14 +249,14 @@ function Reset-OrchardCoreApp
             }
         }
 
-        
-        
+
+
         # Launching the .NET application host process.
 
         $webProjectDllFile = Get-Item -Path $webProjectDllPath
-        
+
         "Starting .NET application host at `"$applicationUrl`"!`n"
-                
+
         $applicationProcess = Start-Process `
             -WorkingDirectory $WebProjectPath `
             dotnet `
@@ -289,9 +289,9 @@ function Reset-OrchardCoreApp
             $applicationRunning = $true
         }
         until ($applicationRunning)
-        
-        
-        
+
+
+
         # Running setup.
 
         "Application started, attempting to run setup!`n"
@@ -319,8 +319,8 @@ function Reset-OrchardCoreApp
 
         "Setup successful!`n"
 
-        
-        
+
+
         # Terminating the .NET application host process if Keep Alive is not requested.
 
         if (-not $KeepAlive.IsPresent)
@@ -331,7 +331,7 @@ function Reset-OrchardCoreApp
         }
 
 
-        
+
         if ($Pause.IsPresent)
         {
             pause

@@ -35,7 +35,7 @@ function Init-OrchardCoreSolution
         {
             dotnet new -i OrchardCore.ProjectTemplates::1.4.0 --nuget-source $NuGetSource
         }
-        
+
         dotnet new occms -o "$Path/src/$Name.Web"
 
         dotnet new sln -o "$Path" -n "$Name"

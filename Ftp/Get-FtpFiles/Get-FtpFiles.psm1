@@ -25,15 +25,15 @@ function FileTransferProgress
     {
         # Print transfer progress.
         Write-Host ("$($transferEvent.FileName): $($transferEvent.FileProgress * 100)%, Overall: $($transferEvent.OverallProgress * 100)%")
- 
+
         # Remember the name of the last file reported.
         $script:lastFileName = $transferEvent.FileName
-        $script:lastFileProgress = $transferEvent.FileProgress        
+        $script:lastFileProgress = $transferEvent.FileProgress
     }
 }
 
 
-function Get-FtpFiles
+function Get-FtpFile
 {
     [CmdletBinding()]
     [Alias("gff")]
@@ -85,7 +85,7 @@ function Get-FtpFiles
             $session.add_FileTransferProgress({ FileTransferProgress($_) })
 
             $session.Open($sessionOptions)
-         
+
             if ($session.FileExists($DownloadSourcePath))
             {
                 $session.GetFiles("$DownloadSourcePath/*", "$DownloadDestinationPath\*").Check()

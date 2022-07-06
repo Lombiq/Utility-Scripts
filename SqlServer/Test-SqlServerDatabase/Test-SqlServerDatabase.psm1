@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
    Checks whether the given database exists in a local SQL Server instance.
 #>
@@ -21,7 +21,7 @@ function Test-SqlServerDatabase
 
         [string] $UserName = $null,
 
-        [string] $Password = $null
+        [SecureString] $Password = $null
     )
 
     Process
@@ -33,12 +33,12 @@ function Test-SqlServerDatabase
 
         $server = New-SqlServerConnection $SqlServerName $UserName $Password
         $server.Connect()
-        
+
         # This works even for remote servers when $server.Databases returns empty.
         $databases = New-Object "System.Collections.Generic.HashSet[string]"
         $reader = $server.ExecuteReader("SELECT name FROM sys.databases")
         while ($reader.Read()) { $databases.Add($reader.GetString(0).ToUpperInvariant()) | Out-Null }
-        
+
         $reader.Close()
         $server.Disconnect()
 

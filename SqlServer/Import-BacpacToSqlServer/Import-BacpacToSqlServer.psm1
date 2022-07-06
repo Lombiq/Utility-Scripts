@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
    Imports a .bacpac file to a database on a local SQL Server instance.
 
@@ -61,7 +61,7 @@ function Import-BacpacToSqlServer
         {
             if (![string]::IsNullOrEmpty($SqlPackageExecutablePath))
             {
-                Write-Warning ("SQL Package executable for importing the database is not found at `"$path`"! Trying to locate default SQL Package executables...")    
+                Write-Warning ("SQL Package executable for importing the database is not found at `"$path`"! Trying to locate default SQL Package executables...")
             }
 
             $defaultSqlPackageExecutablePath = ""
@@ -94,7 +94,7 @@ function Import-BacpacToSqlServer
 
         # Checking the validity of the bacpac file.
         $bacpacFile = Get-Item $BacpacPath
-        if ($bacpacFile -eq $null -or !($bacpacFile -is [System.IO.FileInfo]) -or !($bacpacFile.Extension -eq ".bacpac"))
+        if ($null -eq $bacpacFile -or !($bacpacFile -is [System.IO.FileInfo]) -or !($bacpacFile.Extension -eq ".bacpac"))
         {
             throw ("The .bacpac file is not found at `"$BacpacPath`"!")
         }
@@ -120,7 +120,7 @@ function Import-BacpacToSqlServer
         }
 
 
-        
+
         # Checking the validity of the SqlServerName variable.
         [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
         $DataSource = ""

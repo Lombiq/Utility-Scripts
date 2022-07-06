@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
     Copies all files from the specified folder to Azure Development Storage.
 
@@ -46,7 +46,7 @@ function Copy-ToAzureDevelopmentStorage
             foreach ($subFolder in Get-ChildItem $folder.FullName)
             {
                 Get-AzStorageContainer -Context $storageContext -Name $folder.Name | Get-AzStorageBlob | Where-Object { $PSItem.Name.StartsWith($folder.Name + "\") } | Remove-AzStorageBlob
-            }            
+            }
 
             foreach ($file in Get-ChildItem $folder.FullName -Recurse -File)
             {

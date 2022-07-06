@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
    Gets the name of the default local SQL Server instance.
 #>
@@ -19,17 +19,17 @@ function Get-DefaultSqlServerName
         $servicePath = ""
 
         # No SQL Servers installed.
-        if ($serverServices -eq $null)
+        if ($null -eq $serverServices)
         {
             throw ("Could not find any SQL Server services!")
         }
         # Only one SQL Server installed.
-        elseif ($serverServices.Count -eq $null)
+        elseif ($null -eq $serverServices.Count)
         {
             $servicePath = $serverServices.PathName
         }
         # More than one SQL Servers installed and one of them is named "MSSQLSERVER" (default name), so let's choose that.
-        elseif (($serverServices | Where-Object { $PSItem.Name -eq "MSSQLSERVER" }) -ne $null)
+        elseif ($null -ne ($serverServices | Where-Object { $PSItem.Name -eq "MSSQLSERVER" }))
         {
             $servicePath = ($serverServices | Where-Object { $PSItem.Name -eq "MSSQLSERVER" }).PathName
         }

@@ -8,29 +8,29 @@
   You can use the script without defining a path, it will use the current folder by default.
 
 .EXAMPLE
-   PS C:\Windows\system32>  Find-CsprojInConsistency -Path C:\repos\musqle\src\Orchard.Web\Modules\Softival.Musqle.Journal   
+   PS C:\Windows\system32>  Find-CsprojInConsistency -Path C:\repos\musqle\src\Orchard.Web\Modules\Softival.Musqle.Journal
 
     *****
     THE FOLLOWING FILES ARE NOT ADDED TO Softival.Musqle.Journal.csproj!
-    
+
     Views\Parts\DietJournalDay.cshtml
-    
+
     *****
-    
-    
+
+
     *****
     THE FOLLOWING FILES ARE NOT PRESENT IN C:\repos\musqle\src\Orchard.Web\Modules\Softival.Musqle.Journal\!
-    
+
     Views\JournalItemShapesTest.cshtml
-    
+
     *****
-    
-    
+
+
     *****
     THE FOLLOWING FILES ARE DUPLICATED IN Softival.Musqle.Journal.csproj!
-    
+
     Views\JournalItemShapes.cshtml
-    
+
     *****
 .EXAMPLE
 	PS C:\repos\musqle\src\Orchard.Web\Modules\Softival.Musqle.Journal> Find-CsprojInConsistency
@@ -65,7 +65,7 @@ function Test-VSProjectConsistency
     Param
     (
         # The path to a folder or a Visual Studio project file to check. The default path is the current execution path.
-        [string] 
+        [string]
         $Path = (Get-Item -Path ".\").FullName,
 
         # A list of file extensions to also check for in project files. The default file extensions are: ".cs", ".cshtml", ".info", ".config", ".less", ".png", ".jpg", ".jpeg", ".gif", ".ico", ".ts", ".css", ".min.css", ".css.map", ".js", ".min.js", ".js.map".
@@ -126,7 +126,7 @@ function Test-VSProjectConsistency
 
             $fileExtensions += $extension.ToLowerInvariant()
         }
-		
+
 		# Skip these directories during the collection of files, both from the csproj and the file system.
 		$directoriesToSkip = @("bin", "obj", "tests", "node_modules", "lib")
 		# ORCHARD-SPECIFIC DIRECTORIES
@@ -192,7 +192,7 @@ function Test-VSProjectConsistency
             {
 				$projectFoldersInTheProjectFolder += $file
             }
-			            
+
             foreach ($file in Get-ChildItem -Path $projectFolder -Recurse -File | Where-Object {!(FolderPathContainsAnyFolder $PSItem.FullName $directoriesToSkip $projectFolder) -and !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") })
             {
 				if ($file.FullName.ToLowerInvariant() -match "($fileExtensionsForRegex)$")
@@ -243,7 +243,7 @@ function Test-VSProjectConsistency
                 }
                 Write-Output ("`n*****`n")
             }
-			
+
             # Getting the files missing from the file system (folder) and the files that are duplicated in the project file.
             $missingFilesFromFolder = @()
             # The list of duplicated files in the project file.
@@ -255,9 +255,9 @@ function Test-VSProjectConsistency
                 {
                     $missingFilesFromFolder += $file
                 }
-                
+
                 # Checking the duplicates. The first condition is needed because ToLower() throws error if the list is empty.
-                if($helperListForDuplicatadFiles -and $helperListForDuplicatadFiles.ToLower().Contains($file.ToLower())) # This means that we have iterated through this file once before. 
+                if($helperListForDuplicatadFiles -and $helperListForDuplicatadFiles.ToLower().Contains($file.ToLower())) # This means that we have iterated through this file once before.
                 {
                     $duplicatesInProjectFile += $file
                 }
@@ -296,7 +296,7 @@ function Test-VSProjectConsistency
 				{
 					$emptyFoldersInFileSystem += $file.FullName.Substring($projectFolder.Length)
 				}
-               
+
             }
 			if ($emptyFoldersInFileSystem)
             {
@@ -358,7 +358,7 @@ function FolderContainsCsproj
 	{
 		return $false
 	}
-	
+
 	foreach($file in Get-ChildItem $path)
 	{
 		if($file.Extension -eq ".csproj")
@@ -366,14 +366,14 @@ function FolderContainsCsproj
 			return $true
 		}
 	}
-	
+
 	return $false
 }
 
 function FileIsInsideAnyOfTheFolders
 {
 	Param($fileFullPath, $folders)
-	
+
 	foreach ($folder in $folders)
 	{
 		if($fileFullPath.Contains($folder.FullName))
@@ -381,7 +381,7 @@ function FileIsInsideAnyOfTheFolders
 			return $true
 		}
 	}
-	
+
 	return $false
 }
 
@@ -397,6 +397,6 @@ function FolderPathContainsAnyFolder
 			return $true
 		}
 	}
-	
+
 	return $false
 }

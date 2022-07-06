@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
    Renames FTP folder.
 .DESCRIPTION
@@ -36,7 +36,7 @@ function Rename-FtpDirectory
                    HelpMessage = "Specify new folder name.")]
         [string] $DestinationFolder
     )
-    
+
     Process
     {
         $folderToRenamePath = $Url + "/" + $SourceFolder
@@ -70,24 +70,24 @@ function Rename-FtpDirectory
             catch [Net.WebException]
             {
                 throw "Other error encountered during new folder creation."
-            }    
+            }
         }
 
         try
         {
             Write-Host "Listing files..."
-            
+
             $listRequest = [System.Net.FtpWebRequest]::Create($folderToRenamePath)
             $listRequest.Credentials = $credentials
             $listRequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectory
             $listRequest.EnableSsl = $true
-            
+
             $files = New-Object System.Collections.ArrayList
-            
+
             $listResponse = $listRequest.GetResponse()
             $listStream = $listResponse.GetResponseStream()
             $listReader = New-Object System.IO.StreamReader($listStream)
-            
+
             while (!$listReader.EndOfStream)
             {
                 $file = $listReader.ReadLine()
@@ -107,7 +107,7 @@ function Rename-FtpDirectory
             {
                 Write-Host "Renaming $file..."
                 Write-Host "Destination:" ($destinationFolderRelPath + "/" + $file)
-                
+
                 $renameRequest = [System.Net.FtpWebRequest]::Create($folderToRenamePath + "/" + $file)
                 $renameRequest.Credentials = $credentials
                 $renameRequest.Method = [System.Net.WebRequestMethods+Ftp]::Rename

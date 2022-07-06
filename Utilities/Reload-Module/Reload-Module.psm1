@@ -44,7 +44,7 @@ function Reload-Module
         }
         else
         {
-            Write-Error("$Path is not available!")   
+            Write-Error("$Path is not available!")
         }
     }
 }

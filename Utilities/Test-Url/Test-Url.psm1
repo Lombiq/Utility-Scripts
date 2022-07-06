@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
    Pings a specified URL.
 .DESCRIPTION
@@ -52,7 +52,7 @@ function Test-Url
                 $retryCounter++
 
                 Write-Host ("Attempt #$retryCounter to ping the URL `"$Url`" failed with the following error:`n$($_.Exception)`n")
-                
+
                 if ($retryCounter -gt $RetryCount)
                 {
                     throw ("Failed to reach the URL `"$Url`"!")

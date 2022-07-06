@@ -1,4 +1,4 @@
-<#
+﻿<#
 .DESCRIPTION
     Stops processes defined by the executable file name (without extension), optionally filtered by the path of the
     executable or a string found in their command line arguments.
@@ -16,7 +16,7 @@
     Stop-Processes -ProcessNames YouHadOneJob, CloseMe -Path "C:\temp" -CommandLine "weirdparameter"
 #>
 
-function Stop-Processes
+function Stop-Process
 {
     [CmdletBinding()]
     [Alias("sps")]
@@ -35,7 +35,7 @@ function Stop-Processes
         [Parameter(HelpMessage = "The number of attempts to shut down the matching processes. The default value is 3.")]
         [int] $RetryCount = 3
     )
-    
+
     process
     {
         $ProcessNames = $ProcessNames | ForEach-Object { "$($_).exe" }
@@ -71,7 +71,7 @@ function Stop-Processes
     }
 }
 
-function Get-Processes
+function Get-Process
 {
     [CmdletBinding()]
     param

@@ -1,4 +1,4 @@
-function Get-VisualStudioSolutionProjectPaths
+﻿function Get-VisualStudioSolutionProjectPath
 {
     [CmdletBinding()]
     param
@@ -16,7 +16,7 @@ function Get-VisualStudioSolutionProjectPaths
         [Switch]
         $RelativePaths
     )
-    
+
     process
     {
         $pathItem = Get-Item -Path $Path
@@ -57,7 +57,7 @@ function Get-VisualStudioSolutionProjectPaths
 
         $projectPaths = dotnet sln "$($solution.FullName)" list | Where-Object { $_ -like "*.csproj" }
         $projects = $projectPaths | ForEach-Object { Get-Item "$($solution.DirectoryName)\$_" }
-        
+
         if (-not [string]::IsNullOrEmpty($ProjectNameFilter))
         {
             $projects = $projects | Where-Object { $_.BaseName -like "$ProjectNameFilter" }

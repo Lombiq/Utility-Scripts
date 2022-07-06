@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
    Tests the connection to a local SQL Server instance.
 #>
@@ -18,13 +18,13 @@ function Test-SqlServer
 
         [string] $UserName = $null,
 
-        [string] $Password = $null
+        [SecureString] $Password = $null
     )
 
     Process
     {
         $Connection = New-SqlServerConnection $ServerName $UserName $Password
 
-        return (New-Object ("Microsoft.SqlServer.Management.Smo.Server") $Connection).InstanceName -ne $null
+        return $null -ne (New-Object ("Microsoft.SqlServer.Management.Smo.Server") $Connection).InstanceName
     }
 }

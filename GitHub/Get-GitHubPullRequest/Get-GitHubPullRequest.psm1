@@ -1,4 +1,4 @@
-function Get-GitHubPullRequest
+﻿function Get-GitHubPullRequest
 {
     [CmdletBinding()]
     [Alias("gghpr")]
@@ -34,11 +34,11 @@ function Get-GitHubPullRequest
         [Parameter(HelpMessage = "When used together with the ThrowIfNotMergeable switch, draft pull requests will not cause an exception.")]
         [Switch] $IgnoreDraft
     )
-    
+
     process
     {
         $repositoryPath = ""
-        
+
         if ($RepositoryUrl -like "git@github.com:*")
         {
             $repositoryPathSegments = $RepositoryUrl.TrimStart("git@github.com:").TrimEnd(".git").Split('/', [System.StringSplitOptions]::RemoveEmptyEntries)
@@ -53,12 +53,12 @@ function Get-GitHubPullRequest
         else
         {
             $repositoryUri = [System.Uri]$RepositoryUrl
-    
+
             if ($repositoryUri.Host -ne "github.com")
             {
                 throw "`"$RepositoryUrl`" must be a valid HTTPS URL of a GitHub repository!"
             }
-    
+
             if ($repositoryUri.Segments.Count -lt 3)
             {
                 throw "`"$RepositoryUrl`" must be a valid URL of a repository!"
@@ -120,7 +120,7 @@ function Get-GitHubPullRequest
                     $successful = $true
                 }
             }
-            
+
             if ($IgnoreDraft.IsPresent)
             {
                 if ($null -eq $pullRequest.draft)
@@ -134,7 +134,7 @@ function Get-GitHubPullRequest
                 }
             }
         }
-        
+
         Write-Output $pullRequest
 
         if (-not $successful)

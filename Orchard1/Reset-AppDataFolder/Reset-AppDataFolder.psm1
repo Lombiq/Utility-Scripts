@@ -23,7 +23,7 @@ function Reset-AppDataFolder
     )
 
     Process
-    {        
+    {
         if (!(Test-Path $Path))
         {
             throw ("The path `"$Path`" is invalid!")
@@ -50,7 +50,7 @@ function Reset-AppDataFolder
             if (Test-Path("$Path\Logs"))
             {
                 # Removing empty files and files that are not log files in the "Logs" folder.
-                Get-ChildItem -Path "$Path\Logs" | Where-Object { $PSItem.Extension -ne ".log" -or $PSItem.Length -eq 0 } | Remove-Item -Force                
+                Get-ChildItem -Path "$Path\Logs" | Where-Object { $PSItem.Extension -ne ".log" -or $PSItem.Length -eq 0 } | Remove-Item -Force
             }
         }
 

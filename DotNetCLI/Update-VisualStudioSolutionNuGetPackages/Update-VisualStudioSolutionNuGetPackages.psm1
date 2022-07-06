@@ -1,4 +1,4 @@
-function Update-VisualStudioSolutionNuGetPackages
+﻿function Update-VisualStudioSolutionNuGetPackage
 {
     [CmdletBinding()]
     param
@@ -14,9 +14,9 @@ function Update-VisualStudioSolutionNuGetPackages
 
         # Wildcard-enabled expression to filter package names.
         [string]
-        $PackageNameFilter        
+        $PackageNameFilter
     )
-    
+
     process
     {
         foreach ($projectPath in Get-VisualStudioSolutionProjectPaths -Path $Path -ProjectNameFilter $ProjectNameFilter)

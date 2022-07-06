@@ -1,4 +1,4 @@
-function Get-VisualStudioProjectNuGetPackages
+﻿function Get-VisualStudioProjectNuGetPackage
 {
     [CmdletBinding()]
     param
@@ -12,7 +12,7 @@ function Get-VisualStudioProjectNuGetPackages
         [string]
         $PackageNameFilter
     )
-    
+
     process
     {
         $pathItem = Get-Item -Path $Path
@@ -27,7 +27,7 @@ function Get-VisualStudioProjectNuGetPackages
         $packageList = $packageTextList | ForEach-Object { $_.Trim() } | Where-Object { $_.StartsWith(">") } | ForEach-Object `
         {
             $packageTextLineSegments = $_.Trim().TrimStart(">").TrimStart().Split(" ", [System.StringSplitOptions]::RemoveEmptyEntries)
-            
+
             New-Object PSObject -Property `
             @{
                 Name             = $packageTextLineSegments[0]
