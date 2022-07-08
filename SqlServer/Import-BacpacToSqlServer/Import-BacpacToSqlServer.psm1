@@ -61,25 +61,20 @@ function Import-BacpacToSqlServer
         {
             if (![string]::IsNullOrEmpty($SqlPackageExecutablePath))
             {
-                Write-Warning ("SQL Package executable for importing the database is not found at `"$path`"! Trying to locate default SQL Package executables...")
+                Write-Warning ("SQL Package executable for importing the database is not found at `"$path`"! " +
+                    "Trying to locate default SQL Package executables...")
             }
 
-            $defaultSqlPackageExecutablePath = ""
-            for ($i = 20; $i -ge 12; $i--)
+            foreach ($i in 20..12)
             {
-                $defaultSqlPackageExecutablePath = "C:\Program Files\Microsoft SQL Server\$($i)0\DAC\bin\SqlPackage.exe"
-                if (Test-Path $defaultSqlPackageExecutablePath)
-                {
-                    $sqlPackageExecutablePath = $defaultSqlPackageExecutablePath
-                    Write-Host ("`nSQL Package executable for importing the database found at `"$sqlPackageExecutablePath`"!`n")
-                    break
-                }
+                $defaultSqlPackageExecutablePath =
+                    Join-Path $Env:ProgramFiles, ${Env:ProgramFiles(x86)} "Microsoft SQL Server" $i DAC bin SqlPackage.exe |
+                        Where-Object { Test-Path $_ }
 
-                $defaultSqlPackageExecutablePath = "C:\Program Files (x86)\Microsoft SQL Server\$($i)0\DAC\bin\SqlPackage.exe"
-                if (Test-Path $defaultSqlPackageExecutablePath)
+                if ($defaultSqlPackageExecutablePath.Count)
                 {
                     $sqlPackageExecutablePath = $defaultSqlPackageExecutablePath
-                    Write-Host ("`nSQL Package executable for importing the database found at `"$sqlPackageExecutablePath`"!`n")
+                    Write-Verbose "SQL Package executable for importing the database found at `"$sqlPackageExecutablePath`"!"
                     break
                 }
             }
