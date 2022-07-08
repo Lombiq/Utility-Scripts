@@ -75,7 +75,7 @@ function Get-FtpDirectory
             {
                 if (!(Test-Path $localFilePath -PathType container))
                 {
-                    Write-Host "Creating directory $localFilePath"
+                    Write-Verbose "Creating directory $localFilePath"
                     New-Item $localFilePath -Type directory | Out-Null
                 }
 
@@ -85,7 +85,7 @@ function Get-FtpDirectory
             {
                 try
                 {
-                    Write-Host "Downloading $fileUrl to $localFilePath"
+                    Write-Verbose "Downloading $fileUrl to $localFilePath"
 
                     $downloadRequest = [Net.WebRequest]::Create($fileUrl)
                     $downloadRequest.Method = [System.Net.WebRequestMethods+Ftp]::DownloadFile

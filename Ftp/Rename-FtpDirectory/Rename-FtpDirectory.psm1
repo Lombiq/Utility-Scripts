@@ -53,7 +53,7 @@ function Rename-FtpDirectory
             $makeDirectory.EnableSsl = $true
             $makeDirectory.GetResponse()
 
-            Write-Host "New folder created successfully:" $ftpFolderPath
+            Write-Verbose "New folder created successfully: $ftpFolderPath"
         }
         catch [Net.WebException]
         {
@@ -65,7 +65,7 @@ function Rename-FtpDirectory
                 $checkDirectory.EnableSsl = $true
                 $checkDirectory.GetResponse()
 
-                Write-Host "New folder already exists:" $ftpFolderPath
+                Write-Warning "New folder already exists: $ftpFolderPath"
             }
             catch [Net.WebException]
             {
@@ -75,7 +75,7 @@ function Rename-FtpDirectory
 
         try
         {
-            Write-Host "Listing files..."
+            Write-Verbose "Listing files..."
 
             $listRequest = [System.Net.FtpWebRequest]::Create($folderToRenamePath)
             $listRequest.Credentials = $credentials
@@ -105,8 +105,8 @@ function Rename-FtpDirectory
         {
             try
             {
-                Write-Host "Renaming $file..."
-                Write-Host "Destination:" ($destinationFolderRelPath + "/" + $file)
+                Write-Verbose "Renaming $file..."
+                Write-Verbose "Destination: $destinationFolderRelPath/$file"
 
                 $renameRequest = [System.Net.FtpWebRequest]::Create($folderToRenamePath + "/" + $file)
                 $renameRequest.Credentials = $credentials
@@ -122,7 +122,7 @@ function Rename-FtpDirectory
         }
 
         # Remove empty previous folder.
-        Write-Host "Deleting now empty previous folder."
+        Write-Verbose "Deleting now empty previous folder."
 
         try
         {
@@ -136,8 +136,8 @@ function Rename-FtpDirectory
         {
             if ($deleteResponse)
             {
-                Write-Host "Delete response disposed."
                 $deleteResponse.Dispose()
+                Write-Verbose "Delete response disposed."
             }
         }
     }

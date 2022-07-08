@@ -74,7 +74,7 @@ function Remove-FtpDirectory
             {
                 try
                 {
-                    Write-Host "Deleting file $name"
+                    Write-Verbose "Deleting file $name"
                     $deleteRequest = [Net.WebRequest]::Create($fileUrl)
                     $deleteRequest.Credentials = $credentials
                     $deleteRequest.Method = [System.Net.WebRequestMethods+Ftp]::DeleteFile
@@ -85,8 +85,8 @@ function Remove-FtpDirectory
                 {
                     if ($deleteResponse)
                     {
-                        Write-Host "Delete response disposed."
                         $deleteResponse.Dispose()
+                        Write-Verbose "Delete response disposed."
                     }
                 }
             }
@@ -94,7 +94,7 @@ function Remove-FtpDirectory
 
         try
         {
-            Write-Host "Deleting folder."
+            Write-Verbose "Deleting folder."
 
             $deleteRequest = [Net.WebRequest]::Create($Url)
             $deleteRequest.Credentials = $credentials
@@ -106,7 +106,7 @@ function Remove-FtpDirectory
         {
             if ($deleteResponse)
             {
-                Write-Host "Delete response disposed."
+                Write-Verbose "Delete response disposed."
                 $deleteResponse.Dispose()
             }
         }

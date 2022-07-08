@@ -31,20 +31,22 @@ function Reload-Module
 
             if ($modules.Length -gt 0)
             {
-                Write-Host ("`nRELOADING PS MODULES:`n*****")
+                $loadedModules = @()
 
                 foreach ($module in $modules)
                 {
                     Import-Module ([System.IO.Path]::GetDirectoryName($module.FullName)) -Force
-                    Write-Host ("* " + $module.FullName)
+                    $loadedModules += ,"* $($module.FullName)"
                 }
 
-                Write-Host ("*****`n")
+                $header = "Reloading PowerShell modules:";
+                $line = $header -replace '.', '*'
+                Write-Verbose "`n$header`n$line`n$($loadedModules -join "`n")`n$line`n"
             }
         }
         else
         {
-            Write-Error("$Path is not available!")
+            Write-Error "$Path is not available!"
         }
     }
 }

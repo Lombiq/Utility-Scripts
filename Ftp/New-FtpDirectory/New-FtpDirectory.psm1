@@ -49,7 +49,7 @@ function New-FtpDirectory
             $makeDirectory.EnableSsl = $true
             $makeDirectory.GetResponse()
 
-            Write-Host "Folder created successfully:" $Url
+            Write-Verbose "Folder created successfully:" $Url
         }
         catch [Net.WebException]
         {
@@ -61,7 +61,7 @@ function New-FtpDirectory
                 $checkDirectory.EnableSsl = $true
                 $checkDirectory.GetResponse()
 
-                Write-Host "Folder already exists:" $Url
+                Write-Warning "Folder already exists:" $Url
             }
             catch [Net.WebException]
             {
@@ -84,8 +84,7 @@ function New-FtpDirectory
                 $makeDirectory.EnableSsl = $true
                 $makeDirectory.GetResponse()
 
-                Write-Host "Folder created successfully."
-                Write-Host "Destination folder:" $destinationFolder
+                Write-Verbose "Folder created successfully.`nDestination folder:" $destinationFolder
             }
             catch [Net.WebException]
             {
@@ -97,8 +96,7 @@ function New-FtpDirectory
                     $checkDirectory.EnableSsl = $true
                     $checkDirectory.GetResponse()
 
-                    Write-Host "Folder already exists."
-                    Write-Host "Destination folder:" $destinationFolder
+                    Write-Warning "Folder already exists. Destination folder: $destinationFolder"
                 }
                 catch [Net.WebException]
                 {
@@ -122,8 +120,8 @@ function New-FtpDirectory
 
                 $uri = New-Object System.Uri($destinationFile)
 
-                Write-Host "Uploading file:" $srcFullPath
-                Write-Host "File uri:" $uri
+                Write-Verbose "Uploading file: $srcFullPath"
+                Write-Verbose "File uri: $uri"
                 $errorCount = 0
 
                 do
@@ -131,7 +129,7 @@ function New-FtpDirectory
                     try
                     {
                         $webclient.UploadFile($uri, $srcFullPath)
-                        Write-Host "Upload successful."
+                        Write-Verbose "Upload successful."
 
                         break
                     }
@@ -139,9 +137,10 @@ function New-FtpDirectory
                     {
                         try
                         {
-                            Write-Host "Error caught, trying initializing new webclient object."
+                            Write-Warning "Error caught, trying initializing new webclient object."
+
                             $errorCount++
-                            Write-Host "ERROR COUNT:" $errorCount
+                            Write-Debug "ERROR COUNT:" $errorCount
                         }
                         finally
                         {

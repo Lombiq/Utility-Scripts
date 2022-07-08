@@ -35,6 +35,6 @@ function Set-FileContent
 
         (Get-Content $FilePath) | Foreach-Object { $PSItem -replace $Match, $ReplaceWith } | Set-Content $FilePath
 
-        Write-Host ("Successfully replaced all occurrences of `"$Match`" with `"$ReplaceWith`" in the file `"$FilePath`"!")
+        Write-Verbose "Successfully replaced all occurrences of `"$Match`" with `"$ReplaceWith`" in the file `"$FilePath`"!"
     }
 }

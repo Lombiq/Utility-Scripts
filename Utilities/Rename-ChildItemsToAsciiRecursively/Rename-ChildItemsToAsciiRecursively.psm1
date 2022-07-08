@@ -19,7 +19,7 @@ function Rename-ChildItemsToAsciiRecursively
 
             if ($item.Name -ne $asciiName)
             {
-                Write-Host ("Renaming `"$($item.FullName)`" to `"$asciiName`".")
+                Write-Verbose "Renaming `"$($item.FullName)`" to `"$asciiName`"."
                 $item | Rename-Item -NewName $asciiName
             }
         }
