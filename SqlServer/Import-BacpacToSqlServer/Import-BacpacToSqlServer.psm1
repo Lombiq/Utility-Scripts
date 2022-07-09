@@ -119,7 +119,6 @@ function Import-BacpacToSqlServer
         # Checking the validity of the SqlServerName variable.
         [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
         $DataSource = ""
-        $invalidSqlServer = $false
 
         # SqlServerName is not defined, so let's try to find one.
         if ([string]::IsNullOrEmpty($SqlServerName))
