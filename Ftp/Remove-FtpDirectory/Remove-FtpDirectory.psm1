@@ -68,7 +68,7 @@ function Remove-FtpDirectory
 
             if ($isDirectory)
             {
-                Remove-FtpDirectory ($fileUrl + "/") $User $Password
+                Remove-FtpDirectory -Url ($fileUrl + "/") -User $User -Password $Password
             }
             else
             {

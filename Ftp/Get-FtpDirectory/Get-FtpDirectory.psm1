@@ -79,7 +79,7 @@ function Get-FtpDirectory
                     New-Item $localFilePath -Type directory | Out-Null
                 }
 
-                Get-FtpDirectory ($fileUrl + "/") $User $Password $localFilePath
+                Get-FtpDirectory -Url ($fileUrl + "/") -User $User -Password $Password -LocalPath $localFilePath
             }
             else
             {
