@@ -18,15 +18,7 @@ function Start-Azurite
 
     Process
     {
-        $azuriteProcessExists = [bool]$(if ($host.Version.Major -ge 7)
-        {
-            (Get-Process node).CommandLine -match 'azurite'
-        }
-        else
-        {
-            (Get-CimInstance Win32_Process -Filter "name = 'node.exe'").CommandLine -match 'azurite'
-        })
-
+        $azuriteProcessExists = Test-Process node azurite
         $azuriteJobState = (Get-Job AzuriteNodeJS -ErrorAction SilentlyContinue).State
 
         if ((-not $azuriteProcessExists) -and
