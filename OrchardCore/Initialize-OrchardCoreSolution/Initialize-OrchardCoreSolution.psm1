@@ -6,11 +6,11 @@
    Initializes an Orchard Core solution using the latest released Orchard Core NuGet packages at the current location or under the given path, and adds a suitable .gitignore file. Optionally creates an initial module and/or theme, and optionally uses a given NuGet source.
 
 .EXAMPLE
-   Init-OrchardCoreSolution -Name "FancyWebsite" -Path "D:\Work\FancyWebsite" -ModuleName "FancyWebsite.Core" -ThemeName "FancyWebsite.Theme" -NuGetSource "https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json"
+   Initialize-OrchardCoreSolution -Name "FancyWebsite" -Path "D:\Work\FancyWebsite" -ModuleName "FancyWebsite.Core" -ThemeName "FancyWebsite.Theme" -NuGetSource "https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json"
 #>
 
 
-function Init-OrchardCoreSolution
+function Initialize-OrchardCoreSolution
 {
     [CmdletBinding()]
     Param

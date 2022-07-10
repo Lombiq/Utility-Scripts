@@ -1,10 +1,10 @@
 ﻿<#
 .Synopsis
-   Initializes an Orchard Core solution for a git repository. Deprecated, use Init-OrchardCoreSolution instead.
+   Initializes an Orchard Core solution for a git repository. Deprecated, use Initialize-OrchardCoreSolution instead.
 #>
 
 
-function Init-OrchardCore
+function Initialize-OrchardCore
 {
     [CmdletBinding()]
     Param
@@ -21,6 +21,6 @@ function Init-OrchardCore
 
     Process
     {
-        Init-OrchardCoreSolution -Name $Name -Path $Path -ModuleName $ModuleName -ThemeName $ThemeName -NuGetSource $NuGetSource
+        Initialize-OrchardCoreSolution -Name $Name -Path $Path -ModuleName $ModuleName -ThemeName $ThemeName -NuGetSource $NuGetSource
     }
 }

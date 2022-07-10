@@ -44,7 +44,7 @@ On what the different scripts do specifically and how to use them take a look at
     - Reset-AppDataFolder: Clears the App_Data folder from temporary files.
     - Restart-Site: Restarts an Orchard 1.x app in IIS.
 - OrchardCore: For Orchard Core tasks.
-    - Init-OrchardCoreSolution: Initializes an Orchard Core solution for a git repository.
+    - Initialize-OrchardCoreSolution: Initializes an Orchard Core solution for a git repository.
     - Reset-OrchardCoreApp: Resets and sets up an Orchard Core application. Note that for this to work properly you'll need our [Setup Extensions](https://github.com/Lombiq/Setup-Extensions) project. Check out the script's documentation for details.
 - SourceControl: For tasks around managing Mercurial and Git repositories.
     - ArchiveLastCommitToFolder: Copies the files changed in the last commit of a hg repo to another folder.
