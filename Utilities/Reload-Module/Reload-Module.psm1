@@ -11,9 +11,12 @@
     Reload-Module "C:\Path\To\PSModules"
 #>
 
-
 function Reload-Module
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSUseApprovedVerbs',
+        '',
+        Justification = 'Use distinctive name to confusion with existing cmdlets such as Import-Module.')]
     [CmdletBinding()]
     [Alias("rlm")]
     Param
@@ -27,7 +30,8 @@ function Reload-Module
     {
         if (Test-Path($Path) -PathType Container)
         {
-            $modules = Get-ChildItem -Path $Path -Recurse -File | Where-Object { [System.IO.Path]::GetExtension($PSItem.FullName).Equals(".psm1", [System.StringComparison]::InvariantCultureIgnoreCase) }
+            $modules = Get-ChildItem -Path $Path -Recurse -File |
+                Where-Object { [System.IO.Path]::GetExtension($PSItem.FullName) -match '^\.psm1$' }
 
             if ($modules.Length -gt 0)
             {
