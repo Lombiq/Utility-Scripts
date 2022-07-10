@@ -78,9 +78,10 @@ function Test-VSProjectConsistency
             return
         }
 
+        $isPathContainer = [bool] (Test-Path $Path -PathType Container)
+        $isPathCsproj = Test-PathCsproj $Path
         # If the path is a file but not a csproj, then return an error.
-        if (!(Test-Path $Path -PathType Container) -and
-            [System.IO.Path]::GetExtension($Path) -notmatch "[.]csproj")
+        if (-not $isPathContainer -and -not $isPathCsproj)
         {
             Write-Error ("The specified parth is not a folder or a visual studio project file!")
             return
@@ -90,14 +91,12 @@ function Test-VSProjectConsistency
         $projectFiles = @()
 
         # If the path is a folder, then get all the .csprojs inside it.
-        if (Test-Path $Path -PathType Container)
+        if ($isPathContainer)
         {
-            Get-ChildItem -Path $Path -Recurse -File |
-                Where-Object { [System.IO.Path]::GetExtension($_.FullName) -match "[.]csproj" } |
-                ForEach-Object { $projectFiles += $_.FullName }
+            $projectFiles += Get-ChildItem -Path $Path -Recurse -File -Include *.csproj
         }
         # If the path points to a csproj, then check only that.
-        elseif ([System.IO.Path]::GetExtension($Path) -match "[.]csproj")
+        elseif ($isPathCsproj)
         {
             $projectFiles += $Path
         }
@@ -143,7 +142,7 @@ function Test-VSProjectConsistency
         # Skip these directories during the collection of files, both from the csproj and the file system.
         $directoriesToSkip = @("bin", "obj", "tests", "node_modules", "lib")
         # ORCHARD-SPECIFIC DIRECTORIES
-        if ([System.IO.Path]::GetFileName($projectFile) -match "Orchard[.]Web[.]csproj")
+        if ([System.IO.Path]::GetFileName($projectFile) -match "^Orchard\.Web\.csproj$")
         {
             $directoriesToSkip += @("core", "media", "modules", "themes")
         }
@@ -235,12 +234,12 @@ function Test-VSProjectConsistency
             foreach ($file in $matchingFilesInFolder)
             {
                 # If the file is inside a project folder then it's irrelevant for the current csproj.
-                if(FileIsInsideAnyOfTheFolders ($projectFolder + $file) $projectFoldersInTheProjectFolder)
+                if (FileIsInsideAnyOfTheFolders ($projectFolder + $file) $projectFoldersInTheProjectFolder)
                 {
                     continue
                 }
 
-                if (($matchingFilesInProjectFile | ? { $_ -match $file }).Count -eq 0)
+                if (!$matchingFilesInProjectFile.ToLower().Contains($file.ToLower()))
                 {
                     $missingFilesFromProject += $file
                 }
@@ -352,4 +351,9 @@ function Write-VerboseListBox($Header, $Items)
     $line = $Header -replace '.','*'
     $itemsString = ($Items | % { "- " + $_ }) -join "`n"
     Write-Verbose "$line`n$Header`n$line`n$itemsString`n$line"
+}
+
+function Test-PathCsproj($Path)
+{
+    [System.IO.Path]::GetExtension($Path) -match "^\.csproj$"
 }
