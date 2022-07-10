@@ -18,10 +18,19 @@ function Start-Azurite
 
     Process
     {
-        $azuriteProcess = Get-WmiObject Win32_Process -Filter "name = 'node.exe'" | Select-Object CommandLine | Select-String "azurite"
-        $azuriteJob = Get-Job AzuriteNodeJS -ErrorAction SilentlyContinue
+        $azuriteProcessExists = [bool]$(if ($host.Version.Major -ge 7)
+        {
+            (Get-Process node).CommandLine -match 'azurite'
+        }
+        else
+        {
+            (Get-CimInstance Win32_Process -Filter "name = 'node.exe'").CommandLine -match 'azurite'
+        })
 
-        if ($null -eq $azuriteProcess -or $null -eq $azuriteJob -or $azuriteJob.State -ne [System.Management.Automation.JobState]::Running)
+        $azuriteJobState = (Get-Job AzuriteNodeJS -ErrorAction SilentlyContinue).State
+
+        if ((-not $azuriteProcessExists) -and
+            ($azuriteJobState -ne [System.Management.Automation.JobState]::Running))
         {
             Start-Job -Name AzuriteNodeJS -ScriptBlock { azurite --silent }
         }
