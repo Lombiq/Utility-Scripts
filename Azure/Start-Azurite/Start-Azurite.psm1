@@ -18,7 +18,7 @@ function Start-Azurite
 
     Process
     {
-        $azuriteProcessExists = Test-Process node azurite
+        [bool] $azuriteProcessExists = Get-ProcessId -Name node -CommandLine azurite
         $azuriteJobState = (Get-Job AzuriteNodeJS -ErrorAction SilentlyContinue).State
 
         if ((-not $azuriteProcessExists) -and

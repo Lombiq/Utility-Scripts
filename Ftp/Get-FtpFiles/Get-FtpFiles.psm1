@@ -14,7 +14,7 @@ function FileTransferProgress
 
     if ($null -ne $script:lastFileName -and $script:lastFileName -ne $transferEvent.FileName)
     {
-        Write-Host
+        Write-Output
     }
 
     $currentFileName = $transferEvent.FileName
@@ -24,7 +24,7 @@ function FileTransferProgress
     if ($currentFileName -ne $script:lastFileName -or $currentFileProgress -ne $script:lastFileProgress)
     {
         # Print transfer progress.
-        Write-Host ("$($transferEvent.FileName): $($transferEvent.FileProgress * 100)%, Overall: $($transferEvent.OverallProgress * 100)%")
+        Write-Output ("$($transferEvent.FileName): $($transferEvent.FileProgress * 100)%, Overall: $($transferEvent.OverallProgress * 100)%")
 
         # Remember the name of the last file reported.
         $script:lastFileName = $transferEvent.FileName
