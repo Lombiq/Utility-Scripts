@@ -12,6 +12,15 @@
 
 function Reset-OrchardCoreApp
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSAvoidUsingUsernameAndPasswordParams',
+        Justification = 'This cmdlet should only be used for dev setups for local testing.')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSAvoidUsingPlainTextForPassword',
+        Justification = 'Plain text is needed for connection string building. Also see above.')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSAvoidUsingConvertToSecureStringWithPlainText',
+        Justification = 'Same.')]
     [CmdletBinding(DefaultParameterSetName = "FileDB")]
     Param
     (
@@ -22,7 +31,7 @@ function Reset-OrchardCoreApp
         [string] $SetupTenantName = "Default",
         [string] $SetupRecipeName = "Blog",
         [string] $SetupUserName = "admin",
-        [SecureString] $SetupPassword = "Password1!",
+        [string] $SetupPassword = "Password1!",
         [string] $SetupEmail = "admin@localhost",
 
 
@@ -45,7 +54,7 @@ function Reset-OrchardCoreApp
         [string] $SetupDatabaseSqlUser = "sa",
 
         [Parameter(ParameterSetName = "ServerDB")]
-        [SecureString] $SetupDatabaseSqlPassword = $null,
+        [string] $SetupDatabaseSqlPassword = $null,
 
         [Parameter(ParameterSetName = "ServerDB")]
         [switch] $Force,
@@ -176,7 +185,14 @@ function Reset-OrchardCoreApp
 
             "Using the following database name: `"$SetupDatabaseName`"."
 
-            if (New-SqlServerDatabase -SqlServerName $SetupDatabaseServerName -DatabaseName $SetupDatabaseName -Force:$Force.IsPresent -ErrorAction Stop -UserName $SetupDatabaseSqlUser -Password $SetupDatabaseSqlPassword)
+            $newSqlServerDatabaseParameters = @{
+                SqlServerName = $SetupDatabaseServerName
+                DatabaseName = $SetupDatabaseName
+                ErrorAction = "Stop"
+                UserName = $SetupDatabaseSqlUser
+                Password = (ConvertTo-SecureString $SetupDatabaseSqlPassword -AsPlainText -Force)
+            }
+            if (New-SqlServerDatabase -Force:$Force.IsPresent @newSqlServerDatabaseParameters)
             {
                 "Database `"$SetupDatabaseServerName\$SetupDatabaseName`" created!"
             }
