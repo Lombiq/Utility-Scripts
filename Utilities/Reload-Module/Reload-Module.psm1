@@ -15,7 +15,6 @@ function Reload-Module
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
         'PSUseApprovedVerbs',
-        '',
         Justification = 'Use distinctive name to confusion with existing cmdlets such as Import-Module.')]
     [CmdletBinding()]
     [Alias("rlm")]

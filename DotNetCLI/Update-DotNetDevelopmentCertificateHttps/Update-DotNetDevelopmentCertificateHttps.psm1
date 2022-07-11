@@ -1,5 +1,8 @@
-﻿function Update-DotNetDevelopmentCertificateHttp
+﻿function Update-DotNetDevelopmentCertificateHttps
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSUseSingularNouns',
+        Justification = '"HTTPS" is not plural.')]
     [CmdletBinding()]
     param()
 
