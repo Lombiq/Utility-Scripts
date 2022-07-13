@@ -248,7 +248,7 @@ function Test-VSProjectConsistency
             $missingFilesFromFolder = @()
             # The list of duplicated files in the project file.
             $duplicatesInProjectFile = @()
-            $helperListForDuplicatadFiles = @()
+            $helperListForDuplicatedFiles = @()
             foreach ($file in $matchingFilesInProjectFile)
             {
                 if (!$matchingFilesInFolder.ToLower().Contains($file.ToLower()))
@@ -257,11 +257,11 @@ function Test-VSProjectConsistency
                 }
                 
                 # Checking the duplicates. The first condition is needed because ToLower() throws error if the list is empty.
-                if($helperListForDuplicatadFiles -and $helperListForDuplicatadFiles.ToLower().Contains($file.ToLower())) # This means that we have iterated through this file once before. 
+                if($helperListForDuplicatedFiles -and $helperListForDuplicatedFiles.ToLower().Contains($file.ToLower())) # This means that we have iterated through this file once before. 
                 {
                     $duplicatesInProjectFile += $file
                 }
-                $helperListForDuplicatadFiles += $file
+                $helperListForDuplicatedFiles += $file
             }
             if ($missingFilesFromFolder)
             {

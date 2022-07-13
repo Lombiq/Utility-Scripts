@@ -22,14 +22,14 @@ function Stop-Processes
     [Alias("sps")]
     param
     (
-        [Parameter(Mandatory = $true, HelpMessage = "Please specifiy the list of executable names to stop.")]
+        [Parameter(Mandatory = $true, HelpMessage = "Please specify the list of executable names to stop.")]
         [string[]] $ProcessNames,
 
         [string] $Path,
 
         [string] $CommandLine,
 
-        [Parameter(HelpMessage = "The number of seconds to wait between the attepmts to shut down the matching processes. Default value is 5.")]
+        [Parameter(HelpMessage = "The number of seconds to wait between the attempts to shut down the matching processes. Default value is 5.")]
         [int] $RetryInterval = 5,
 
         [Parameter(HelpMessage = "The number of attempts to shut down the matching processes. The default value is 3.")]
