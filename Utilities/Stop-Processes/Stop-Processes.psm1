@@ -29,7 +29,7 @@ function Stop-Processes
 
         [string] $CommandLine,
 
-        [Parameter(HelpMessage = "The number of seconds to wait between the attepmts to shut down the matching processes. Default value is 5.")]
+        [Parameter(HelpMessage = "The number of seconds to wait between the attempts to shut down the matching processes. Default value is 5.")]
         [int] $RetryInterval = 5,
 
         [Parameter(HelpMessage = "The number of attempts to shut down the matching processes. The default value is 3.")]
