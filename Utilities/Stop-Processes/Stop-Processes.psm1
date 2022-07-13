@@ -22,7 +22,7 @@ function Stop-Processes
     [Alias("sps")]
     param
     (
-        [Parameter(Mandatory = $true, HelpMessage = "Please specifiy the list of executable names to stop.")]
+        [Parameter(Mandatory = $true, HelpMessage = "Please specify the list of executable names to stop.")]
         [string[]] $ProcessNames,
 
         [string] $Path,
