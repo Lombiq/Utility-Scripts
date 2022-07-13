@@ -173,7 +173,7 @@ function Import-BacpacToSqlServer
         # Importing the database was successful.
         if ($LASTEXITCODE -eq 0)
         {
-            # If there was a database with an idendical name on the target server, we'll swap it with the one we've just imported.
+            # If there was a database with an identical name on the target server, we'll swap it with the one we've just imported.
             if ($databaseExists)
             {
                 $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") $DataSource
