@@ -67,9 +67,10 @@ function Import-BacpacToSqlServer
 
             foreach ($i in 20..12)
             {
-                $defaultSqlPackageExecutablePath =
-                    Join-Path $Env:ProgramFiles, ${Env:ProgramFiles(x86)} "Microsoft SQL Server" $i DAC bin SqlPackage.exe |
-                        Where-Object { Test-Path $_ }
+                $defaultSqlPackageExecutablePath = @(
+                    [System.IO.Path]::Combine($Env:ProgramFiles, "Microsoft SQL Server", $i, "DAC", "bin", "SqlPackage.exe")
+                    [System.IO.Path]::Combine(${Env:ProgramFiles(x86)}, "Microsoft SQL Server", $i, "DAC", "bin", "SqlPackage.exe")
+                ) | Where-Object { Test-Path $_ }
 
                 if ($defaultSqlPackageExecutablePath.Count)
                 {
