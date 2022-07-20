@@ -45,7 +45,7 @@ function Get-ProcessId
         {
             if (-not $CommandLine.Contains('*')) { $CommandLine = "*$CommandLine*" }
 
-            $processes = $processes | ? { $_.CommandLine -like }
+            $processes = $processes | ? { $_.CommandLine -like $CommandLine }
         }
 
         $processes | % { [int] $_.Id }
