@@ -43,8 +43,9 @@ function Get-ProcessId
 
         if (-not [string]::IsNullOrEmpty($CommandLine))
         {
-            $processes = $processes |
-                ? { $_.CommandLine.Contains($CommandLine, [System.StringComparison]::OrdinalIgnoreCase) }
+            if (-not $CommandLine.Contains('*')) { $CommandLine = "*$CommandLine*" }
+
+            $processes = $processes | ? { $_.CommandLine -like }
         }
 
         $processes | % { [int] $_.Id }
