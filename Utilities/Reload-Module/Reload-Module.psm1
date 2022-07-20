@@ -30,7 +30,7 @@ function Reload-Module
         if (Test-Path($Path) -PathType Container)
         {
             $modules = Get-ChildItem -Path $Path -Recurse -File |
-                Where-Object { [System.IO.Path]::GetExtension($PSItem.FullName) -match '^\.psm1$' }
+                Where-Object { [System.IO.Path]::GetExtension($_.FullName) -match '^\.psm1$' }
 
             if ($modules.Length -gt 0)
             {

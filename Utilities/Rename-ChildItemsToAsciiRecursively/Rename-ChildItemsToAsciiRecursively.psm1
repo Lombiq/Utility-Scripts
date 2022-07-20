@@ -8,20 +8,15 @@ function Rename-ChildItemsToAsciiRecursively
 
     Process
     {
-        foreach ($item in Get-ChildItem $Path)
-        {
-            if ($item.PSIsContainer)
-            {
-                Rename-ChildItemsToAsciiRecursively -Path $item.FullName
-            }
+        Get-ChildItem $Path -Recurse | % {
+            $asciiName = [System.Text.Encoding]::ASCII.GetString([System.Text.Encoding]::ASCII.GetBytes($_.Name)).Replace('?', '_')
 
-            $asciiName = [System.Text.Encoding]::ASCII.GetString([System.Text.Encoding]::ASCII.GetBytes($item.Name)).Replace('?', '_')
+            if ($_.Name -eq $asciiName) { return }
 
-            if ($item.Name -ne $asciiName)
-            {
-                Write-Verbose "Renaming `"$($item.FullName)`" to `"$asciiName`"."
-                $item | Rename-Item -NewName $asciiName
-            }
+            Write-Verbose "Renaming `"$($_.FullName)`" to `"$asciiName`"."
+            $_ | Rename-Item -NewName $asciiName
+
+            New-Object PSObject -Property @{ Original = $_.FullName; Renamed = $asciiName }
         }
     }
 }
