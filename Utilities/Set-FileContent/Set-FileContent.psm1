@@ -28,12 +28,12 @@ function Set-FileContent
 
     Process
     {
-        if (!(Test-Path $FilePath -PathType Leaf))
+        if (-not (Test-Path $FilePath -PathType Leaf))
         {
             throw ("Could not find the file specified at `"$FilePath`"!")
         }
 
-        (Get-Content $FilePath) | Foreach-Object { $PSItem -replace $Match, $ReplaceWith } | Set-Content $FilePath
+        (Get-Content $FilePath -Raw) -replace $Match, $ReplaceWith | Set-Content $FilePath
 
         Write-Verbose "Successfully replaced all occurrences of `"$Match`" with `"$ReplaceWith`" in the file `"$FilePath`"!"
     }
