@@ -64,6 +64,9 @@ On what the different scripts do specifically and how to use them take a look at
     - Test-Url: Sends a ping request to a URL, returning a boolean value based on the response.
     - Test-VSProjectConsistency: Checks Visual Studio project files' contents against the file system looking for inconsistencies.
 
+## Notes
+
+- The cmdlets follow the convention of using [`Write-Verbose`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-verbose?view=powershell-7.2) for outputting status messages, so they can be used in automation without generating a lot of output. If you are invoking them from a terminal, use the `-Verbose` switch to see how the cmdlet is progressing. This can be especially useful if the execution wasn't successful.
 
 ## Contributing and support
 
