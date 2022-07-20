@@ -12,13 +12,13 @@
 
 function Reset-OrchardCoreApp
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+    [Diagnostics.CodeAnalysis.SuppressMessage(
         'PSAvoidUsingUsernameAndPasswordParams',
         Justification = 'This cmdlet should only be used for dev setups for local testing.')]
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+    [Diagnostics.CodeAnalysis.SuppressMessage(
         'PSAvoidUsingPlainTextForPassword',
         Justification = 'Plain text is needed for connection string building. Also see above.')]
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+    [Diagnostics.CodeAnalysis.SuppressMessage(
         'PSAvoidUsingConvertToSecureStringWithPlainText',
         Justification = 'Same.')]
     [CmdletBinding(DefaultParameterSetName = "FileDB")]

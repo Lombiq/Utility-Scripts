@@ -1,6 +1,6 @@
 ﻿function Update-VisualStudioSolutionNuGetPackages
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+    [Diagnostics.CodeAnalysis.SuppressMessage(
         'PSUseSingularNouns',
         Justification = 'Not applicable here.')]
     [CmdletBinding()]

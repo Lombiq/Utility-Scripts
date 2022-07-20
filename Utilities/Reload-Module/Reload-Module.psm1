@@ -13,7 +13,7 @@
 
 function Reload-Module
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+    [Diagnostics.CodeAnalysis.SuppressMessage(
         'PSUseApprovedVerbs',
         Justification = 'Use distinctive name to avoid confusion with existing cmdlets such as Import-Module.')]
     [CmdletBinding()]
