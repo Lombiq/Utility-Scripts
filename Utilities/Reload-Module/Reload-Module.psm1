@@ -38,7 +38,7 @@ function Reload-Module
 
                 foreach ($module in $modules)
                 {
-                    Import-Module $module.Directory.FullName -Force
+                    Import-Module $module.FullName -Force
                     $loadedModules += ,"* $($module.FullName)"
                 }
 
