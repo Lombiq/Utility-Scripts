@@ -59,25 +59,25 @@ function Import-BacpacToSqlServer
         }
         else
         {
-            if (![string]::IsNullOrEmpty($SqlPackageExecutablePath))
+            if (-not [string]::IsNullOrEmpty($SqlPackageExecutablePath))
             {
                 Write-Warning ("SQL Package executable for importing the database is not found at `"$path`"! " +
                     "Trying to locate default SQL Package executables...")
             }
 
-            foreach ($i in 20..12)
-            {
-                $defaultSqlPackageExecutablePath = @(
-                    [System.IO.Path]::Combine($Env:ProgramFiles, "Microsoft SQL Server", $i, "DAC", "bin", "SqlPackage.exe")
-                    [System.IO.Path]::Combine(${Env:ProgramFiles(x86)}, "Microsoft SQL Server", $i, "DAC", "bin", "SqlPackage.exe")
-                ) | Where-Object { Test-Path $_ }
+            $defaultSqlPackageExecutablePath = @(
+                [System.IO.Path]::Combine($Env:ProgramFiles, "Microsoft SQL Server"),
+                [System.IO.Path]::Combine(${Env:ProgramFiles(x86)}, "Microsoft SQL Server")) |
+                ? { Test-Path $_ } |
+                % { Get-ChildItem $_ | ? { [int] $dummy = 0; [int]::TryParse($_.Name, [ref] $dummy) } } |
+                % { [System.IO.Path]::Combine($_.FullName, "DAC", "bin", "SqlPackage.exe") } |
+                ? { Test-Path $_ } |
+                Sort-Object -Descending |
+                Select-Object -First 1
 
-                if ($defaultSqlPackageExecutablePath.Count)
-                {
-                    $sqlPackageExecutablePath = $defaultSqlPackageExecutablePath
-                    Write-Verbose "SQL Package executable for importing the database found at `"$sqlPackageExecutablePath`"!"
-                    break
-                }
+            if ([string]::IsNullOrWhiteSpace($locatedPath)) {
+                $sqlPackageExecutablePath = $defaultSqlPackageExecutablePath
+                Write-Verbose "SQL Package executable for importing the database found at `"$sqlPackageExecutablePath`"!"
             }
         }
 
