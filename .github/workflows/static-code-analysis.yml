@@ -35,4 +35,4 @@ jobs:
     
     - name: PowerShell 7+ Static Code Analysis
       if: always() # Even if the above fails, let's check both.
-      run: pwsh .\tools\Lombiq.Analyzers.PowerShell\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
+      run: ./tools/Lombiq.Analyzers.PowerShell/Lombiq.Analyzers.PowerShell/Invoke-Analyzer.ps1 -ForGitHubActions
