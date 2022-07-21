@@ -67,9 +67,9 @@
             $repositoryPath = [string]::Join([string]::Empty, $repositoryUri.Segments[1..2])
         }
 
-        $pullRequestId = 0
-        if (-not [int]::TryParse($BranchName.Replace("refs/", "").Replace("pull/", "").Replace("/head", ""), [ref] $pullRequestId) `
-                -or $pullRequestId -le 0)
+        $pullRequestId = $BranchName.Replace("refs/", "").Replace("pull/", "").Replace("/head", "")
+        $isPullRequestIdValid = [int]::TryParse($pullRequestId, [ref] $pullRequestId)
+        if (-not $isPullRequestIdValid -or $pullRequestId -le 0)
         {
             throw "Could not determine the ID of the pull request from the branch name `"$BranchName`"!"
         }
@@ -89,11 +89,12 @@
 
             $retryCount += 1
 
-            $pullRequest = Invoke-WebRequest `
-                -Uri "https://api.github.com/repos/$repositoryPath/pulls/$pullRequestId" `
-                -Headers @{ Authorization = "Basic $([System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($apiCredentials)))" } `
-                -UseBasicParsing `
-            | ConvertFrom-Json
+            $credentialsBase64 = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($apiCredentials))
+            $webRequestParameters = @{
+                Uri = "https://api.github.com/repos/$repositoryPath/pulls/$pullRequestId"
+                Headers = @{Authorization = "Basic $credentialsBase64" }
+            }
+            $pullRequest = Invoke-WebRequest @webRequestParameters -UseBasicParsing | ConvertFrom-Json
         } while ($null -eq $pullRequest -and $retryCount -lt 3)
 
         if ($null -eq $pullRequest)

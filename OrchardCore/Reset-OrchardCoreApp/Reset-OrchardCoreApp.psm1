@@ -97,7 +97,7 @@ function Reset-OrchardCoreApp
 
         if ($siteHostProcesses.Count -gt 0)
         {
-            Write-Verbose "Terminating application host process: " + ($siteHostProcesses -join ", ")
+            Write-Verbose "Terminating application host process: $($siteHostProcesses -join ", ")"
             Stop-Process $siteHostProcesses
 
             Start-Sleep 1
@@ -111,7 +111,7 @@ function Reset-OrchardCoreApp
 
         if (Test-Path $appDataPath -PathType Container)
         {
-            "Deleting App_Data folder found in `"$WebProjectPath`"!`n"
+            Write-Verbose "Deleting App_Data folder found in `"$WebProjectPath`"!"
 
             Remove-Item $appDataPath -Force -Recurse
         }
@@ -123,13 +123,13 @@ function Reset-OrchardCoreApp
         $buildRequired = $false;
         if ($Rebuild.IsPresent)
         {
-            "Rebuild switch active!`n"
+            Write-Verbose "Rebuild switch active!"
 
             $buildRequired = $true
         }
         elseif ([string]::IsNullOrEmpty($webProjectDllPath) -or -not (Test-Path $webProjectDllPath -PathType Leaf))
         {
-            "Web Project DLL not found, build is required!`n"
+            Write-Verbose "Web Project DLL not found, build is required!"
 
             $buildRequired = $true
         }
@@ -155,7 +155,7 @@ function Reset-OrchardCoreApp
             }
         }
 
-        "Compiled Web Project DLL found at `"$webProjectDllPath`"!`n"
+        Write-Verbose "Compiled Web Project DLL found at `"$webProjectDllPath`"!"
 
 
 
@@ -183,7 +183,7 @@ function Reset-OrchardCoreApp
                 $SetupDatabaseName = $SetupDatabaseName + "_" + $solutionFolder
             }
 
-            "Using the following database name: `"$SetupDatabaseName`"."
+            Write-Verbose "Using the following database name: `"$SetupDatabaseName`"."
 
             $newSqlServerDatabaseParameters = @{
                 SqlServerName = $SetupDatabaseServerName
@@ -194,7 +194,7 @@ function Reset-OrchardCoreApp
             }
             if (New-SqlServerDatabase -Force:$Force.IsPresent @newSqlServerDatabaseParameters)
             {
-                "Database `"$SetupDatabaseServerName\$SetupDatabaseName`" created!"
+                Write-Verbose "Database `"$SetupDatabaseServerName\$SetupDatabaseName`" created!"
             }
             else
             {
@@ -204,7 +204,7 @@ function Reset-OrchardCoreApp
                 }
                 else
                 {
-                    "The specified database already exists! Attempting to run setup using the `"$SetupDatabaseTablePrefix`" table prefix."
+                    Write-Verbose "The specified database already exists! Attempting to run setup using the `"$SetupDatabaseTablePrefix`" table prefix."
                 }
             }
 
@@ -268,13 +268,20 @@ function Reset-OrchardCoreApp
 
         $webProjectDllFile = Get-Item -Path $webProjectDllPath
 
-        "Starting .NET application host at `"$applicationUrl`"!`n"
+        Write-Verbose "Starting .NET application host at `"$applicationUrl`"!"
 
-        $applicationProcess = Start-Process `
-            -WorkingDirectory $WebProjectPath `
-            dotnet `
-            -ArgumentList "$($webProjectDllFile.FullName) --urls $applicationUrl --environment $environmentSetting --webroot wwwroot --AuthorizeOrchardApiRequests true" `
-            -PassThru
+        $processParameters = @{
+            WorkingDirectory = $WebProjectPath
+            FilePath = "dotnet"
+            ArgumentList = @(
+                "$($webProjectDllFile.FullName)"
+                "--urls $applicationUrl"
+                "--environment $environmentSetting"
+                "--webroot wwwroot"
+                "--AuthorizeOrchardApiRequests true"
+            ) -join " "
+        }
+        $applicationProcess = Start-Process @processParameters -PassThru
 
 
 
@@ -307,7 +314,7 @@ function Reset-OrchardCoreApp
 
         # Running setup.
 
-        "Application started, attempting to run setup!`n"
+        Write-Verbose "Application started, attempting to run setup!"
 
         $tenantSetupSettings = @{
             SiteName = $SetupSiteName
@@ -330,7 +337,7 @@ function Reset-OrchardCoreApp
             throw "Setup failed with status code $($setupRequest.StatusCode)!"
         }
 
-        "Setup successful!`n"
+        Write-Verbose "Setup successful!"
 
 
 
@@ -338,7 +345,7 @@ function Reset-OrchardCoreApp
 
         if (-not $KeepAlive.IsPresent)
         {
-            "Keep Alive not requested, shutting down application host process!"
+            Write-Verbose "Keep Alive not requested, shutting down application host process!"
 
             Stop-Process $applicationProcess
         }
