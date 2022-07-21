@@ -15,6 +15,7 @@ function Reload-Module
 {
     [Diagnostics.CodeAnalysis.SuppressMessage(
         'PSUseApprovedVerbs',
+        '',
         Justification = 'Use distinctive name to avoid confusion with existing cmdlets such as Import-Module.')]
     [CmdletBinding()]
     [Alias("rlm")]
@@ -29,16 +30,15 @@ function Reload-Module
     {
         if (Test-Path($Path) -PathType Container)
         {
-            $modules = Get-ChildItem -Path $Path -Recurse -File |
-                Where-Object { [System.IO.Path]::GetExtension($_.FullName) -match '^\.psm1$' }
+            $modules = Get-ChildItem -Path $Path -Recurse -File -Include *.psm1
 
-            if ($modules.Length -gt 0)
+            if ($modules.Count -gt 0)
             {
                 $loadedModules = @()
 
                 foreach ($module in $modules)
                 {
-                    Import-Module ([System.IO.Path]::GetDirectoryName($module.FullName)) -Force
+                    Import-Module $module.Directory.FullName -Force
                     $loadedModules += ,"* $($module.FullName)"
                 }
 
