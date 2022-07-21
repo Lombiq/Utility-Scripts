@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
    Uploads FTP folder.
 .DESCRIPTION
@@ -31,7 +31,7 @@ function New-FtpDirectory
                    HelpMessage = "Specify path to local folder to upload.")]
         [string] $LocalFolderPath
     )
-    
+
     Process
     {
         $credentials = New-Object System.Net.NetworkCredential($User, $Password)
@@ -39,7 +39,7 @@ function New-FtpDirectory
         $srcEntries = Get-ChildItem $LocalFolderPath -Recurse
         $srcFolders = $srcEntries | Where-Object { $_.PSIsContainer }
         $srcFiles = $srcEntries | Where-Object { !$_.PSIsContainer }
-    
+
         # Create folder.
         try
         {
@@ -48,8 +48,8 @@ function New-FtpDirectory
             $makeDirectory.Method = [System.Net.WebRequestMethods+FTP]::MakeDirectory
             $makeDirectory.EnableSsl = $true
             $makeDirectory.GetResponse()
-    
-            Write-Host "Folder created successfully:" $Url
+
+            Write-Verbose "Folder created successfully:" $Url
         }
         catch [Net.WebException]
         {
@@ -60,22 +60,22 @@ function New-FtpDirectory
                 $checkDirectory.Method = [System.Net.WebRequestMethods+FTP]::PrintWorkingDirectory
                 $checkDirectory.EnableSsl = $true
                 $checkDirectory.GetResponse()
-    
-                Write-Host "Folder already exists:" $Url
+
+                Write-Warning "Folder already exists:" $Url
             }
             catch [Net.WebException]
             {
                 throw "Other error encountered during folder creation."
-            }    
+            }
         }
-    
+
         # Create subdirectories.
         foreach ($folder in $srcFolders)
         {
             $srcFolderPath = $LocalFolderPath -replace "\\", "\\" -replace "\:", "\:"
             $destinationFolder = $folder.Fullname -replace $srcFolderPath, $Url
             $destinationFolder = $destinationFolder -replace "\\", "/"
-         
+
             try
             {
                 $makeDirectory = [System.Net.WebRequest]::Create($destinationFolder)
@@ -83,9 +83,8 @@ function New-FtpDirectory
                 $makeDirectory.Method = [System.Net.WebRequestMethods+FTP]::MakeDirectory
                 $makeDirectory.EnableSsl = $true
                 $makeDirectory.GetResponse()
-    
-                Write-Host "Folder created successfully."
-                Write-Host "Destination folder:" $destinationFolder
+
+                Write-Verbose "Folder created successfully.`nDestination folder:" $destinationFolder
             }
             catch [Net.WebException]
             {
@@ -96,9 +95,8 @@ function New-FtpDirectory
                     $checkDirectory.Method = [System.Net.WebRequestMethods+FTP]::PrintWorkingDirectory
                     $checkDirectory.EnableSsl = $true
                     $checkDirectory.GetResponse()
-                    
-                    Write-Host "Folder already exists."
-                    Write-Host "Destination folder:" $destinationFolder
+
+                    Write-Warning "Folder already exists. Destination folder: $destinationFolder"
                 }
                 catch [Net.WebException]
                 {
@@ -106,11 +104,11 @@ function New-FtpDirectory
                 }
             }
         }
-         
+
         # Upload files.
         $webclient = New-Object System.Net.WebClient
         $webclient.Credentials = $credentials
-        
+
         try
         {
             foreach ($file in $srcFiles)
@@ -119,42 +117,43 @@ function New-FtpDirectory
                 $srcFilePath = $LocalFolderPath -replace "\\", "\\" -replace "\:", "\:"
                 $destinationFile = $srcFullPath -replace $srcFilePath, $Url
                 $destinationFile = $destinationFile -replace "\\", "/"
-                
-                $uri = New-Object System.Uri($destinationFile) 
-                
-                Write-Host "Uploading file:" $srcFullPath
-                Write-Host "File uri:" $uri
+
+                $uri = New-Object System.Uri($destinationFile)
+
+                Write-Verbose "Uploading file: $srcFullPath"
+                Write-Verbose "File uri: $uri"
                 $errorCount = 0
-                
+
                 do
                 {
                     try
                     {
                         $webclient.UploadFile($uri, $srcFullPath)
-                        Write-Host "Upload successful."
-                        
+                        Write-Verbose "Upload successful."
+
                         break
                     }
                     catch
                     {
                         try
                         {
-                            Write-Host "Error caught, trying initializing new webclient object."
+                            Write-Warning "Error caught, trying initializing new webclient object."
+
                             $errorCount++
-                            Write-Host "ERROR COUNT:" $errorCount
+                            Write-Debug "ERROR COUNT:" $errorCount
                         }
                         finally
                         {
                             $webclient.Dispose()
                             Start-Sleep -s 5
-                            
-                            $webclient = New-Object System.Net.WebClient 
-                            $webclient.Credentials = $credentials 
-                        }                        
+
+                            $webclient = New-Object System.Net.WebClient
+                            $webclient.Credentials = $credentials
+                        }
                     }
                 } while ($errorCount -ne 10)
-                
-                if ($errorCount -eq 10) 
+
+                if ($errorCount -eq 10)
                 {
                     throw "Maximum error count exceeded."
                 }

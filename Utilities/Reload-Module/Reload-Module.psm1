@@ -11,9 +11,12 @@
     Reload-Module "C:\Path\To\PSModules"
 #>
 
-
 function Reload-Module
 {
+    [Diagnostics.CodeAnalysis.SuppressMessage(
+        'PSUseApprovedVerbs',
+        '',
+        Justification = 'Use distinctive name to avoid confusion with existing cmdlets such as Import-Module.')]
     [CmdletBinding()]
     [Alias("rlm")]
     Param
@@ -27,24 +30,26 @@ function Reload-Module
     {
         if (Test-Path($Path) -PathType Container)
         {
-            $modules = Get-ChildItem -Path $Path -Recurse -File | Where-Object { [System.IO.Path]::GetExtension($PSItem.FullName).Equals(".psm1", [System.StringComparison]::InvariantCultureIgnoreCase) }
+            $modules = Get-ChildItem -Path $Path -Recurse -File -Include *.psm1
 
-            if ($modules.Length -gt 0)
+            if ($modules.Count -gt 0)
             {
-                Write-Host ("`nRELOADING PS MODULES:`n*****")
+                $loadedModules = @()
 
                 foreach ($module in $modules)
                 {
-                    Import-Module ([System.IO.Path]::GetDirectoryName($module.FullName)) -Force
-                    Write-Host ("* " + $module.FullName)
+                    Import-Module $module.FullName -Force
+                    $loadedModules += ,"* $($module.FullName)"
                 }
 
-                Write-Host ("*****`n")
+                $header = "Reloading PowerShell modules:";
+                $line = $header -replace '.', '*'
+                Write-Verbose "`n$header`n$line`n$($loadedModules -join "`n")`n$line`n"
             }
         }
         else
         {
-            Write-Error("$Path is not available!")   
+            Write-Error "$Path is not available!"
         }
     }
 }

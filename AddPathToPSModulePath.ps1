@@ -13,7 +13,7 @@
 Param
 (
     # The path to a folder that should be added to the list of paths containing PS modules. If not specified, the current path of this script will be added.
-    [string] 
+    [string]
     $Path = "$PSScriptRoot\"
 )
 
@@ -22,7 +22,7 @@ $paths = [Environment]::GetEnvironmentVariable("PSModulePath", "Machine").Split(
 if(!$paths.Contains($Path))
 {
     [System.Environment]::SetEnvironmentVariable("PSModulePath", [string]::Join(";", $paths + $Path), "Machine")
-    Write-Information "The path `"$Path`" was successfully added to the PSModulePath environment variable."
+    Write-Verbose "The path `"$Path`" was successfully added to the PSModulePath environment variable."
 }
 else
 {

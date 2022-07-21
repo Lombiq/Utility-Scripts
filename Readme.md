@@ -44,7 +44,7 @@ On what the different scripts do specifically and how to use them take a look at
     - Reset-AppDataFolder: Clears the App_Data folder from temporary files.
     - Restart-Site: Restarts an Orchard 1.x app in IIS.
 - OrchardCore: For Orchard Core tasks.
-    - Init-OrchardCoreSolution: Initializes an Orchard Core solution for a git repository.
+    - Initialize-OrchardCoreSolution: Initializes an Orchard Core solution for a git repository.
     - Reset-OrchardCoreApp: Resets and sets up an Orchard Core application. Note that for this to work properly you'll need our [Setup Extensions](https://github.com/Lombiq/Setup-Extensions) project. Check out the script's documentation for details.
 - SourceControl: For tasks around managing Mercurial and Git repositories.
     - ArchiveLastCommitToFolder: Copies the files changed in the last commit of a hg repo to another folder.
@@ -64,6 +64,9 @@ On what the different scripts do specifically and how to use them take a look at
     - Test-Url: Sends a ping request to a URL, returning a boolean value based on the response.
     - Test-VSProjectConsistency: Checks Visual Studio project files' contents against the file system looking for inconsistencies.
 
+## Notes
+
+- The cmdlets follow the convention of using [`Write-Verbose`](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-verbose?view=powershell-7.2) for outputting status messages, so they can be used in automation without generating a lot of output. If you are invoking them from a terminal, use the `-Verbose` switch to see how the cmdlet is progressing. This can be especially useful if the execution wasn't successful.
 
 ## Contributing and support
 

@@ -1,4 +1,4 @@
-function Get-GitHubPullRequest
+﻿function Get-GitHubPullRequest
 {
     [CmdletBinding()]
     [Alias("gghpr")]
@@ -34,11 +34,11 @@ function Get-GitHubPullRequest
         [Parameter(HelpMessage = "When used together with the ThrowIfNotMergeable switch, draft pull requests will not cause an exception.")]
         [Switch] $IgnoreDraft
     )
-    
+
     process
     {
         $repositoryPath = ""
-        
+
         if ($RepositoryUrl -like "git@github.com:*")
         {
             $repositoryPathSegments = $RepositoryUrl.TrimStart("git@github.com:").TrimEnd(".git").Split('/', [System.StringSplitOptions]::RemoveEmptyEntries)
@@ -53,12 +53,12 @@ function Get-GitHubPullRequest
         else
         {
             $repositoryUri = [System.Uri]$RepositoryUrl
-    
+
             if ($repositoryUri.Host -ne "github.com")
             {
                 throw "`"$RepositoryUrl`" must be a valid HTTPS URL of a GitHub repository!"
             }
-    
+
             if ($repositoryUri.Segments.Count -lt 3)
             {
                 throw "`"$RepositoryUrl`" must be a valid URL of a repository!"
@@ -67,9 +67,9 @@ function Get-GitHubPullRequest
             $repositoryPath = [string]::Join([string]::Empty, $repositoryUri.Segments[1..2])
         }
 
-        $pullRequestId = 0
-        if (-not [int]::TryParse($BranchName.Replace("refs/", "").Replace("pull/", "").Replace("/head", ""), [ref] $pullRequestId) `
-                -or $pullRequestId -le 0)
+        $pullRequestId = $BranchName.Replace("refs/", "").Replace("pull/", "").Replace("/head", "")
+        $isPullRequestIdValid = [int]::TryParse($pullRequestId, [ref] $pullRequestId)
+        if (-not $isPullRequestIdValid -or $pullRequestId -le 0)
         {
             throw "Could not determine the ID of the pull request from the branch name `"$BranchName`"!"
         }
@@ -89,11 +89,12 @@ function Get-GitHubPullRequest
 
             $retryCount += 1
 
-            $pullRequest = Invoke-WebRequest `
-                -Uri "https://api.github.com/repos/$repositoryPath/pulls/$pullRequestId" `
-                -Headers @{ Authorization = "Basic $([System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($apiCredentials)))" } `
-                -UseBasicParsing `
-            | ConvertFrom-Json
+            $credentialsBase64 = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($apiCredentials))
+            $webRequestParameters = @{
+                Uri = "https://api.github.com/repos/$repositoryPath/pulls/$pullRequestId"
+                Headers = @{Authorization = "Basic $credentialsBase64" }
+            }
+            $pullRequest = Invoke-WebRequest @webRequestParameters -UseBasicParsing | ConvertFrom-Json
         } while ($null -eq $pullRequest -and $retryCount -lt 3)
 
         if ($null -eq $pullRequest)
@@ -120,7 +121,7 @@ function Get-GitHubPullRequest
                     $successful = $true
                 }
             }
-            
+
             if ($IgnoreDraft.IsPresent)
             {
                 if ($null -eq $pullRequest.draft)
@@ -134,7 +135,7 @@ function Get-GitHubPullRequest
                 }
             }
         }
-        
+
         Write-Output $pullRequest
 
         if (-not $successful)

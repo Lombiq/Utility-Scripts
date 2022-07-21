@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
    Renames FTP folder.
 .DESCRIPTION
@@ -36,7 +36,7 @@ function Rename-FtpDirectory
                    HelpMessage = "Specify new folder name.")]
         [string] $DestinationFolder
     )
-    
+
     Process
     {
         $folderToRenamePath = $Url + "/" + $SourceFolder
@@ -53,7 +53,7 @@ function Rename-FtpDirectory
             $makeDirectory.EnableSsl = $true
             $makeDirectory.GetResponse()
 
-            Write-Host "New folder created successfully:" $ftpFolderPath
+            Write-Verbose "New folder created successfully: $ftpFolderPath"
         }
         catch [Net.WebException]
         {
@@ -65,29 +65,29 @@ function Rename-FtpDirectory
                 $checkDirectory.EnableSsl = $true
                 $checkDirectory.GetResponse()
 
-                Write-Host "New folder already exists:" $ftpFolderPath
+                Write-Warning "New folder already exists: $ftpFolderPath"
             }
             catch [Net.WebException]
             {
                 throw "Other error encountered during new folder creation."
-            }    
+            }
         }
 
         try
         {
-            Write-Host "Listing files..."
-            
+            Write-Verbose "Listing files..."
+
             $listRequest = [System.Net.FtpWebRequest]::Create($folderToRenamePath)
             $listRequest.Credentials = $credentials
             $listRequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectory
             $listRequest.EnableSsl = $true
-            
+
             $files = New-Object System.Collections.ArrayList
-            
+
             $listResponse = $listRequest.GetResponse()
             $listStream = $listResponse.GetResponseStream()
             $listReader = New-Object System.IO.StreamReader($listStream)
-            
+
             while (!$listReader.EndOfStream)
             {
                 $file = $listReader.ReadLine()
@@ -105,9 +105,9 @@ function Rename-FtpDirectory
         {
             try
             {
-                Write-Host "Renaming $file..."
-                Write-Host "Destination:" ($destinationFolderRelPath + "/" + $file)
-                
+                Write-Verbose "Renaming $file..."
+                Write-Verbose "Destination: $destinationFolderRelPath/$file"
+
                 $renameRequest = [System.Net.FtpWebRequest]::Create($folderToRenamePath + "/" + $file)
                 $renameRequest.Credentials = $credentials
                 $renameRequest.Method = [System.Net.WebRequestMethods+Ftp]::Rename
@@ -122,7 +122,7 @@ function Rename-FtpDirectory
         }
 
         # Remove empty previous folder.
-        Write-Host "Deleting now empty previous folder."
+        Write-Verbose "Deleting now empty previous folder."
 
         try
         {
@@ -136,8 +136,8 @@ function Rename-FtpDirectory
         {
             if ($deleteResponse)
             {
-                Write-Host "Delete response disposed."
                 $deleteResponse.Dispose()
+                Write-Verbose "Delete response disposed."
             }
         }
     }

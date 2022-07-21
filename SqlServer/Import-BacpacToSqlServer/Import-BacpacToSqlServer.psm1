@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
    Imports a .bacpac file to a database on a local SQL Server instance.
 
@@ -59,29 +59,25 @@ function Import-BacpacToSqlServer
         }
         else
         {
-            if (![string]::IsNullOrEmpty($SqlPackageExecutablePath))
+            if (-not [string]::IsNullOrEmpty($SqlPackageExecutablePath))
             {
-                Write-Warning ("SQL Package executable for importing the database is not found at `"$path`"! Trying to locate default SQL Package executables...")    
+                Write-Warning ("SQL Package executable for importing the database is not found at `"$path`"! " +
+                    "Trying to locate default SQL Package executables...")
             }
 
-            $defaultSqlPackageExecutablePath = ""
-            for ($i = 20; $i -ge 12; $i--)
-            {
-                $defaultSqlPackageExecutablePath = "C:\Program Files\Microsoft SQL Server\$($i)0\DAC\bin\SqlPackage.exe"
-                if (Test-Path $defaultSqlPackageExecutablePath)
-                {
-                    $sqlPackageExecutablePath = $defaultSqlPackageExecutablePath
-                    Write-Host ("`nSQL Package executable for importing the database found at `"$sqlPackageExecutablePath`"!`n")
-                    break
-                }
+            $defaultSqlPackageExecutablePath = @(
+                [System.IO.Path]::Combine($Env:ProgramFiles, "Microsoft SQL Server"),
+                [System.IO.Path]::Combine(${Env:ProgramFiles(x86)}, "Microsoft SQL Server")) |
+                ? { Test-Path $_ } |
+                % { Get-ChildItem $_ | ? { [int] $dummy = 0; [int]::TryParse($_.Name, [ref] $dummy) } } |
+                % { [System.IO.Path]::Combine($_.FullName, "DAC", "bin", "SqlPackage.exe") } |
+                ? { Test-Path $_ } |
+                Sort-Object -Descending |
+                Select-Object -First 1
 
-                $defaultSqlPackageExecutablePath = "C:\Program Files (x86)\Microsoft SQL Server\$($i)0\DAC\bin\SqlPackage.exe"
-                if (Test-Path $defaultSqlPackageExecutablePath)
-                {
-                    $sqlPackageExecutablePath = $defaultSqlPackageExecutablePath
-                    Write-Host ("`nSQL Package executable for importing the database found at `"$sqlPackageExecutablePath`"!`n")
-                    break
-                }
+            if ([string]::IsNullOrWhiteSpace($locatedPath)) {
+                $sqlPackageExecutablePath = $defaultSqlPackageExecutablePath
+                Write-Verbose "SQL Package executable for importing the database found at `"$sqlPackageExecutablePath`"!"
             }
         }
 
@@ -94,7 +90,7 @@ function Import-BacpacToSqlServer
 
         # Checking the validity of the bacpac file.
         $bacpacFile = Get-Item $BacpacPath
-        if ($bacpacFile -eq $null -or !($bacpacFile -is [System.IO.FileInfo]) -or !($bacpacFile.Extension -eq ".bacpac"))
+        if ($null -eq $bacpacFile -or !($bacpacFile -is [System.IO.FileInfo]) -or !($bacpacFile.Extension -eq ".bacpac"))
         {
             throw ("The .bacpac file is not found at `"$BacpacPath`"!")
         }
@@ -120,11 +116,10 @@ function Import-BacpacToSqlServer
         }
 
 
-        
+
         # Checking the validity of the SqlServerName variable.
         [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
         $DataSource = ""
-        $invalidSqlServer = $false
 
         # SqlServerName is not defined, so let's try to find one.
         if ([string]::IsNullOrEmpty($SqlServerName))

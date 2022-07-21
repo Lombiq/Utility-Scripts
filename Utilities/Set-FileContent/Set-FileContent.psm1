@@ -16,25 +16,25 @@ function Set-FileContent
     [Alias("sfc")]
     Param
     (
-        [Parameter(Mandatory = $true, HelpMEssage = "The path to the file in which the matching string should be replaced.")]
+        [Parameter(Mandatory = $true, HelpMessage = "The path to the file in which the matching string should be replaced.")]
         [string] $FilePath,
 
-        [Parameter(Mandatory = $true, HelpMEssage = "The PowerShell-escaped string to replace in the file specified.")]
+        [Parameter(Mandatory = $true, HelpMessage = "The PowerShell-escaped string to replace in the file specified.")]
         [string] $Match,
 
-        [Parameter(Mandatory = $true, HelpMEssage = "The PowerShell-escaped replacement string.")]
+        [Parameter(Mandatory = $true, HelpMessage = "The PowerShell-escaped replacement string.")]
         [string] $ReplaceWith
     )
 
     Process
     {
-        if (!(Test-Path $FilePath -PathType Leaf))
+        if (-not (Test-Path $FilePath -PathType Leaf))
         {
             throw ("Could not find the file specified at `"$FilePath`"!")
         }
 
-        (Get-Content $FilePath) | Foreach-Object { $PSItem -replace $Match, $ReplaceWith } | Set-Content $FilePath
+        (Get-Content $FilePath -Raw) -replace $Match, $ReplaceWith | Set-Content $FilePath
 
-        Write-Host ("Successfully replaced all occurrences of `"$Match`" with `"$ReplaceWith`" in the file `"$FilePath`"!")
+        Write-Verbose "Successfully replaced all occurrences of `"$Match`" with `"$ReplaceWith`" in the file `"$FilePath`"!"
     }
 }

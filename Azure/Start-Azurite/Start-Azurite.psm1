@@ -18,10 +18,11 @@ function Start-Azurite
 
     Process
     {
-        $azuriteProcess = Get-WmiObject Win32_Process -Filter "name = 'node.exe'" | Select-Object CommandLine | Select-String "azurite"
-        $azuriteJob = Get-Job AzuriteNodeJS -ErrorAction SilentlyContinue
+        [bool] $azuriteProcessExists = Get-ProcessId -Name node -CommandLine azurite
+        $azuriteJobState = (Get-Job AzuriteNodeJS -ErrorAction SilentlyContinue).State
 
-        if ($null -eq $azuriteProcess -or $null -eq $azuriteJob -or $azuriteJob.State -ne [System.Management.Automation.JobState]::Running)
+        if ((-not $azuriteProcessExists) -and
+            ($azuriteJobState -ne [System.Management.Automation.JobState]::Running))
         {
             Start-Job -Name AzuriteNodeJS -ScriptBlock { azurite --silent }
         }

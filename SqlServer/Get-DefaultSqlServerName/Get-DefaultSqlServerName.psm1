@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
    Gets the name of the default local SQL Server instance.
 #>
@@ -15,23 +15,24 @@ function Get-DefaultSqlServerName
 
     Process
     {
-        $serverServices = (Get-WmiObject win32_Service -Computer $env:COMPUTERNAME | Where-Object { $PSItem.Name -match "MSSQL" -and $PSItem.PathName -match "sqlservr.exe" })
+        $serverServices = Get-CimInstance win32_Service |
+            Where-Object { $_.Name -match "MSSQL" -and $_.PathName -match "sqlservr.exe" }
         $servicePath = ""
 
         # No SQL Servers installed.
-        if ($serverServices -eq $null)
+        if ($null -eq $serverServices)
         {
             throw ("Could not find any SQL Server services!")
         }
         # Only one SQL Server installed.
-        elseif ($serverServices.Count -eq $null)
+        elseif ($null -eq $serverServices.Count)
         {
             $servicePath = $serverServices.PathName
         }
         # More than one SQL Servers installed and one of them is named "MSSQLSERVER" (default name), so let's choose that.
-        elseif (($serverServices | Where-Object { $PSItem.Name -eq "MSSQLSERVER" }) -ne $null)
+        elseif ($null -ne ($serverServices | Where-Object { $_.Name -eq "MSSQLSERVER" }))
         {
-            $servicePath = ($serverServices | Where-Object { $PSItem.Name -eq "MSSQLSERVER" }).PathName
+            $servicePath = ($serverServices | Where-Object { $_.Name -eq "MSSQLSERVER" }).PathName
         }
         # More than one SQL Servers installed, choosing the first one.
         else

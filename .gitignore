@@ -12,3 +12,4 @@ artifacts
 robots.txt
 syntax: regexp
 (?i)src/.*bin/.*
+.idea

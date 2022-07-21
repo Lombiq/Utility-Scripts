@@ -15,7 +15,7 @@ function Get-Rekt
     [CmdletBinding()]
     [Alias("grek")]
     Param()
-    
+
     Process
     {
         throw [System.OutOfMemoryException] "Get Rekt!"

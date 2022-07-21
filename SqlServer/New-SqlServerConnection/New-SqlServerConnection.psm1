@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
    Creates a new SQL Server connection object.
 #>
@@ -15,12 +15,12 @@ function New-SqlServerConnection
 
         [string] $UserName = $null,
 
-        [string] $Password = $null
+        [SecureString] $Password = $null
     )
 
     Process
     {
-        if (-not $UserName -or -not $Password) 
+        if (-not $UserName -or -not $Password)
         {
             New-Object -TypeName Microsoft.SqlServer.Management.Common.ServerConnection -ArgumentList $ServerName
         }

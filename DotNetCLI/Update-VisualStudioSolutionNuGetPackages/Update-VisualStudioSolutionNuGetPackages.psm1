@@ -1,5 +1,8 @@
-function Update-VisualStudioSolutionNuGetPackages
+﻿function Update-VisualStudioSolutionNuGetPackages
 {
+    [Diagnostics.CodeAnalysis.SuppressMessage(
+        'PSUseSingularNouns',
+        Justification = 'Not applicable here.')]
     [CmdletBinding()]
     param
     (
@@ -14,9 +17,9 @@ function Update-VisualStudioSolutionNuGetPackages
 
         # Wildcard-enabled expression to filter package names.
         [string]
-        $PackageNameFilter        
+        $PackageNameFilter
     )
-    
+
     process
     {
         foreach ($projectPath in Get-VisualStudioSolutionProjectPaths -Path $Path -ProjectNameFilter $ProjectNameFilter)

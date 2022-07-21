@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
    Creates a new database on the given SQL Server instance, after dropping it first if it already exists.
 #>
@@ -20,10 +20,10 @@ function New-SqlServerDatabase
         [string] $DatabaseName,
 
         [switch] $Force,
-        
+
         [string] $UserName = $null,
 
-        [string] $Password = $null
+        [SecureString] $Password = $null
     )
 
     Process
