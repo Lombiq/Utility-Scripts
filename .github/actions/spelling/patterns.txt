@@ -1,4 +1,0 @@
-(\((.*?)\))
-[Ll]ombiq
-[Rr]eks
-[Rr]ekt
