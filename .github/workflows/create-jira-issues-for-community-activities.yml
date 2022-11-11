@@ -21,3 +21,4 @@ jobs:
       PULL_REQUEST_JIRA_ISSUE_DESCRIPTION: ${{ secrets.DEFAULT_PULL_REQUEST_JIRA_ISSUE_DESCRIPTION }}
     with:
       suffix-issue-titles: "false"
+      issue-component: Lombiq.UtilityScripts
