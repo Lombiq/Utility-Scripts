@@ -175,7 +175,7 @@ function Test-VSProjectConsistency
             $matchingFilesInFolder = @()
             # The files in the project file but with wrong node name. The adding mode is wrong.
             $matchingFilesInProjectFileButWithWrongNodeName = @()
-            foreach ($itemGroup in $xml.Project.ItemGroup | % { $_.ChildNodes })
+            foreach ($itemGroup in $xml.Project.ItemGroup | ForEach-Object { $_.ChildNodes })
             {
                 # The accepted node names.
                 $acceptedNodeNames = @("Content", "Compile")
@@ -213,18 +213,18 @@ function Test-VSProjectConsistency
             # If a file is inside a project folder then it's irrelevant for the current csproj.
             $projectFoldersInTheProjectFolder = @()
             Get-ChildItem -Path $projectFolder -Recurse |
-                ? { (PathNotContainsAnyFolder -FullFolderPath $_.FullName -Folders $directoriesToSkip) -and
+                Where-Object { (PathNotContainsAnyFolder -FullFolderPath $_.FullName -Folders $directoriesToSkip) -and
                     !$_.FullName.Substring($projectFolder.Length).StartsWith(".") -and
                     (FolderContainsCsproj $_.FullName)
                 } |
-                % { $projectFoldersInTheProjectFolder += $_ }
+                ForEach-Object { $projectFoldersInTheProjectFolder += $_ }
 
             Get-ChildItem -Path $projectFolder -Recurse -File |
-                ? { (PathNotContainsAnyFolder -FullFolderPath $_.FullName -Folders $directoriesToSkip) -and
+                Where-Object { (PathNotContainsAnyFolder -FullFolderPath $_.FullName -Folders $directoriesToSkip) -and
                     (-not $_.FullName.Substring($projectFolder.Length).StartsWith(".")) -and
                     $_.FullName -imatch $fileExtensionsForRegex
                 } |
-                % { $matchingFilesInFolder += $_.FullName.Substring($projectFolder.Length) }
+                ForEach-Object { $matchingFilesInFolder += $_.FullName.Substring($projectFolder.Length) }
             [Array]::Sort($matchingFilesInFolder)
 
             # Comparing the files included in the project file and the contents of the project folder.
@@ -273,7 +273,7 @@ function Test-VSProjectConsistency
                 }
 
                 # Checking the duplicates. The first condition is needed because ToLower() throws error if the list is empty.
-                if($helperListForDuplicatedFiles -and $helperListForDuplicatedFiles.ToLower().Contains($file.ToLower())) # This means that we have iterated through this file once before. 
+                if($helperListForDuplicatedFiles -and $helperListForDuplicatedFiles.ToLower().Contains($file.ToLower())) # This means that we have iterated through this file once before.
                 {
                     $duplicatesInProjectFile += $file
                 }
@@ -290,13 +290,13 @@ function Test-VSProjectConsistency
 
             # Detecting empty folders in the file system.
             $emptyFoldersInFileSystem = Get-ChildItem -Path $projectFolder -Recurse |
-                ? { PathNotContainsAnyFolder -FullFolderPath $_.FullName -Folders $directoriesToSkip } |
-                ? { -not $_.FullName.Substring($projectFolder.Length).StartsWith(".") } |
+                Where-Object { PathNotContainsAnyFolder -FullFolderPath $_.FullName -Folders $directoriesToSkip } |
+                Where-Object { -not $_.FullName.Substring($projectFolder.Length).StartsWith(".") } |
                 # If the file is inside a project folder then it's irrelevant for the current csproj.
-                ? { -not (FileIsInsideAnyOfTheFolders $file.FullName $projectFoldersInTheProjectFolder) }
-                ? { Test-Path $file.FullName -PathType Container } |
-                ? { (Get-ChildItem $file.FullName | Measure-Object).Count -eq 0 } |
-                % { $file.FullName.Substring($projectFolder.Length) }
+                Where-Object { -not (FileIsInsideAnyOfTheFolders $file.FullName $projectFoldersInTheProjectFolder) }
+                Where-Object { Test-Path $file.FullName -PathType Container } |
+                Where-Object { (Get-ChildItem $file.FullName | Measure-Object).Count -eq 0 } |
+                ForEach-Object { $file.FullName.Substring($projectFolder.Length) }
 
             if ($emptyFoldersInFileSystem.Count)
             {
@@ -343,13 +343,13 @@ function FolderContainsCsproj($Path)
 
 function FileIsInsideAnyOfTheFolders($FileFullPath, $Folders)
 {
-    return ($Folders | % { $FileFullPath.Contains($_.FullName) }).Count -gt 0
+    return ($Folders | ForEach-Object { $FileFullPath.Contains($_.FullName) }).Count -gt 0
 }
 
 function Write-VerboseListBox($Header, $Items)
 {
     $line = $Header -replace '.','*'
-    $itemsString = ($Items | % { "- " + $_ }) -join "`n"
+    $itemsString = ($Items | ForEach-Object { "- " + $_ }) -join "`n"
     Write-Verbose "$line`n$Header`n$line`n$itemsString`n$line"
 }
 
