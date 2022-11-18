@@ -1,4 +1,4 @@
-function Rename-ChildItemsToAsciiRecursively
+﻿function Rename-ChildItemsToAsciiRecursively
 {
     Param
     (
@@ -8,7 +8,7 @@ function Rename-ChildItemsToAsciiRecursively
 
     Process
     {
-        Get-ChildItem $Path -Recurse | % {
+        Get-ChildItem $Path -Recurse | ForEach-Object {
             $asciiName = [System.Text.Encoding]::ASCII.GetString([System.Text.Encoding]::ASCII.GetBytes($_.Name)).Replace('?', '_')
 
             if ($_.Name -eq $asciiName) { return }

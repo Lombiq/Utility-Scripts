@@ -14,6 +14,7 @@ function Start-AzureStorageEmulator
 {
     [CmdletBinding()]
     [Alias("saase")]
+    [OutputType([bool])]
     Param ()
 
     Process
