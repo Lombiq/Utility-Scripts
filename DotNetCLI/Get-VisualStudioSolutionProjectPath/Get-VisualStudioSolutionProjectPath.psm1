@@ -23,7 +23,7 @@
 
         if ($pathItem -is [System.IO.DirectoryInfo])
         {
-            $solution = Get-ChildItem -Path $Path | Where-Object { $_.Name -like "*.sln" }
+            $solution = Get-ChildItem -Path $Path | Where-Object { $PSItem.Name -like "*.sln" }
 
             if ($solution -isnot [System.IO.FileInfo])
             {
@@ -55,21 +55,21 @@
             throw "Unexpected result when trying to examine the `"$Path`" path!"
         }
 
-        $projectPaths = dotnet sln "$($solution.FullName)" list | Where-Object { $_ -like "*.csproj" }
+        $projectPaths = dotnet sln "$($solution.FullName)" list | Where-Object { $PSItem -like "*.csproj" }
         $projects = $projectPaths | ForEach-Object { Get-Item "$($solution.DirectoryName)\$_" }
 
         if (-not [string]::IsNullOrEmpty($ProjectNameFilter))
         {
-            $projects = $projects | Where-Object { $_.BaseName -like "$ProjectNameFilter" }
+            $projects = $projects | Where-Object { $PSItem.BaseName -like "$ProjectNameFilter" }
         }
 
         if ($RelativePaths.IsPresent)
         {
-            return $projects | ForEach-Object { $_.FullName.SubString($solution.DirectoryName.Length + 1) }
+            return $projects | ForEach-Object { $PSItem.FullName.SubString($solution.DirectoryName.Length + 1) }
         }
         else
         {
-            return $projects | ForEach-Object { $_.FullName }
+            return $projects | ForEach-Object { $PSItem.FullName }
         }
     }
 }

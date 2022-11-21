@@ -43,17 +43,17 @@ function Get-VisualStudioProjectNuGetPackage
         # In the future (once https://github.com/NuGet/Home/issues/7752 is resolved) we may be able to request this
         # output in JSON or similar format. If so, this code should be replaced to use that and e.g. ConvertFrom-Json.
         $packageList = dotnet list $pathItem.FullName package |
-            ForEach-Object { $_.Trim() } |
-            Where-Object { $_.StartsWith(">") } |
+            ForEach-Object { $PSItem.Trim() } |
+            Where-Object { $PSItem.StartsWith(">") } |
             ForEach-Object {
-                ($Name, $Requested, $Resolved) = $_.TrimStart(">").Split(" ", [System.StringSplitOptions]::RemoveEmptyEntries)
+                ($Name, $Requested, $Resolved) = $PSItem.TrimStart(">").Split(" ", [System.StringSplitOptions]::RemoveEmptyEntries)
 
                 New-Object PSObject -Property @{ Name = $Name; Requested = $Requested; Resolved = $Resolved }
             }
 
         if (-not [string]::IsNullOrEmpty($PackageNameFilter))
         {
-            $packageList = $packageList | Where-Object { $_.Name -like "$PackageNameFilter" }
+            $packageList = $packageList | Where-Object { $PSItem.Name -like "$PackageNameFilter" }
         }
 
         $packageList
