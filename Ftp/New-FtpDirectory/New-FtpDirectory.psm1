@@ -37,8 +37,8 @@ function New-FtpDirectory
         $credentials = New-Object System.Net.NetworkCredential($User, $Password)
 
         $srcEntries = Get-ChildItem $LocalFolderPath -Recurse
-        $srcFolders = $srcEntries | Where-Object { $_.PSIsContainer }
-        $srcFiles = $srcEntries | Where-Object { !$_.PSIsContainer }
+        $srcFolders = $srcEntries | Where-Object { $PSItem.PSIsContainer }
+        $srcFiles = $srcEntries | Where-Object { !$PSItem.PSIsContainer }
 
         # Create folder.
         try

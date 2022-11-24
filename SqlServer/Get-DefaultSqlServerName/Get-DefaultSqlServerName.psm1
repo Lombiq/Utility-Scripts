@@ -16,7 +16,7 @@ function Get-DefaultSqlServerName
     Process
     {
         $serverServices = Get-CimInstance win32_Service |
-            Where-Object { $_.Name -match "MSSQL" -and $_.PathName -match "sqlservr.exe" }
+            Where-Object { $PSItem.Name -match "MSSQL" -and $PSItem.PathName -match "sqlservr.exe" }
         $servicePath = ""
 
         # No SQL Servers installed.
@@ -30,9 +30,9 @@ function Get-DefaultSqlServerName
             $servicePath = $serverServices.PathName
         }
         # More than one SQL Servers installed and one of them is named "MSSQLSERVER" (default name), so let's choose that.
-        elseif ($null -ne ($serverServices | Where-Object { $_.Name -eq "MSSQLSERVER" }))
+        elseif ($null -ne ($serverServices | Where-Object { $PSItem.Name -eq "MSSQLSERVER" }))
         {
-            $servicePath = ($serverServices | Where-Object { $_.Name -eq "MSSQLSERVER" }).PathName
+            $servicePath = ($serverServices | Where-Object { $PSItem.Name -eq "MSSQLSERVER" }).PathName
         }
         # More than one SQL Servers installed, choosing the first one.
         else

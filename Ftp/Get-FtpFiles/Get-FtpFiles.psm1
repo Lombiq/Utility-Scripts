@@ -82,7 +82,7 @@ function Get-FtpFile
 
         try
         {
-            $session.add_FileTransferProgress({ FileTransferProgress($_) })
+            $session.add_FileTransferProgress({ FileTransferProgress($PSItem) })
 
             $session.Open($sessionOptions)
 

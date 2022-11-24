@@ -29,25 +29,25 @@ function Get-ProcessId
         [array] $processes = Get-Process $Name -ErrorAction SilentlyContinue
         if ($null -eq $processes) { $processes = @() }
 
-        if (-not $CommandLine) { return $processes | ForEach-Object { $_.Id } }
+        if (-not $CommandLine) { return $processes | ForEach-Object { $PSItem.Id } }
 
         [hashtable[]] $processes = $(if ($host.Version.Major -ge 7)
         {
-            $processes | ForEach-Object { @{ Id = $_.Id; CommandLine = $_.CommandLine } }
+            $processes | ForEach-Object { @{ Id = $PSItem.Id; CommandLine = $PSItem.CommandLine } }
         }
         else
         {
             Get-CimInstance Win32_Process -Filter "name = '${Name}.exe'" |
-                ForEach-Object { @{ Id = $_.Handle; CommandLine = $_.CommandLine } }
+                ForEach-Object { @{ Id = $PSItem.Handle; CommandLine = $PSItem.CommandLine } }
         })
 
         if (-not [string]::IsNullOrEmpty($CommandLine))
         {
             if (-not $CommandLine.Contains('*')) { $CommandLine = "*$CommandLine*" }
 
-            $processes = $processes | Where-Object { $_.CommandLine -like $CommandLine }
+            $processes = $processes | Where-Object { $PSItem.CommandLine -like $CommandLine }
         }
 
-        $processes | ForEach-Object { [int] $_.Id }
+        $processes | ForEach-Object { [int] $PSItem.Id }
     }
 }

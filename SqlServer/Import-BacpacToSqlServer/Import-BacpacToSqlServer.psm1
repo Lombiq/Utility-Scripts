@@ -68,10 +68,10 @@ function Import-BacpacToSqlServer
             $defaultSqlPackageExecutablePath = @(
                 [System.IO.Path]::Combine($Env:ProgramFiles, "Microsoft SQL Server"),
                 [System.IO.Path]::Combine(${Env:ProgramFiles(x86)}, "Microsoft SQL Server")) |
-                Where-Object { Test-Path $_ } |
-                ForEach-Object { Get-ChildItem $_ | Where-Object { [int] $dummy = 0; [int]::TryParse($_.Name, [ref] $dummy) } } |
-                ForEach-Object { [System.IO.Path]::Combine($_.FullName, "DAC", "bin", "SqlPackage.exe") } |
-                Where-Object { Test-Path $_ } |
+                Where-Object { Test-Path $PSItem } |
+                ForEach-Object { Get-ChildItem $PSItem | Where-Object { [int] $dummy = 0; [int]::TryParse($PSItem.Name, [ref] $dummy) } } |
+                ForEach-Object { [System.IO.Path]::Combine($PSItem.FullName, "DAC", "bin", "SqlPackage.exe") } |
+                Where-Object { Test-Path $PSItem } |
                 Sort-Object -Descending |
                 Select-Object -First 1
 
