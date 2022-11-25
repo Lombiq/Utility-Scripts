@@ -13,7 +13,7 @@ function Get-ProcessId
     [CmdletBinding()]
     Param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string] $Name,
 
         [string] $CommandLine
@@ -32,14 +32,14 @@ function Get-ProcessId
         if (-not $CommandLine) { return $processes | ForEach-Object { $PSItem.Id } }
 
         [hashtable[]] $processes = $(if ($host.Version.Major -ge 7)
-        {
-            $processes | ForEach-Object { @{ Id = $PSItem.Id; CommandLine = $PSItem.CommandLine } }
-        }
-        else
-        {
-            Get-CimInstance Win32_Process -Filter "name = '${Name}.exe'" |
-                ForEach-Object { @{ Id = $PSItem.Handle; CommandLine = $PSItem.CommandLine } }
-        })
+            {
+                $processes | ForEach-Object { @{ Id = $PSItem.Id; CommandLine = $PSItem.CommandLine } }
+            }
+            else
+            {
+                Get-CimInstance Win32_Process -Filter "name = '${Name}.exe'" |
+                    ForEach-Object { @{ Id = $PSItem.Handle; CommandLine = $PSItem.CommandLine } }
+            })
 
         if (-not [string]::IsNullOrEmpty($CommandLine))
         {

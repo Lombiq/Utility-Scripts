@@ -43,27 +43,27 @@ function Restart-Site
 		$whiteListFolders = @("\src\Orchard.Azure\Orchard.Azure.CloudService\Orchard.Azure.WebContent\Bin")
 
 		Get-ChildItem -Path ($Path + "\src\") -Recurse |
-		Where-Object { $PSItem.PSIsContainer -and ( $PSItem.Name -eq "bin" -or $PSItem.Name -eq "obj") } |
-		ForEach-Object {
-			if($whiteListFolders.Contains($PSItem.FullName.Substring($Path.Length)))
-			{
-				Get-ChildItem -Path $PSItem.FullName -Recurse -File |
-				ForEach-Object {
-					if(!$whiteList.Contains($PSItem.FullName.Substring($Path.Length)))
+			Where-Object { $PSItem.PSIsContainer -and ( $PSItem.Name -eq "bin" -or $PSItem.Name -eq "obj") } |
+			ForEach-Object {
+				if ($whiteListFolders.Contains($PSItem.FullName.Substring($Path.Length)))
+				{
+					Get-ChildItem -Path $PSItem.FullName -Recurse -File |
+						ForEach-Object {
+							if (!$whiteList.Contains($PSItem.FullName.Substring($Path.Length)))
+							{
+								Remove-Item $PSItem.FullName -Force
+							}
+						}
+					}
+					else
 					{
-						Remove-Item $PSItem.FullName -Force
+						Remove-Item $PSItem.FullName -Recurse -Force
 					}
 				}
-			}
-			else
-			{
-				Remove-Item $PSItem.FullName -Recurse -Force
-			}
-		}
 
 		# Deleting App_Data
 		$appDataPath = $Path + "\src\Orchard.Web\App_Data\"
-		if(Test-Path ($appDataPath))
+		if (Test-Path ($appDataPath))
 		{
 			Remove-Item -Path ($appDataPath) -Recurse -Force
 		}

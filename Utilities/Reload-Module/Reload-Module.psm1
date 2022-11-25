@@ -23,7 +23,7 @@ function Reload-Module
     (
         # The path to a folder where PowerShell modules should be reloaded.
         [Parameter(ValueFromPipelineByPropertyName = $true,
-                   Position = 0)]
+            Position = 0)]
         $Path = $PSScriptRoot
     )
     Process
@@ -39,7 +39,7 @@ function Reload-Module
                 foreach ($module in $modules)
                 {
                     Import-Module $module.FullName -Force
-                    $loadedModules += ,"* $($module.FullName)"
+                    $loadedModules += , "* $($module.FullName)"
                 }
 
                 $header = "Reloading PowerShell modules:";

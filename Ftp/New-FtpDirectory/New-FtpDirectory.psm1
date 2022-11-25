@@ -12,23 +12,23 @@ function New-FtpDirectory
     [CmdletBinding()]
     Param
     (
-        [Parameter(Mandatory=$true,
-                   ValueFromPipelineByPropertyName=$true,
-                   HelpMessage = "Specify a valid FTP server path to a folder.")]
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true,
+            HelpMessage = "Specify a valid FTP server path to a folder.")]
         [string] $Url,
 
-        [Parameter(Mandatory=$true,
-                   ValueFromPipelineByPropertyName=$true,
-                   HelpMessage = "Provide username.")]
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true,
+            HelpMessage = "Provide username.")]
         [string] $User,
 
-        [Parameter(Mandatory=$true,
-                   ValueFromPipelineByPropertyName=$true,
-                   HelpMessage = "Provide password in SecureString format.")]
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true,
+            HelpMessage = "Provide password in SecureString format.")]
         [securestring] $Password,
 
-        [Parameter(Mandatory=$true,
-                   HelpMessage = "Specify path to local folder to upload.")]
+        [Parameter(Mandatory = $true,
+            HelpMessage = "Specify path to local folder to upload.")]
         [string] $LocalFolderPath
     )
 
@@ -44,7 +44,7 @@ function New-FtpDirectory
         try
         {
             $makeDirectory = [System.Net.WebRequest]::Create($Url)
-            $makeDirectory.Credentials =  $credentials
+            $makeDirectory.Credentials = $credentials
             $makeDirectory.Method = [System.Net.WebRequestMethods+FTP]::MakeDirectory
             $makeDirectory.EnableSsl = $true
             $makeDirectory.GetResponse()

@@ -140,7 +140,7 @@ function Reset-OrchardCoreApp
 
             if ($LASTEXITCODE -ne 0)
             {
-                pause
+                Pause
 
                 exit $LASTEXITCODE
             }
@@ -187,10 +187,10 @@ function Reset-OrchardCoreApp
 
             $newSqlServerDatabaseParameters = @{
                 SqlServerName = $SetupDatabaseServerName
-                DatabaseName = $SetupDatabaseName
-                ErrorAction = "Stop"
-                UserName = $SetupDatabaseSqlUser
-                Password = (ConvertTo-SecureString $SetupDatabaseSqlPassword -AsPlainText -Force)
+                DatabaseName  = $SetupDatabaseName
+                ErrorAction   = "Stop"
+                UserName      = $SetupDatabaseSqlUser
+                Password      = (ConvertTo-SecureString $SetupDatabaseSqlPassword -AsPlainText -Force)
             }
             if (New-SqlServerDatabase -Force:$Force.IsPresent @newSqlServerDatabaseParameters)
             {
@@ -272,8 +272,8 @@ function Reset-OrchardCoreApp
 
         $processParameters = @{
             WorkingDirectory = $WebProjectPath
-            FilePath = "dotnet"
-            ArgumentList = @(
+            FilePath         = "dotnet"
+            ArgumentList     = @(
                 "$($webProjectDllFile.FullName)"
                 "--urls $applicationUrl"
                 "--environment $environmentSetting"
@@ -317,15 +317,15 @@ function Reset-OrchardCoreApp
         Write-Verbose "Application started, attempting to run setup!"
 
         $tenantSetupSettings = @{
-            SiteName = $SetupSiteName
+            SiteName         = $SetupSiteName
             DatabaseProvider = $SetupDatabaseProvider
-            TablePrefix = $SetupDatabaseTablePrefix
+            TablePrefix      = $SetupDatabaseTablePrefix
             ConnectionString = $SetupDatabaseConnectionString
-            RecipeName = $SetupRecipeName
-            UserName = $SetupUserName
-            Password = $SetupPassword
-            Email = $SetupEmail
-            Name = $SetupTenantName
+            RecipeName       = $SetupRecipeName
+            UserName         = $SetupUserName
+            Password         = $SetupPassword
+            Email            = $SetupEmail
+            Name             = $SetupTenantName
         }
 
         $setupRequest = Invoke-WebRequest -Method Post -Uri "$applicationUrl/api/tenants/setup" -Body (ConvertTo-Json($tenantSetupSettings)) -ContentType "application/json" -UseBasicParsing
@@ -354,7 +354,7 @@ function Reset-OrchardCoreApp
 
         if ($Pause.IsPresent)
         {
-            pause
+            Pause
         }
 
         exit 0

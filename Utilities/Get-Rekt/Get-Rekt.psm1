@@ -1,12 +1,12 @@
 ﻿<#
 .Synopsis
-   Throws an exception.
+    Throws an exception.
 
 .DESCRIPTION
-   Reks the script execution by throwing a fatal exception.
+    Reks the script execution by throwing a fatal exception.
 
 .EXAMPLE
-   Get-Rekt
+    Get-Rekt
 #>
 
 

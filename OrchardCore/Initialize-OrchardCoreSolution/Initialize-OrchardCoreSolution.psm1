@@ -18,7 +18,7 @@ function Initialize-OrchardCoreSolution
     (
         [string] $Path = (Get-Location).Path,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string] $Name,
 
         [string] $ModuleName,

@@ -16,10 +16,10 @@ function Test-Url
     [OutputType([bool])]
     Param
     (
-        [Parameter(Mandatory=$true,
-                   ValueFromPipelineByPropertyName=$true,
-                   Position=0,
-                   HelpMessage = "Please specify a full URL (including protocol) to ping.")]
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 0,
+            HelpMessage = "Please specify a full URL (including protocol) to ping.")]
         [string] $Url,
 
         [Parameter(HelpMessage = "Request timeout in seconds. The default value is 100.")]
