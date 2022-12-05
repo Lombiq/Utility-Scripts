@@ -10,4 +10,4 @@ on:
 jobs:
   check-spelling:
     name: Check Spelling
-    uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@issue/OSOE-470
+    uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@dev
