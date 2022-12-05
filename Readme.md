@@ -58,7 +58,7 @@ On what the different scripts do specifically and how to use them take a look at
     - Test-SqlServerDatabase: Checks whether the given database exists in a local SQL Server instance.
 - Utilities: The true utilities!
     - CreateTrustedCertificate: Creates all necessary files and imports them into the local Certificate Store so that it can be used to access localhost sites via HTTPS, without the browser showing certificate errors.
-    - Get-Rekt: Reks the script execution by throwing a fatal exception :).
+    - Get-Rekt: Wrecks the script execution by throwing a fatal exception :).
     - Reload-Module: Reloads PowerShell modules from a folder.
     - Set-FileContent: Replaces a string in a file.
     - Test-Url: Sends a ping request to a URL, returning a boolean value based on the response.
