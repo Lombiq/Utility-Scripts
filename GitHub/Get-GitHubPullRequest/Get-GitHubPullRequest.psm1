@@ -91,7 +91,7 @@
 
             $credentialsBase64 = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($apiCredentials))
             $webRequestParameters = @{
-                Uri     = "https://api.github.com/repos/$repositoryPath/pulls/$pullRequestId"
+                Uri = "https://api.github.com/repos/$repositoryPath/pulls/$pullRequestId"
                 Headers = @{Authorization = "Basic $credentialsBase64" }
             }
             $pullRequest = Invoke-WebRequest @webRequestParameters -UseBasicParsing | ConvertFrom-Json

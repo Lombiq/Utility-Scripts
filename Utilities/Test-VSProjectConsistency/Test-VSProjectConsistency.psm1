@@ -294,8 +294,8 @@ function Test-VSProjectConsistency
                 Where-Object { PathNotContainsAnyFolder -FullFolderPath $PSItem.FullName -Folders $directoriesToSkip } |
                 Where-Object { -not $PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") } |
                 # If the file is inside a project folder then it's irrelevant for the current csproj.
-                Where-Object { -not (FileIsInsideAnyOfTheFolders $file.FullName $projectFoldersInTheProjectFolder) }
-            Where-Object { Test-Path $file.FullName -PathType Container } |
+                Where-Object { -not (FileIsInsideAnyOfTheFolders $file.FullName $projectFoldersInTheProjectFolder) } |
+                Where-Object { Test-Path $file.FullName -PathType Container } |
                 Where-Object { (Get-ChildItem $file.FullName | Measure-Object).Count -eq 0 } |
                 ForEach-Object { $file.FullName.Substring($projectFolder.Length) }
 

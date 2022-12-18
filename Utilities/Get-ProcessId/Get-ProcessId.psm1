@@ -1,11 +1,11 @@
 ﻿<#
 .Synopsis
-   Returns the process IDs for a given criteria.
+    Returns the process IDs for a given criteria.
 .DESCRIPTION
-   Returns the IDs of the active processes filtering on process name (automatically adds ".exe" on Windows Powershell)
-   and optionally checks to contents of the command line invocation. The results can be passed to e.g. Stop-Process.
+    Returns the IDs of the active processes filtering on process name (automatically adds ".exe" on Windows Powershell)
+    and optionally checks to contents of the command line invocation. The results can be passed to e.g. Stop-Process.
 .EXAMPLE
-   Get-ProcessId -Name node -CommandLine azurite
+    Get-ProcessId -Name node -CommandLine azurite
 #>
 
 function Get-ProcessId
