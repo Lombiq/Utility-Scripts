@@ -7,10 +7,6 @@ on:
     branches:
       - dev
 
-defaults:
-  run:
-    shell: pwsh
-
 jobs:
   powershell-static-code-analysis:
     name: PowerShell Static Code Analysis
@@ -24,15 +20,12 @@ jobs:
         with:
           submodules: "recursive"
 
-      - name: Windows PowerShell Static Code Analysis
-        run: |
-          if ($Env:RUNNER_OS -ne 'Windows') 
-          {
-              Write-Output "This step is only for Windows. The current runner is $Env:RUNNER_OS so it's skipped."
-              exit 0
-          }
-          powershell .\tools\Lombiq.Analyzers.PowerShell\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
+      - name: Windows PowerShell Static Code Analysis (Windows-only)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: .\tools\Lombiq.Analyzers.PowerShell\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
 
       - name: PowerShell 7+ Static Code Analysis
         if: always() # Even if the above fails, let's check both.
+        shell: pwsh
         run: .\tools\Lombiq.Analyzers.PowerShell\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
