@@ -16,9 +16,8 @@ jobs:
     runs-on: ${{ matrix.machine-type }}
 
     steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: "recursive"
+      - name: Checkout
+        uses: Lombiq/GitHub-Actions/.github/actions/checkout@dev
 
       - name: Windows PowerShell Static Code Analysis (Windows-only)
         if: runner.os == 'Windows'
