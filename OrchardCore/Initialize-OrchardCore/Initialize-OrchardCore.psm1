@@ -1,6 +1,6 @@
 ﻿<#
 .Synopsis
-   Initializes an Orchard Core solution for a git repository. Deprecated, use Initialize-OrchardCoreSolution instead.
+    Initializes an Orchard Core solution for a git repository. Deprecated, use Initialize-OrchardCoreSolution instead.
 #>
 
 
@@ -12,7 +12,7 @@ function Initialize-OrchardCore
     (
         [string] $Path = (Get-Location).Path,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string] $Name,
 
         [string] $ModuleName,
@@ -22,6 +22,12 @@ function Initialize-OrchardCore
 
     Process
     {
-        Initialize-OrchardCoreSolution -Name $Name -Path $Path -ModuleName $ModuleName -ThemeName $ThemeName -NuGetSource $NuGetSource
+        Initialize-OrchardCoreSolution @{
+            Name = $Name
+            Path = $Path
+            ModuleName = $ModuleName
+            ThemeName = $ThemeName
+            NuGetSource = $NuGetSource
+        }
     }
 }

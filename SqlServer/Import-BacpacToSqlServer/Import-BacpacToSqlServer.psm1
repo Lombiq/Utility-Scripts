@@ -75,7 +75,8 @@ function Import-BacpacToSqlServer
                 Sort-Object -Descending |
                 Select-Object -First 1
 
-            if ([string]::IsNullOrWhiteSpace($locatedPath)) {
+            if ([string]::IsNullOrWhiteSpace($locatedPath))
+            {
                 $sqlPackageExecutablePath = $defaultSqlPackageExecutablePath
                 Write-Verbose "SQL Package executable for importing the database found at `"$sqlPackageExecutablePath`"!"
             }

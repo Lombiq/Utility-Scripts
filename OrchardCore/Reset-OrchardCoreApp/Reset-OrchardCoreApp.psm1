@@ -140,7 +140,7 @@ function Reset-OrchardCoreApp
 
             if ($LASTEXITCODE -ne 0)
             {
-                pause
+                Pause
 
                 exit $LASTEXITCODE
             }
@@ -354,7 +354,7 @@ function Reset-OrchardCoreApp
 
         if ($Pause.IsPresent)
         {
-            pause
+            Pause
         }
 
         exit 0
