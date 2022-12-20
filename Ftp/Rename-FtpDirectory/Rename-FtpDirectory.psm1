@@ -12,28 +12,28 @@ function Rename-FtpDirectory
     [CmdletBinding()]
     Param
     (
-        [Parameter(Mandatory=$true,
-                   ValueFromPipelineByPropertyName=$true,
-                   HelpMessage = "Specify a valid FTP server path to a folder that contains the directory which
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true,
+            HelpMessage = "Specify a valid FTP server path to a folder that contains the directory which
                    needs to be renamed.")]
         [string] $Url,
 
-        [Parameter(Mandatory=$true,
-                   ValueFromPipelineByPropertyName=$true,
-                   HelpMessage = "Provide username.")]
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true,
+            HelpMessage = "Provide username.")]
         [string] $User,
 
-        [Parameter(Mandatory=$true,
-                   ValueFromPipelineByPropertyName=$true,
-                   HelpMessage = "Provide password in SecureString format.")]
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true,
+            HelpMessage = "Provide password in SecureString format.")]
         [securestring] $Password,
 
-        [Parameter(Mandatory=$true,
-                   HelpMessage = "Specify folder to rename.")]
+        [Parameter(Mandatory = $true,
+            HelpMessage = "Specify folder to rename.")]
         [string] $SourceFolder,
 
-        [Parameter(Mandatory=$true,
-                   HelpMessage = "Specify new folder name.")]
+        [Parameter(Mandatory = $true,
+            HelpMessage = "Specify new folder name.")]
         [string] $DestinationFolder
     )
 

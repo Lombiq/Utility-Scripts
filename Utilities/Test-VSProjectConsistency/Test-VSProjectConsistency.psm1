@@ -102,7 +102,7 @@ function Test-VSProjectConsistency
         }
 
         # Return with a message if there aren't any .csproj files to process.
-        if($projectFiles.Length -eq 0)
+        if ($projectFiles.Length -eq 0)
         {
             Write-Output "No .csproj in the folder."
             return
@@ -193,7 +193,7 @@ function Test-VSProjectConsistency
                         $matchingFilesInProjectFile += $decodedFullPath
 
                         # Filtering the wrong node names.
-                        if($acceptedButWrongNodeName.Contains($node.Name))
+                        if ($acceptedButWrongNodeName.Contains($node.Name))
                         {
                             $matchingFilesInProjectFileButWithWrongNodeName += $decodedFullPath
                         }
@@ -273,7 +273,8 @@ function Test-VSProjectConsistency
                 }
 
                 # Checking the duplicates. The first condition is needed because ToLower() throws error if the list is empty.
-                if($helperListForDuplicatedFiles -and $helperListForDuplicatedFiles.ToLower().Contains($file.ToLower())) # This means that we have iterated through this file once before.
+                # This means that we have iterated through this file once before.
+                if ($helperListForDuplicatedFiles -and $helperListForDuplicatedFiles.ToLower().Contains($file.ToLower()))
                 {
                     $duplicatesInProjectFile += $file
                 }
@@ -293,7 +294,7 @@ function Test-VSProjectConsistency
                 Where-Object { PathNotContainsAnyFolder -FullFolderPath $PSItem.FullName -Folders $directoriesToSkip } |
                 Where-Object { -not $PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") } |
                 # If the file is inside a project folder then it's irrelevant for the current csproj.
-                Where-Object { -not (FileIsInsideAnyOfTheFolders $file.FullName $projectFoldersInTheProjectFolder) }
+                Where-Object { -not (FileIsInsideAnyOfTheFolders $file.FullName $projectFoldersInTheProjectFolder) } |
                 Where-Object { Test-Path $file.FullName -PathType Container } |
                 Where-Object { (Get-ChildItem $file.FullName | Measure-Object).Count -eq 0 } |
                 ForEach-Object { $file.FullName.Substring($projectFolder.Length) }
@@ -310,18 +311,18 @@ function Test-VSProjectConsistency
 
             # Checking min and map files without a corresponding parent file.
             $mapAndMinFilesWithoutParent = @()
-            foreach($mapFile in $matchingFilesInProjectFile | Where-Object {$PSItem -match "\.map$"})
+            foreach ($mapFile in $matchingFilesInProjectFile | Where-Object { $PSItem -match "\.map$" })
             {
-                if(!$matchingFilesInProjectFile.Contains($mapFile.Substring(0, $mapFile.Length - 4)))
+                if (!$matchingFilesInProjectFile.Contains($mapFile.Substring(0, $mapFile.Length - 4)))
                 {
                     $mapAndMinFilesWithoutParent += $mapFile
                 }
             }
-            foreach($minFile in $matchingFilesInProjectFile | Where-Object {$PSItem -match "\.min\."})
+            foreach ($minFile in $matchingFilesInProjectFile | Where-Object { $PSItem -match "\.min\." })
             {
                 $minFileWithoutMin = $minFile -replace "\.min\.", "."
-                if(!($matchingFilesInProjectFile.Contains(($minFileWithoutMin)) -or
-                    $matchingFilesInProjectFile.Contains(($minFileWithoutMin -replace "\.map", ""))))
+                if (!($matchingFilesInProjectFile.Contains(($minFileWithoutMin)) -or
+                        $matchingFilesInProjectFile.Contains(($minFileWithoutMin -replace "\.map", ""))))
                 {
                     $mapAndMinFilesWithoutParent += $minFile
                 }
@@ -348,7 +349,7 @@ function FileIsInsideAnyOfTheFolders($FileFullPath, $Folders)
 
 function Write-VerboseListBox($Header, $Items)
 {
-    $line = $Header -replace '.','*'
+    $line = $Header -replace '.', '*'
     $itemsString = ($Items | ForEach-Object { "- " + $PSItem }) -join "`n"
     Write-Verbose "$line`n$Header`n$line`n$itemsString`n$line"
 }
