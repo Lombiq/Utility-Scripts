@@ -22,12 +22,14 @@ function Initialize-OrchardCore
 
     Process
     {
-        Initialize-OrchardCoreSolution @{
+        $initializationParameters = @{
             Name = $Name
             Path = $Path
             ModuleName = $ModuleName
             ThemeName = $ThemeName
             NuGetSource = $NuGetSource
         }
+
+        Initialize-OrchardCoreSolution @initializationParameters
     }
 }
