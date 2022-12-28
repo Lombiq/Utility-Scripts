@@ -191,8 +191,9 @@ function Reset-OrchardCoreApp
                 ErrorAction = "Stop"
                 UserName = $SetupDatabaseSqlUser
                 Password = (ConvertTo-SecureString $SetupDatabaseSqlPassword -AsPlainText -Force)
+                Force = $Force
             }
-            if (New-SqlServerDatabase -Force:$Force.IsPresent @newSqlServerDatabaseParameters)
+            if (New-SqlServerDatabase @newSqlServerDatabaseParameters)
             {
                 Write-Verbose "Database `"$SetupDatabaseServerName\$SetupDatabaseName`" created!"
             }
