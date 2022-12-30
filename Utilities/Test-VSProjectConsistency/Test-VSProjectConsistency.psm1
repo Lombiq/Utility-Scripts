@@ -110,23 +110,23 @@ function Test-VSProjectConsistency
 
         # The default whitelist of the extensions to we're interested in.
         $fileExtensions = @(
+            ".config",
             ".cs",
             ".cshtml",
-            ".info",
-            ".config",
-            ".less",
-            ".png",
-            ".jpg",
-            ".jpeg",
+            ".css.map",
+            ".css",
             ".gif",
             ".ico",
-            ".ts",
-            ".css",
-            ".min.css",
-            ".css.map",
+            ".info",
+            ".jpeg",
+            ".jpg",
+            ".js.map",
             ".js",
+            ".less",
+            ".min.css",
             ".min.js",
-            ".js.map")
+            ".png",
+            ".ts")
         $fileExtensionsForRegex = "(" + ($fileExtensions -join "|") + ")$"
         # Adding additional whitelisted extensions to the whitelist.
         foreach ($extension in $AdditionalFileExtensions)
