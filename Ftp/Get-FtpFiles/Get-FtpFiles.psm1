@@ -9,7 +9,7 @@ function FileTransferProgress
 {
     param
     (
-        [WinSCP.FileTransferProgressEventArgs] $transferEvent
+        [System.Object] $transferEvent
     )
 
     if ($null -ne $script:lastFileName -and $script:lastFileName -ne $transferEvent.FileName)
