@@ -1,12 +1,12 @@
 ﻿<#
 .Synopsis
-   Resets and sets up an Orchard Core application.
+    Resets and sets up an Orchard Core application.
 
 .DESCRIPTION
-   Resets an Orchard Core application to its blank state even if it's running, then runs its setup with the given parameters. Note that for the setup to work you'll need to configure the app to accept unauthenticated API requests for the duration of the setup; you can do this with Setup Extensions: https://github.com/Lombiq/Setup-Extensions#logged-in-user-authentication-for-api-requests.
+    Resets an Orchard Core application to its blank state even if it's running, then runs its setup with the given parameters. Note that for the setup to work you'll need to configure the app to accept unauthenticated API requests for the duration of the setup; you can do this with Setup Extensions: https://github.com/Lombiq/Setup-Extensions#logged-in-user-authentication-for-api-requests.
 
 .EXAMPLE
-   Reset-OrchardCoreApp -WebProjectPath "." -SetupSiteName "FancyWebsite" -SetupRecipeName "FancyWebsite.DevelopmentSetup"
+    Reset-OrchardCoreApp -WebProjectPath "." -SetupSiteName "FancyWebsite" -SetupRecipeName "FancyWebsite.DevelopmentSetup"
 #>
 
 
@@ -34,9 +34,7 @@ function Reset-OrchardCoreApp
         [string] $SetupPassword = "Password1!",
         [string] $SetupEmail = "admin@localhost",
 
-
         [int] $Port = 5000,
-
 
         [Parameter(ParameterSetName = "ServerDB", Mandatory)]
         [string] [ValidateSet("SqlConnection")] $SetupDatabaseProvider = "Sqlite",
@@ -62,7 +60,6 @@ function Reset-OrchardCoreApp
         [Parameter(ParameterSetName = "ServerDB")]
         [switch] $SuffixDatabaseNameWithFolderName,
 
-
         [switch] $Rebuild,
         [switch] $KeepAlive,
         [switch] $Pause
@@ -74,7 +71,7 @@ function Reset-OrchardCoreApp
 
         if (Test-Path -Path $WebProjectPath -PathType Leaf)
         {
-            $webProjectDllPath = $WebProjectPath;
+            $webProjectDllPath = $WebProjectPath
             $siteName = (Get-Item $WebProjectPath).BaseName
             $WebProjectPath = (Get-Item $WebProjectPath).DirectoryName
         }
@@ -120,7 +117,7 @@ function Reset-OrchardCoreApp
 
         # Rebuilding the application if the "Rebuild" switch is present or the Web Project DLL is not found.
 
-        $buildRequired = $false;
+        $buildRequired = $false
         if ($Rebuild.IsPresent)
         {
             Write-Verbose "Rebuild switch active!"
@@ -170,7 +167,7 @@ function Reset-OrchardCoreApp
 
                 while (-not [string]::IsNullOrEmpty($solutionPath) -and -not (Test-Path (Join-Path $solutionPath "*.sln")))
                 {
-                    $solutionPath = Split-Path $solutionPath -Parent;
+                    $solutionPath = Split-Path $solutionPath -Parent
                 }
 
                 if ([string]::IsNullOrEmpty($solutionPath))
@@ -390,5 +387,5 @@ function GetWebProjectDllPath([string] $WebProjectPath)
         return $webProjectDllPath.Substring(2)
     }
 
-    return "";
+    return ""
 }
