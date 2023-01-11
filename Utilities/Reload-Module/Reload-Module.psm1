@@ -42,7 +42,7 @@ function Reload-Module
                     $loadedModules += , "* $($module.FullName)"
                 }
 
-                $header = "Reloading PowerShell modules:";
+                $header = "Reloading PowerShell modules:"
                 $line = $header -replace '.', '*'
                 Write-Verbose "`n$header`n$line`n$($loadedModules -join "`n")`n$line`n"
             }
