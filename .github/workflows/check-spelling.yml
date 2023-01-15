@@ -11,3 +11,5 @@ jobs:
   check-spelling:
     name: Check Spelling
     uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@dev
+    with:
+      spell-check-this: Lombiq/GitHub-Actions@dev
