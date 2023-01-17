@@ -3,7 +3,7 @@
    Creates a new SQL Server connection object.
 #>
 
-[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.ConnectionInfo")
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.ConnectionInfo')
 
 function New-SqlServerConnection
 {

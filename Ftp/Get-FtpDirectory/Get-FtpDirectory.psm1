@@ -14,21 +14,21 @@ function Get-FtpDirectory
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
-            HelpMessage = "Specify a valid FTP server path to a folder.")]
+            HelpMessage = 'Specify a valid FTP server path to a folder.')]
         [string] $Url,
 
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
-            HelpMessage = "Provide username.")]
+            HelpMessage = 'Provide username.')]
         [string] $User,
 
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
-            HelpMessage = "Provide password in SecureString format.")]
+            HelpMessage = 'Provide password in SecureString format.')]
         [securestring] $Password,
 
         [Parameter(Mandatory = $true,
-            HelpMessage = "Specify path to local folder to download.")]
+            HelpMessage = 'Specify path to local folder to download.')]
         [string] $LocalPath
     )
 
@@ -64,12 +64,12 @@ function Get-FtpDirectory
 
         foreach ($line in $lines)
         {
-            $tokens = $line.Split(" ", 9, [StringSplitOptions]::RemoveEmptyEntries)
+            $tokens = $line.Split(' ', 9, [StringSplitOptions]::RemoveEmptyEntries)
             $name = $tokens[3]
-            $isDirectory = $tokens[2] -eq "<DIR>"
+            $isDirectory = $tokens[2] -eq '<DIR>'
 
             $localFilePath = Join-Path $LocalPath $name
-            $fileUrl = ($Url + "/" + $name)
+            $fileUrl = ($Url + '/' + $name)
 
             if ($isDirectory)
             {
@@ -79,7 +79,7 @@ function Get-FtpDirectory
                     New-Item $localFilePath -Type directory | Out-Null
                 }
 
-                Get-FtpDirectory -Url ($fileUrl + "/") -User $User -Password $Password -LocalPath $localFilePath
+                Get-FtpDirectory -Url ($fileUrl + '/') -User $User -Password $Password -LocalPath $localFilePath
             }
             else
             {

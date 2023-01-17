@@ -28,7 +28,7 @@ function Restart-Site
         # If the path is invalid, then return an error.
         if (!(Test-Path ($Path)))
         {
-            Write-Error ("File or folder not found!")
+            Write-Error ('File or folder not found!')
             return
         }
 
@@ -38,13 +38,13 @@ function Restart-Site
 
         # Deleting bin and obj folders.
         # Add relative file paths here what you want to keep.
-        $whiteList = @("\src\Orchard.Azure\Orchard.Azure.CloudService\Orchard.Azure.WebContent\Bin\Startup\SetIdleTimeout.cmd")
+        $whiteList = @('\src\Orchard.Azure\Orchard.Azure.CloudService\Orchard.Azure.WebContent\Bin\Startup\SetIdleTimeout.cmd')
         # Also add the bin/obj folder's path of the paths in the whiteList here. This is needed for performance reasons,
         # the script will run faster this way.
-        $whiteListFolders = @("\src\Orchard.Azure\Orchard.Azure.CloudService\Orchard.Azure.WebContent\Bin")
+        $whiteListFolders = @('\src\Orchard.Azure\Orchard.Azure.CloudService\Orchard.Azure.WebContent\Bin')
 
-        Get-ChildItem -Path ($Path + "\src\") -Recurse |
-            Where-Object { $PSItem.PSIsContainer -and ( $PSItem.Name -eq "bin" -or $PSItem.Name -eq "obj") } |
+        Get-ChildItem -Path ($Path + '\src\') -Recurse |
+            Where-Object { $PSItem.PSIsContainer -and ( $PSItem.Name -eq 'bin' -or $PSItem.Name -eq 'obj') } |
             ForEach-Object {
                 if ($whiteListFolders.Contains($PSItem.FullName.Substring($Path.Length)))
                 {
@@ -63,7 +63,7 @@ function Restart-Site
                 }
 
         # Deleting App_Data
-        $appDataPath = $Path + "\src\Orchard.Web\App_Data\"
+        $appDataPath = $Path + '\src\Orchard.Web\App_Data\'
         if (Test-Path ($appDataPath))
         {
             Remove-Item -Path ($appDataPath) -Recurse -Force

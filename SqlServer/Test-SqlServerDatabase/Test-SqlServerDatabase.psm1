@@ -4,12 +4,12 @@
 #>
 
 
-[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.Smo') | Out-Null
 
 function Test-SqlServerDatabase
 {
     [CmdletBinding()]
-    [Alias("tssd")]
+    [Alias('tssd')]
     [OutputType([bool])]
     Param
     (
@@ -35,8 +35,8 @@ function Test-SqlServerDatabase
         $server.Connect()
 
         # This works even for remote servers when $server.Databases returns empty.
-        $databases = New-Object "System.Collections.Generic.HashSet[string]"
-        $reader = $server.ExecuteReader("SELECT name FROM sys.databases")
+        $databases = New-Object 'System.Collections.Generic.HashSet[string]'
+        $reader = $server.ExecuteReader('SELECT name FROM sys.databases')
         while ($reader.Read()) { $databases.Add($reader.GetString(0).ToUpperInvariant()) | Out-Null }
 
         $reader.Close()

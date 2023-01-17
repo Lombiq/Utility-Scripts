@@ -13,17 +13,17 @@
 function Start-AzureStorageEmulator
 {
     [CmdletBinding()]
-    [Alias("saase")]
+    [Alias('saase')]
     [OutputType([bool])]
     Param ()
 
     Process
     {
-        $path = "C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe"
+        $path = 'C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe'
 
         if (Get-Process | Where-Object { $PSItem.Path -eq $path })
         {
-            Write-Warning ("The Azure Storage Emulator is already running.")
+            Write-Warning ('The Azure Storage Emulator is already running.')
         }
         elseif (!(Test-Path $path))
         {

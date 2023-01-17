@@ -14,21 +14,21 @@ function New-FtpDirectory
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
-            HelpMessage = "Specify a valid FTP server path to a folder.")]
+            HelpMessage = 'Specify a valid FTP server path to a folder.')]
         [string] $Url,
 
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
-            HelpMessage = "Provide username.")]
+            HelpMessage = 'Provide username.')]
         [string] $User,
 
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
-            HelpMessage = "Provide password in SecureString format.")]
+            HelpMessage = 'Provide password in SecureString format.')]
         [securestring] $Password,
 
         [Parameter(Mandatory = $true,
-            HelpMessage = "Specify path to local folder to upload.")]
+            HelpMessage = 'Specify path to local folder to upload.')]
         [string] $LocalFolderPath
     )
 
@@ -49,7 +49,7 @@ function New-FtpDirectory
             $makeDirectory.EnableSsl = $true
             $makeDirectory.GetResponse()
 
-            Write-Verbose "Folder created successfully:" $Url
+            Write-Verbose 'Folder created successfully:' $Url
         }
         catch [Net.WebException]
         {
@@ -61,20 +61,20 @@ function New-FtpDirectory
                 $checkDirectory.EnableSsl = $true
                 $checkDirectory.GetResponse()
 
-                Write-Warning "Folder already exists:" $Url
+                Write-Warning 'Folder already exists:' $Url
             }
             catch [Net.WebException]
             {
-                throw "Other error encountered during folder creation."
+                throw 'Other error encountered during folder creation.'
             }
         }
 
         # Create subdirectories.
         foreach ($folder in $srcFolders)
         {
-            $srcFolderPath = $LocalFolderPath -replace "\\", "\\" -replace "\:", "\:"
+            $srcFolderPath = $LocalFolderPath -replace '\\', '\\' -replace '\:', '\:'
             $destinationFolder = $folder.Fullname -replace $srcFolderPath, $Url
-            $destinationFolder = $destinationFolder -replace "\\", "/"
+            $destinationFolder = $destinationFolder -replace '\\', '/'
 
             try
             {
@@ -100,7 +100,7 @@ function New-FtpDirectory
                 }
                 catch [Net.WebException]
                 {
-                    throw "Other error encountered during subfolders creation."
+                    throw 'Other error encountered during subfolders creation.'
                 }
             }
         }
@@ -114,9 +114,9 @@ function New-FtpDirectory
             foreach ($file in $srcFiles)
             {
                 $srcFullPath = $file.fullname
-                $srcFilePath = $LocalFolderPath -replace "\\", "\\" -replace "\:", "\:"
+                $srcFilePath = $LocalFolderPath -replace '\\', '\\' -replace '\:', '\:'
                 $destinationFile = $srcFullPath -replace $srcFilePath, $Url
-                $destinationFile = $destinationFile -replace "\\", "/"
+                $destinationFile = $destinationFile -replace '\\', '/'
 
                 $uri = New-Object System.Uri($destinationFile)
 
@@ -129,7 +129,7 @@ function New-FtpDirectory
                     try
                     {
                         $webclient.UploadFile($uri, $srcFullPath)
-                        Write-Verbose "Upload successful."
+                        Write-Verbose 'Upload successful.'
 
                         break
                     }
@@ -137,10 +137,10 @@ function New-FtpDirectory
                     {
                         try
                         {
-                            Write-Warning "Error caught, trying initializing new webclient object."
+                            Write-Warning 'Error caught, trying initializing new webclient object.'
 
                             $errorCount++
-                            Write-Debug "ERROR COUNT:" $errorCount
+                            Write-Debug 'ERROR COUNT:' $errorCount
                         }
                         finally
                         {
@@ -155,7 +155,7 @@ function New-FtpDirectory
 
                 if ($errorCount -eq 10)
                 {
-                    throw "Maximum error count exceeded."
+                    throw 'Maximum error count exceeded.'
                 }
             }
         }

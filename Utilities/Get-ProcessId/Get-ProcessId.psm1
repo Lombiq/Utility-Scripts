@@ -23,7 +23,7 @@ function Get-ProcessId
     {
         if ([string]::IsNullOrEmpty($Name))
         {
-            throw "The -Name switch must not be null or empty."
+            throw 'The -Name switch must not be null or empty.'
         }
 
         [array] $processes = Get-Process $Name -ErrorAction SilentlyContinue
