@@ -9,22 +9,4 @@ on:
 
 jobs:
   powershell-static-code-analysis:
-    name: PowerShell Static Code Analysis
-    strategy:
-      matrix:
-        machine-type: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.machine-type }}
-
-    steps:
-      - name: Checkout
-        uses: Lombiq/GitHub-Actions/.github/actions/checkout@dev
-
-      - name: Windows PowerShell Static Code Analysis (Windows-only)
-        if: runner.os == 'Windows'
-        shell: powershell
-        run: .\tools\Lombiq.Analyzers.PowerShell\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
-
-      - name: PowerShell 7+ Static Code Analysis
-        if: always() # Even if the above fails, let's check both.
-        shell: pwsh
-        run: .\tools\Lombiq.Analyzers.PowerShell\Lombiq.Analyzers.PowerShell\Invoke-Analyzer.ps1 -ForGitHubActions
+    uses: Lombiq/GitHub-Actions/.github/workflows/powershell-static-code-analysis.yml@dev
