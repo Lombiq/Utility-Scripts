@@ -26,5 +26,5 @@ if (!$paths.Contains($Path))
 }
 else
 {
-    Write-Host "The PSModulePath environment variable already contains the path `"$Path`"."
+    Write-Warning "The PSModulePath environment variable already contains the path `"$Path`"."
 }
