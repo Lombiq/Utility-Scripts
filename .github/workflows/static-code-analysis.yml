@@ -9,4 +9,4 @@ on:
 
 jobs:
   powershell-static-code-analysis:
-    uses: Lombiq/GitHub-Actions/.github/workflows/powershell-static-code-analysis.yml@dev
+    uses: Lombiq/GitHub-Actions/.github/workflows/powershell-static-code-analysis.yml@issue/OSOE-504
