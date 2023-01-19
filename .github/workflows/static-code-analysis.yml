@@ -10,3 +10,6 @@ on:
 jobs:
   powershell-static-code-analysis:
     uses: Lombiq/PowerShell-Analyzers/.github/workflows/static-code-analysis.yml@issue/OSOE-504
+    with:
+      run-windows-powershell: "false"
+      run-powershell-core: "false"
