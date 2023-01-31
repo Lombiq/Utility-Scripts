@@ -39,9 +39,9 @@ function Rename-FtpDirectory
 
     Process
     {
-        $folderToRenamePath = $Url + '/' + $SourceFolder
-        $ftpFolderPath = $Url + '/' + $DestinationFolder
-        $destinationFolderRelPath = '../' + $DestinationFolder
+        $folderToRenamePath = "$Url/$SourceFolder"
+        $ftpFolderPath = "$Url/$DestinationFolder"
+        $destinationFolderRelativePath = "../$DestinationFolder"
         $credentials = New-Object System.Net.NetworkCredential($User, $Password)
 
         # Create new folder.
@@ -106,13 +106,13 @@ function Rename-FtpDirectory
             try
             {
                 Write-Verbose "Renaming $file..."
-                Write-Verbose "Destination: $destinationFolderRelPath/$file"
+                Write-Verbose "Destination: $destinationFolderRelativePath/$file"
 
-                $renameRequest = [System.Net.FtpWebRequest]::Create($folderToRenamePath + '/' + $file)
+                $renameRequest = [System.Net.FtpWebRequest]::Create("$folderToRenamePath/$file")
                 $renameRequest.Credentials = $credentials
                 $renameRequest.Method = [System.Net.WebRequestMethods+Ftp]::Rename
                 $renameRequest.EnableSsl = $true
-                $renameRequest.RenameTo = $destinationFolderRelPath + '/' + $file
+                $renameRequest.RenameTo = "$destinationFolderRelativePath/$file"
                 $renameResponse = $renameRequest.GetResponse()
             }
             finally
