@@ -140,7 +140,7 @@ function New-FtpDirectory
                             Write-Warning 'Error caught, trying initializing new webclient object.'
 
                             $errorCount++
-                            Write-Debug 'ERROR COUNT:' $errorCount
+                            Write-Debug "ERROR COUNT: $errorCount"
                         }
                         finally
                         {

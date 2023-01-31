@@ -60,7 +60,7 @@ function Test-VSProjectConsistency
     (
         # The path to a folder or a Visual Studio project file to check. The default path is the current execution path.
         [string]
-        $Path = (Get-Item -Path '.\').FullName,
+        $Path = (Get-Item .).FullName,
 
         # A list of file extensions to also check for in project files. The default file extensions are: ".cs",
         # ".cshtml", ".info", ".config", ".less", ".png", ".jpg", ".jpeg", ".gif", ".ico", ".ts", ".css", ".min.css",
@@ -127,7 +127,7 @@ function Test-VSProjectConsistency
             '.min.js',
             '.png',
             '.ts')
-        $fileExtensionsForRegex = '(' + ($fileExtensions -join '|') + ')$'
+        $fileExtensionsForRegex = "($($fileExtensions -join '|'))`$"
         # Adding additional whitelisted extensions to the whitelist.
         foreach ($extension in $AdditionalFileExtensions)
         {
