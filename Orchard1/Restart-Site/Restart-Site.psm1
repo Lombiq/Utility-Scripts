@@ -44,7 +44,7 @@ function Restart-Site
         $whiteListFolders = @('\src\Orchard.Azure\Orchard.Azure.CloudService\Orchard.Azure.WebContent\Bin')
 
         Get-ChildItem -Path ($Path + '\src\') -Recurse |
-            Where-Object { $PSItem.PSIsContainer -and ( $PSItem.Name -eq 'bin' -or $PSItem.Name -eq 'obj') } |
+            Where-Object { $PSItem.PSIsContainer -and $PSItem.Name -in 'bin', 'obj' } |
             ForEach-Object {
                 if ($whiteListFolders.Contains($PSItem.FullName.Substring($Path.Length)))
                 {
