@@ -17,11 +17,11 @@ Param
     $Path = "$PSScriptRoot\"
 )
 
-$paths = [Environment]::GetEnvironmentVariable("PSModulePath", "Machine").Split(";", [System.StringSplitOptions]::RemoveEmptyEntries)
+$paths = [Environment]::GetEnvironmentVariable('PSModulePath', 'Machine').Split(';', [System.StringSplitOptions]::RemoveEmptyEntries)
 
 if (!$paths.Contains($Path))
 {
-    [System.Environment]::SetEnvironmentVariable("PSModulePath", [string]::Join(";", $paths + $Path), "Machine")
+    [System.Environment]::SetEnvironmentVariable('PSModulePath', [string]::Join(';', $paths + $Path), 'Machine')
     Write-Verbose "The path `"$Path`" was successfully added to the PSModulePath environment variable."
 }
 else

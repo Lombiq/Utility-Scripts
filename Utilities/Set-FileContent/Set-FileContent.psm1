@@ -13,16 +13,16 @@
 function Set-FileContent
 {
     [CmdletBinding()]
-    [Alias("sfc")]
+    [Alias('sfc')]
     Param
     (
-        [Parameter(Mandatory = $true, HelpMessage = "The path to the file in which the matching string should be replaced.")]
+        [Parameter(Mandatory = $true, HelpMessage = 'The path to the file in which the matching string should be replaced.')]
         [string] $FilePath,
 
-        [Parameter(Mandatory = $true, HelpMessage = "The PowerShell-escaped string to replace in the file specified.")]
+        [Parameter(Mandatory = $true, HelpMessage = 'The PowerShell-escaped string to replace in the file specified.')]
         [string] $Match,
 
-        [Parameter(Mandatory = $true, HelpMessage = "The PowerShell-escaped replacement string.")]
+        [Parameter(Mandatory = $true, HelpMessage = 'The PowerShell-escaped replacement string.')]
         [string] $ReplaceWith
     )
 

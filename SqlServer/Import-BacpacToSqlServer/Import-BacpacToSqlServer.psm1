@@ -21,38 +21,38 @@
 
 function Import-BacpacToSqlServer
 {
-    [CmdletBinding(DefaultParameterSetName = "ByServerAndDatabaseName")]
-    [Alias("ipbpss")]
+    [CmdletBinding(DefaultParameterSetName = 'ByServerAndDatabaseName')]
+    [Alias('ipbpss')]
     [OutputType([bool])]
     Param
     (
         [Parameter(HelpMessage = "The path to the `"SqlPackage`" executable that performs the import process. When not defined, it will try to find the executable installed with the latest SQL Server.")]
-        [Parameter(ParameterSetName = "ByConnectionString")]
-        [Parameter(ParameterSetName = "ByServerAndDatabaseName")]
-        [string] $SqlPackageExecutablePath = "",
+        [Parameter(ParameterSetName = 'ByConnectionString')]
+        [Parameter(ParameterSetName = 'ByServerAndDatabaseName')]
+        [string] $SqlPackageExecutablePath = '',
 
-        [Parameter(Mandatory = $true, HelpMessage = "The path to the .bacpac file to import.")]
-        [Parameter(ParameterSetName = "ByConnectionString")]
-        [Parameter(ParameterSetName = "ByServerAndDatabaseName")]
-        [string] $BacpacPath = $(throw "You need to specify the path to the .bacpac file to import."),
+        [Parameter(Mandatory = $true, HelpMessage = 'The path to the .bacpac file to import.')]
+        [Parameter(ParameterSetName = 'ByConnectionString')]
+        [Parameter(ParameterSetName = 'ByServerAndDatabaseName')]
+        [string] $BacpacPath = $(throw 'You need to specify the path to the .bacpac file to import.'),
 
         [Parameter(HelpMessage = "The connection string that defines the server and database to import the .bacpfile to. If not defined, it will be built using the `"SqlServerName`" and `"DatabaseName`" variables.")]
-        [Parameter(Mandatory = $true, ParameterSetName = "ByConnectionString")]
-        [string] $ConnectionString = "",
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByConnectionString')]
+        [string] $ConnectionString = '',
 
-        [Parameter(HelpMessage = "The name of the SQL Server instance that will host the imported database. If not defined, it will be determined from the system registry.")]
-        [Parameter(ParameterSetName = "ByServerAndDatabaseName")]
-        [string] $SqlServerName = "",
+        [Parameter(HelpMessage = 'The name of the SQL Server instance that will host the imported database. If not defined, it will be determined from the system registry.')]
+        [Parameter(ParameterSetName = 'ByServerAndDatabaseName')]
+        [string] $SqlServerName = '',
 
-        [Parameter(HelpMessage = "The name of the database that will be created for the imported .bacpac file. If not defined, it will be the name of the imported file.")]
-        [Parameter(ParameterSetName = "ByServerAndDatabaseName")]
-        [string] $DatabaseName = ""
+        [Parameter(HelpMessage = 'The name of the database that will be created for the imported .bacpac file. If not defined, it will be the name of the imported file.')]
+        [Parameter(ParameterSetName = 'ByServerAndDatabaseName')]
+        [string] $DatabaseName = ''
     )
 
     Process
     {
         # Setting up SQL Package executable path.
-        $sqlPackageExecutablePath = ""
+        $sqlPackageExecutablePath = ''
         if (![string]::IsNullOrEmpty($SqlPackageExecutablePath) -and (Test-Path $SqlPackageExecutablePath))
         {
             $sqlPackageExecutablePath = $SqlPackageExecutablePath
@@ -62,15 +62,15 @@ function Import-BacpacToSqlServer
             if (-not [string]::IsNullOrEmpty($SqlPackageExecutablePath))
             {
                 Write-Warning ("SQL Package executable for importing the database is not found at `"$path`"! " +
-                    "Trying to locate default SQL Package executables...")
+                    'Trying to locate default SQL Package executables...')
             }
 
             $defaultSqlPackageExecutablePath = @(
-                [System.IO.Path]::Combine($Env:ProgramFiles, "Microsoft SQL Server"),
-                [System.IO.Path]::Combine(${Env:ProgramFiles(x86)}, "Microsoft SQL Server")) |
+                [System.IO.Path]::Combine($Env:ProgramFiles, 'Microsoft SQL Server'),
+                [System.IO.Path]::Combine(${Env:ProgramFiles(x86)}, 'Microsoft SQL Server')) |
                 Where-Object { Test-Path $PSItem } |
                 ForEach-Object { Get-ChildItem $PSItem | Where-Object { [int] $dummy = 0; [int]::TryParse($PSItem.Name, [ref] $dummy) } } |
-                ForEach-Object { [System.IO.Path]::Combine($PSItem.FullName, "DAC", "bin", "SqlPackage.exe") } |
+                ForEach-Object { [System.IO.Path]::Combine($PSItem.FullName, 'DAC', 'bin', 'SqlPackage.exe') } |
                 Where-Object { Test-Path $PSItem } |
                 Sort-Object -Descending |
                 Select-Object -First 1
@@ -84,14 +84,14 @@ function Import-BacpacToSqlServer
 
         if ([string]::IsNullOrEmpty($sqlPackageExecutablePath))
         {
-            throw ("No SQL Package executable found for importing the database!")
+            throw ('No SQL Package executable found for importing the database!')
         }
 
 
 
         # Checking the validity of the bacpac file.
         $bacpacFile = Get-Item $BacpacPath
-        if ($null -eq $bacpacFile -or !($bacpacFile -is [System.IO.FileInfo]) -or !($bacpacFile.Extension -eq ".bacpac"))
+        if ($null -eq $bacpacFile -or !($bacpacFile -is [System.IO.FileInfo]) -or !($bacpacFile.Extension -eq '.bacpac'))
         {
             throw ("The .bacpac file is not found at `"$BacpacPath`"!")
         }
@@ -99,17 +99,17 @@ function Import-BacpacToSqlServer
 
 
         # Given that the parameter set uses the ConnectionString, we're deconstructing it to check its validity.
-        if ($PSCmdlet.ParameterSetName -eq "ByConnectionString")
+        if ($PSCmdlet.ParameterSetName -eq 'ByConnectionString')
         {
             $connectionStringSegments = $ConnectionString.Split(';', [System.StringSplitOptions]::RemoveEmptyEntries)
 
-            $serverSegment = $connectionStringSegments | Where-Object { $PSItem.StartsWith("Data Source=") }
+            $serverSegment = $connectionStringSegments | Where-Object { $PSItem.StartsWith('Data Source=') }
             if (!([string]::IsNullOrEmpty($serverSegment)))
             {
                 $SqlServerName = $serverSegment.Split('=', [System.StringSplitOptions]::RemoveEmptyEntries)[1]
             }
 
-            $databaseSegment = $connectionStringSegments | Where-Object { $PSItem.StartsWith("Initial Catalog=") }
+            $databaseSegment = $connectionStringSegments | Where-Object { $PSItem.StartsWith('Initial Catalog=') }
             if (!([string]::IsNullOrEmpty($databaseSegment)))
             {
                 $DatabaseName = $databaseSegment.Split('=', [System.StringSplitOptions]::RemoveEmptyEntries)[1]
@@ -119,8 +119,8 @@ function Import-BacpacToSqlServer
 
 
         # Checking the validity of the SqlServerName variable.
-        [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
-        $DataSource = ""
+        [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.Smo') | Out-Null
+        $DataSource = ''
 
         # SqlServerName is not defined, so let's try to find one.
         if ([string]::IsNullOrEmpty($SqlServerName))
@@ -135,11 +135,11 @@ function Import-BacpacToSqlServer
         if (!(Test-SqlServer $DataSource))
         {
             Write-Warning ("Could not find SQL Server at `"$DataSource`"!")
-            $DataSource = "localhost"
+            $DataSource = 'localhost'
 
             if (!(Test-SqlServer $DataSource))
             {
-                throw ("Could not find any SQL Server instances!")
+                throw ('Could not find any SQL Server instances!')
             }
         }
 
@@ -155,7 +155,7 @@ function Import-BacpacToSqlServer
         if ($databaseExists)
         {
             $originalDatabaseName = $DatabaseName
-            $DatabaseName += "-" + [System.Guid]::NewGuid()
+            $DatabaseName += '-' + [System.Guid]::NewGuid()
         }
 
 
@@ -172,7 +172,7 @@ function Import-BacpacToSqlServer
             # If there was a database with an identical name on the target server, we'll swap it with the one we've just imported.
             if ($databaseExists)
             {
-                $server = New-Object ("Microsoft.SqlServer.Management.Smo.Server") $DataSource
+                $server = New-Object ('Microsoft.SqlServer.Management.Smo.Server') $DataSource
                 $server.KillAllProcesses($originalDatabaseName)
                 $server.Databases[$originalDatabaseName].Drop()
                 $server.Databases[$DatabaseName].Rename($originalDatabaseName)
@@ -188,7 +188,7 @@ function Import-BacpacToSqlServer
                 Write-Warning ("The database `"$originalDatabaseName`" remains intact and depending on the error in the import process, a new database may have been created with the name `"$DatabaseName`"!")
             }
 
-            throw ("Importing the database failed!")
+            throw ('Importing the database failed!')
         }
     }
 }

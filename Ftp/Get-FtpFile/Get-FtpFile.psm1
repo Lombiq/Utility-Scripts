@@ -9,7 +9,7 @@ function FileTransferProgress
 {
     param
     (
-        [WinSCP.FileTransferProgressEventArgs] $transferEvent
+        [System.Object] $transferEvent
     )
 
     if ($null -ne $script:lastFileName -and $script:lastFileName -ne $transferEvent.FileName)
@@ -36,7 +36,7 @@ function FileTransferProgress
 function Get-FtpFile
 {
     [CmdletBinding()]
-    [Alias("gff")]
+    [Alias('gff')]
     Param
     (
         # The path of a folder that contains "WinSCPnet.dll" and "WinSCPnet.exe".
@@ -65,8 +65,8 @@ function Get-FtpFile
     {
         [Reflection.Assembly]::LoadFrom("\\$WinSCPPath\WinSCPnet.dll") | Out-Null
 
-        $script:lastFileName = ""
-        $script:lastFileProgress = ""
+        $script:lastFileName = ''
+        $script:lastFileProgress = ''
     }
     Process
     {

@@ -14,17 +14,17 @@ function Remove-FtpDirectory
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
-            HelpMessage = "Specify a valid FTP server path to a folder.")]
+            HelpMessage = 'Specify a valid FTP server path to a folder.')]
         [string] $Url,
 
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
-            HelpMessage = "Provide username.")]
+            HelpMessage = 'Provide username.')]
         [string] $User,
 
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
-            HelpMessage = "Provide password in SecureString format.")]
+            HelpMessage = 'Provide password in SecureString format.')]
         [securestring] $Password
     )
 
@@ -60,15 +60,15 @@ function Remove-FtpDirectory
 
         foreach ($line in $lines)
         {
-            $tokens = $line.Split(" ", 9, [StringSplitOptions]::RemoveEmptyEntries)
+            $tokens = $line.Split(' ', 9, [StringSplitOptions]::RemoveEmptyEntries)
             $name = $tokens[3]
-            $isDirectory = $tokens[2] -eq "<DIR>"
+            $isDirectory = $tokens[2] -eq '<DIR>'
 
-            $fileUrl = ($Url + "/" + $name)
+            $fileUrl = ($Url + '/' + $name)
 
             if ($isDirectory)
             {
-                Remove-FtpDirectory -Url ($fileUrl + "/") -User $User -Password $Password
+                Remove-FtpDirectory -Url ($fileUrl + '/') -User $User -Password $Password
             }
             else
             {
@@ -86,7 +86,7 @@ function Remove-FtpDirectory
                     if ($deleteResponse)
                     {
                         $deleteResponse.Dispose()
-                        Write-Verbose "Delete response disposed."
+                        Write-Verbose 'Delete response disposed.'
                     }
                 }
             }
@@ -94,7 +94,7 @@ function Remove-FtpDirectory
 
         try
         {
-            Write-Verbose "Deleting folder."
+            Write-Verbose 'Deleting folder.'
 
             $deleteRequest = [Net.WebRequest]::Create($Url)
             $deleteRequest.Credentials = $credentials
@@ -106,7 +106,7 @@ function Remove-FtpDirectory
         {
             if ($deleteResponse)
             {
-                Write-Verbose "Delete response disposed."
+                Write-Verbose 'Delete response disposed.'
                 $deleteResponse.Dispose()
             }
         }

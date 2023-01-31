@@ -18,7 +18,7 @@ function Reload-Module
         '',
         Justification = 'Use distinctive name to avoid confusion with existing cmdlets such as Import-Module.')]
     [CmdletBinding()]
-    [Alias("rlm")]
+    [Alias('rlm')]
     Param
     (
         # The path to a folder where PowerShell modules should be reloaded.
@@ -42,7 +42,7 @@ function Reload-Module
                     $loadedModules += , "* $($module.FullName)"
                 }
 
-                $header = "Reloading PowerShell modules:";
+                $header = 'Reloading PowerShell modules:'
                 $line = $header -replace '.', '*'
                 Write-Verbose "`n$header`n$line`n$($loadedModules -join "`n")`n$line`n"
             }

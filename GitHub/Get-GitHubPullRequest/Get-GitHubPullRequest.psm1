@@ -1,47 +1,47 @@
 ﻿function Get-GitHubPullRequest
 {
     [CmdletBinding()]
-    [Alias("gghpr")]
+    [Alias('gghpr')]
     [OutputType([object])]
     param
     (
         [Parameter(
             Mandatory = $true,
-            HelpMessage = "You need to provide a valid repository URL on GitHub.")]
+            HelpMessage = 'You need to provide a valid repository URL on GitHub.')]
         [string] $RepositoryUrl,
 
         [Parameter(
             Mandatory = $true,
-            HelpMessage = "You need to provide a valid branch name of a pull request on GitHub.")]
+            HelpMessage = 'You need to provide a valid branch name of a pull request on GitHub.')]
         [string] $BranchName,
 
         [Parameter(
             Mandatory = $true,
-            HelpMessage = "You need to provide a user name to access the GitHub repository through the API.")]
+            HelpMessage = 'You need to provide a user name to access the GitHub repository through the API.')]
         [string] $ApiUserName,
 
         [Parameter(
             Mandatory = $true,
-            HelpMessage = "You need to provide a password to access the GitHub repository through the API.")]
+            HelpMessage = 'You need to provide a password to access the GitHub repository through the API.')]
         [SecureString] $ApiPassword,
 
-        [Parameter(HelpMessage = "Throws exception if the pull request is not mergeable.")]
+        [Parameter(HelpMessage = 'Throws exception if the pull request is not mergeable.')]
         [Switch] $ThrowIfNotMergeable,
 
-        [Parameter(HelpMessage = "When used together with the ThrowIfNotMergeable switch, closed pull requests will not cause an exception.")]
+        [Parameter(HelpMessage = 'When used together with the ThrowIfNotMergeable switch, closed pull requests will not cause an exception.')]
         [Switch] $IgnoreClosed,
 
-        [Parameter(HelpMessage = "When used together with the ThrowIfNotMergeable switch, draft pull requests will not cause an exception.")]
+        [Parameter(HelpMessage = 'When used together with the ThrowIfNotMergeable switch, draft pull requests will not cause an exception.')]
         [Switch] $IgnoreDraft
     )
 
     process
     {
-        $repositoryPath = ""
+        $repositoryPath = ''
 
-        if ($RepositoryUrl -like "git@github.com:*")
+        if ($RepositoryUrl -like 'git@github.com:*')
         {
-            $repositoryPathSegments = $RepositoryUrl.TrimStart("git@github.com:").TrimEnd(".git").Split('/', [System.StringSplitOptions]::RemoveEmptyEntries)
+            $repositoryPathSegments = $RepositoryUrl.TrimStart('git@github.com:').TrimEnd('.git').Split('/', [System.StringSplitOptions]::RemoveEmptyEntries)
 
             if ($repositoryPathSegments.Count -ne 2)
             {
@@ -54,7 +54,7 @@
         {
             $repositoryUri = [System.Uri]$RepositoryUrl
 
-            if ($repositoryUri.Host -ne "github.com")
+            if ($repositoryUri.Host -ne 'github.com')
             {
                 throw "`"$RepositoryUrl`" must be a valid HTTPS URL of a GitHub repository!"
             }
@@ -67,7 +67,7 @@
             $repositoryPath = [string]::Join([string]::Empty, $repositoryUri.Segments[1..2])
         }
 
-        $pullRequestId = $BranchName.Replace("refs/", "").Replace("pull/", "").Replace("/head", "")
+        $pullRequestId = $BranchName.Replace('refs/', '').Replace('pull/', '').Replace('/head', '')
         $isPullRequestIdValid = [int]::TryParse($pullRequestId, [ref] $pullRequestId)
         if (-not $isPullRequestIdValid -or $pullRequestId -le 0)
         {
@@ -113,10 +113,10 @@
             {
                 if ($null -eq $pullRequest.state)
                 {
-                    Write-Warning "Could not determine pull request status!"
+                    Write-Warning 'Could not determine pull request status!'
                 }
 
-                if ($null -eq $pullRequest.state -or $pullRequest.state -eq "closed")
+                if ($null -eq $pullRequest.state -or $pullRequest.state -eq 'closed')
                 {
                     $successful = $true
                 }
@@ -126,7 +126,7 @@
             {
                 if ($null -eq $pullRequest.draft)
                 {
-                    Write-Warning "Could not determine if the pull request is draft or not!"
+                    Write-Warning 'Could not determine if the pull request is draft or not!'
                 }
 
                 if ($null -eq $pullRequest.draft -or $pullRequest.draft)

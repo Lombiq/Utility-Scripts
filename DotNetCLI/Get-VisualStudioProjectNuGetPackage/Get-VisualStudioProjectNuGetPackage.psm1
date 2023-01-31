@@ -22,11 +22,11 @@ function Get-VisualStudioProjectNuGetPackage
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = $true, HelpMessage = "The absolute path to a Visual Studio project file.")]
+        [Parameter(Mandatory = $true, HelpMessage = 'The absolute path to a Visual Studio project file.')]
         [string]
         $Path,
 
-        [Parameter(HelpMessage = "Wildcard-enabled expression to filter package names.")]
+        [Parameter(HelpMessage = 'Wildcard-enabled expression to filter package names.')]
         [string]
         $PackageNameFilter
     )
@@ -44,9 +44,9 @@ function Get-VisualStudioProjectNuGetPackage
         # output in JSON or similar format. If so, this code should be replaced to use that and e.g. ConvertFrom-Json.
         $packageList = dotnet list $pathItem.FullName package |
             ForEach-Object { $PSItem.Trim() } |
-            Where-Object { $PSItem.StartsWith(">") } |
+            Where-Object { $PSItem.StartsWith('>') } |
             ForEach-Object {
-                ($Name, $Requested, $Resolved) = $PSItem.TrimStart(">").Split(" ", [System.StringSplitOptions]::RemoveEmptyEntries)
+                ($Name, $Requested, $Resolved) = $PSItem.TrimStart('>').Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)
 
                 New-Object PSObject -Property @{ Name = $Name; Requested = $Requested; Resolved = $Resolved }
             }

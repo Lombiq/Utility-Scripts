@@ -14,34 +14,34 @@ function Rename-FtpDirectory
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
-            HelpMessage = "Specify a valid FTP server path to a folder that contains the directory which
-                   needs to be renamed.")]
+            HelpMessage = 'Specify a valid FTP server path to a folder that contains the directory which
+                   needs to be renamed.')]
         [string] $Url,
 
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
-            HelpMessage = "Provide username.")]
+            HelpMessage = 'Provide username.')]
         [string] $User,
 
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
-            HelpMessage = "Provide password in SecureString format.")]
+            HelpMessage = 'Provide password in SecureString format.')]
         [securestring] $Password,
 
         [Parameter(Mandatory = $true,
-            HelpMessage = "Specify folder to rename.")]
+            HelpMessage = 'Specify folder to rename.')]
         [string] $SourceFolder,
 
         [Parameter(Mandatory = $true,
-            HelpMessage = "Specify new folder name.")]
+            HelpMessage = 'Specify new folder name.')]
         [string] $DestinationFolder
     )
 
     Process
     {
-        $folderToRenamePath = $Url + "/" + $SourceFolder
-        $ftpFolderPath = $Url + "/" + $DestinationFolder
-        $destinationFolderRelPath = "../" + $DestinationFolder
+        $folderToRenamePath = "$Url/$SourceFolder"
+        $ftpFolderPath = "$Url/$DestinationFolder"
+        $destinationFolderRelativePath = "../$DestinationFolder"
         $credentials = New-Object System.Net.NetworkCredential($User, $Password)
 
         # Create new folder.
@@ -69,13 +69,13 @@ function Rename-FtpDirectory
             }
             catch [Net.WebException]
             {
-                throw "Other error encountered during new folder creation."
+                throw 'Other error encountered during new folder creation.'
             }
         }
 
         try
         {
-            Write-Verbose "Listing files..."
+            Write-Verbose 'Listing files...'
 
             $listRequest = [System.Net.FtpWebRequest]::Create($folderToRenamePath)
             $listRequest.Credentials = $credentials
@@ -106,13 +106,13 @@ function Rename-FtpDirectory
             try
             {
                 Write-Verbose "Renaming $file..."
-                Write-Verbose "Destination: $destinationFolderRelPath/$file"
+                Write-Verbose "Destination: $destinationFolderRelativePath/$file"
 
-                $renameRequest = [System.Net.FtpWebRequest]::Create($folderToRenamePath + "/" + $file)
+                $renameRequest = [System.Net.FtpWebRequest]::Create("$folderToRenamePath/$file")
                 $renameRequest.Credentials = $credentials
                 $renameRequest.Method = [System.Net.WebRequestMethods+Ftp]::Rename
                 $renameRequest.EnableSsl = $true
-                $renameRequest.RenameTo = $destinationFolderRelPath + "/" + $file
+                $renameRequest.RenameTo = "$destinationFolderRelativePath/$file"
                 $renameResponse = $renameRequest.GetResponse()
             }
             finally
@@ -122,7 +122,7 @@ function Rename-FtpDirectory
         }
 
         # Remove empty previous folder.
-        Write-Verbose "Deleting now empty previous folder."
+        Write-Verbose 'Deleting now empty previous folder.'
 
         try
         {
@@ -137,7 +137,7 @@ function Rename-FtpDirectory
             if ($deleteResponse)
             {
                 $deleteResponse.Dispose()
-                Write-Verbose "Delete response disposed."
+                Write-Verbose 'Delete response disposed.'
             }
         }
     }

@@ -12,23 +12,23 @@
 function Test-Url
 {
     [CmdletBinding()]
-    [Alias("turl")]
+    [Alias('turl')]
     [OutputType([bool])]
     Param
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
             Position = 0,
-            HelpMessage = "Please specify a full URL (including protocol) to ping.")]
+            HelpMessage = 'Please specify a full URL (including protocol) to ping.')]
         [string] $Url,
 
-        [Parameter(HelpMessage = "Request timeout in seconds. The default value is 100.")]
+        [Parameter(HelpMessage = 'Request timeout in seconds. The default value is 100.')]
         [int] $Timeout = 100,
 
-        [Parameter(HelpMessage = "The number of seconds to wait between ping attempts. The default value is 15.")]
+        [Parameter(HelpMessage = 'The number of seconds to wait between ping attempts. The default value is 15.')]
         [int] $Interval = 15,
 
-        [Parameter(HelpMessage = "The number of attempts for pinging the specified URL. The default value is 3.")]
+        [Parameter(HelpMessage = 'The number of attempts for pinging the specified URL. The default value is 3.')]
         [int] $RetryCount = 3
     )
 

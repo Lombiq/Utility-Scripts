@@ -23,7 +23,7 @@
 
         if ($pathItem -is [System.IO.DirectoryInfo])
         {
-            $solution = Get-ChildItem -Path $Path | Where-Object { $PSItem.Name -like "*.sln" }
+            $solution = Get-ChildItem -Path $Path | Where-Object { $PSItem.Name -like '*.sln' }
 
             if ($solution -isnot [System.IO.FileInfo])
             {
@@ -43,7 +43,7 @@
         }
         elseif ($pathItem -is [System.IO.FileInfo])
         {
-            if (-not $pathItem.Extension -eq ".sln")
+            if (-not $pathItem.Extension -eq '.sln')
             {
                 throw "The file found at `"$Path`" is not a Visual Studio solution!"
             }
@@ -55,7 +55,7 @@
             throw "Unexpected result when trying to examine the `"$Path`" path!"
         }
 
-        $projectPaths = dotnet sln "$($solution.FullName)" list | Where-Object { $PSItem -like "*.csproj" }
+        $projectPaths = dotnet sln "$($solution.FullName)" list | Where-Object { $PSItem -like '*.csproj' }
         $projects = $projectPaths | ForEach-Object { Get-Item "$($solution.DirectoryName)\$_" }
 
         if (-not [string]::IsNullOrEmpty($ProjectNameFilter))

@@ -4,12 +4,12 @@
 #>
 
 
-[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.Smo') | Out-Null
 
 function New-SqlServerDatabase
 {
     [CmdletBinding()]
-    [Alias("tssd")]
+    [Alias('tssd')]
     [OutputType([bool])]
     Param
     (

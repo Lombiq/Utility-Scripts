@@ -60,7 +60,7 @@ function Test-VSProjectConsistency
     (
         # The path to a folder or a Visual Studio project file to check. The default path is the current execution path.
         [string]
-        $Path = (Get-Item -Path ".\").FullName,
+        $Path = (Get-Item .).FullName,
 
         # A list of file extensions to also check for in project files. The default file extensions are: ".cs",
         # ".cshtml", ".info", ".config", ".less", ".png", ".jpg", ".jpeg", ".gif", ".ico", ".ts", ".css", ".min.css",
@@ -74,7 +74,7 @@ function Test-VSProjectConsistency
         # If the path is invalid, then return an error.
         if (!(Test-Path $Path))
         {
-            Write-Error ("File or folder not found!")
+            Write-Error ('File or folder not found!')
             return
         }
 
@@ -83,7 +83,7 @@ function Test-VSProjectConsistency
         # If the path is a file but not a csproj, then return an error.
         if (-not $isPathContainer -and -not $isPathCsproj)
         {
-            Write-Error ("The specified parth is not a folder or a visual studio project file!")
+            Write-Error ('The specified parth is not a folder or a visual studio project file!')
             return
         }
 
@@ -104,47 +104,47 @@ function Test-VSProjectConsistency
         # Return with a message if there aren't any .csproj files to process.
         if ($projectFiles.Length -eq 0)
         {
-            Write-Output "No .csproj in the folder."
+            Write-Output 'No .csproj in the folder.'
             return
         }
 
         # The default whitelist of the extensions to we're interested in.
         $fileExtensions = @(
-            ".config",
-            ".cs",
-            ".cshtml",
-            ".css.map",
-            ".css",
-            ".gif",
-            ".ico",
-            ".info",
-            ".jpeg",
-            ".jpg",
-            ".js.map",
-            ".js",
-            ".less",
-            ".min.css",
-            ".min.js",
-            ".png",
-            ".ts")
-        $fileExtensionsForRegex = "(" + ($fileExtensions -join "|") + ")$"
+            '.config',
+            '.cs',
+            '.cshtml',
+            '.css.map',
+            '.css',
+            '.gif',
+            '.ico',
+            '.info',
+            '.jpeg',
+            '.jpg',
+            '.js.map',
+            '.js',
+            '.less',
+            '.min.css',
+            '.min.js',
+            '.png',
+            '.ts')
+        $fileExtensionsForRegex = "($($fileExtensions -join '|'))`$"
         # Adding additional whitelisted extensions to the whitelist.
         foreach ($extension in $AdditionalFileExtensions)
         {
-            if (!$extension.StartsWith("."))
+            if (!$extension.StartsWith('.'))
             {
-                $extension = "." + $extension
+                $extension = '.' + $extension
             }
 
             $fileExtensions += $extension.ToLowerInvariant()
         }
 
         # Skip these directories during the collection of files, both from the csproj and the file system.
-        $directoriesToSkip = @("bin", "obj", "tests", "node_modules", "lib")
+        $directoriesToSkip = @('bin', 'obj', 'tests', 'node_modules', 'lib')
         # ORCHARD-SPECIFIC DIRECTORIES
-        if ([System.IO.Path]::GetFileName($projectFile) -match "^Orchard\.Web\.csproj$")
+        if ([System.IO.Path]::GetFileName($projectFile) -match '^Orchard\.Web\.csproj$')
         {
-            $directoriesToSkip += @("core", "media", "modules", "themes")
+            $directoriesToSkip += @('core', 'media', 'modules', 'themes')
         }
         # END ORCHARD-SPECIFIC DIRECTORIES
 
@@ -178,12 +178,12 @@ function Test-VSProjectConsistency
             foreach ($itemGroup in $xml.Project.ItemGroup | ForEach-Object { $PSItem.ChildNodes })
             {
                 # The accepted node names.
-                $acceptedNodeNames = @("Content", "Compile")
+                $acceptedNodeNames = @('Content', 'Compile')
                 # These node names are accepted also, but files added with these node names are added incorrectly.
-                $acceptedButWrongNodeName = @("None")
+                $acceptedButWrongNodeName = @('None')
                 if ($acceptedNodeNames.Contains($node.Name) -or $acceptedButWrongNodeName.Contains($node.Name))
                 {
-                    $fullPath = $node.GetAttribute("Include")
+                    $fullPath = $node.GetAttribute('Include')
                     # Checking files only with the specified extensions.
                     $notContainsAnyFolder = PathNotContainsAnyFolder -FullFolderPath ($projectFolder + $fullPath) -Folders $directoriesToSkip
                     if ($notContainsAnyFolder -and ($fullPath -imatch $fileExtensionsForRegex))
@@ -202,9 +202,9 @@ function Test-VSProjectConsistency
 
                 # Detecting empty folders in the project file.
                 $emptyFoldersInProjectfile = @()
-                if ($node.Name -eq "Folder")
+                if ($node.Name -eq 'Folder')
                 {
-                    $emptyFoldersInProjectfile += $node.GetAttribute("Include")
+                    $emptyFoldersInProjectfile += $node.GetAttribute('Include')
                 }
             }
             [Array]::Sort($matchingFilesInProjectFile)
@@ -214,14 +214,14 @@ function Test-VSProjectConsistency
             $projectFoldersInTheProjectFolder = @()
             Get-ChildItem -Path $projectFolder -Recurse |
                 Where-Object { (PathNotContainsAnyFolder -FullFolderPath $PSItem.FullName -Folders $directoriesToSkip) -and
-                    !$PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") -and
+                    !$PSItem.FullName.Substring($projectFolder.Length).StartsWith('.') -and
                     (FolderContainsCsproj $PSItem.FullName)
                 } |
                 ForEach-Object { $projectFoldersInTheProjectFolder += $PSItem }
 
             Get-ChildItem -Path $projectFolder -Recurse -File |
                 Where-Object { (PathNotContainsAnyFolder -FullFolderPath $PSItem.FullName -Folders $directoriesToSkip) -and
-                    (-not $PSItem.FullName.Substring($projectFolder.Length).StartsWith(".")) -and
+                    (-not $PSItem.FullName.Substring($projectFolder.Length).StartsWith('.')) -and
                     $PSItem.FullName -imatch $fileExtensionsForRegex
                 } |
                 ForEach-Object { $matchingFilesInFolder += $PSItem.FullName.Substring($projectFolder.Length) }
@@ -292,7 +292,7 @@ function Test-VSProjectConsistency
             # Detecting empty folders in the file system.
             $emptyFoldersInFileSystem = Get-ChildItem -Path $projectFolder -Recurse |
                 Where-Object { PathNotContainsAnyFolder -FullFolderPath $PSItem.FullName -Folders $directoriesToSkip } |
-                Where-Object { -not $PSItem.FullName.Substring($projectFolder.Length).StartsWith(".") } |
+                Where-Object { -not $PSItem.FullName.Substring($projectFolder.Length).StartsWith('.') } |
                 # If the file is inside a project folder then it's irrelevant for the current csproj.
                 Where-Object { -not (FileIsInsideAnyOfTheFolders $file.FullName $projectFoldersInTheProjectFolder) } |
                 Where-Object { Test-Path $file.FullName -PathType Container } |
@@ -311,18 +311,18 @@ function Test-VSProjectConsistency
 
             # Checking min and map files without a corresponding parent file.
             $mapAndMinFilesWithoutParent = @()
-            foreach ($mapFile in $matchingFilesInProjectFile | Where-Object { $PSItem -match "\.map$" })
+            foreach ($mapFile in $matchingFilesInProjectFile | Where-Object { $PSItem -match '\.map$' })
             {
                 if (!$matchingFilesInProjectFile.Contains($mapFile.Substring(0, $mapFile.Length - 4)))
                 {
                     $mapAndMinFilesWithoutParent += $mapFile
                 }
             }
-            foreach ($minFile in $matchingFilesInProjectFile | Where-Object { $PSItem -match "\.min\." })
+            foreach ($minFile in $matchingFilesInProjectFile | Where-Object { $PSItem -match '\.min\.' })
             {
-                $minFileWithoutMin = $minFile -replace "\.min\.", "."
+                $minFileWithoutMin = $minFile -replace '\.min\.', '.'
                 if (!($matchingFilesInProjectFile.Contains(($minFileWithoutMin)) -or
-                        $matchingFilesInProjectFile.Contains(($minFileWithoutMin -replace "\.map", ""))))
+                        $matchingFilesInProjectFile.Contains(($minFileWithoutMin -replace '\.map', ''))))
                 {
                     $mapAndMinFilesWithoutParent += $minFile
                 }
@@ -350,11 +350,11 @@ function FileIsInsideAnyOfTheFolders($FileFullPath, $Folders)
 function Write-VerboseListBox($Header, $Items)
 {
     $line = $Header -replace '.', '*'
-    $itemsString = ($Items | ForEach-Object { "- " + $PSItem }) -join "`n"
+    $itemsString = ($Items | ForEach-Object { '- ' + $PSItem }) -join "`n"
     Write-Verbose "$line`n$Header`n$line`n$itemsString`n$line"
 }
 
 function Test-PathCsproj($Path)
 {
-    [System.IO.Path]::GetExtension($Path) -match "^\.csproj$"
+    [System.IO.Path]::GetExtension($Path) -match '^\.csproj$'
 }

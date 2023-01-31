@@ -13,7 +13,7 @@
 function Initialize-OrchardCoreSolution
 {
     [CmdletBinding()]
-    [alias("Init-OrchardCoreSolution")]
+    [alias('Init-OrchardCoreSolution')]
     Param
     (
         [string] $Path = (Get-Location).Path,

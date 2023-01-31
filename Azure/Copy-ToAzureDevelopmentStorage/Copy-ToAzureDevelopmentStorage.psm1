@@ -18,7 +18,7 @@ function Copy-ToAzureDevelopmentStorage
     [OutputType([int])]
     Param
     (
-        [Parameter(Mandatory = $true, HelpMessage = "The path to the folder to copy the content from to the Development Storage. The first level of subfolders will be handled as Storage Containers.")]
+        [Parameter(Mandatory = $true, HelpMessage = 'The path to the folder to copy the content from to the Development Storage. The first level of subfolders will be handled as Storage Containers.')]
         [string] $Path
     )
 
@@ -26,7 +26,7 @@ function Copy-ToAzureDevelopmentStorage
     {
         if (!(Test-Path $Path))
         {
-            throw ("The path specified is not valid!")
+            throw ('The path specified is not valid!')
         }
 
         Start-AzureStorageEmulator | Out-Null
@@ -38,14 +38,14 @@ function Copy-ToAzureDevelopmentStorage
 
         foreach ($folder in Get-ChildItem $Path | Where-Object { $PSItem.PSIsContainer })
         {
-            if ($null -eq $containers -or $containers.Count -eq 0 -or !($containers | Select-Object -ExpandProperty "Name").Contains($folder.Name))
+            if ($null -eq $containers -or $containers.Count -eq 0 -or !($containers | Select-Object -ExpandProperty 'Name').Contains($folder.Name))
             {
                 New-AzStorageContainer -Context $storageContext -Name $folder.Name -Permission Blob
             }
 
             foreach ($subFolder in Get-ChildItem $folder.FullName)
             {
-                Get-AzStorageContainer -Context $storageContext -Name $folder.Name | Get-AzStorageBlob | Where-Object { $PSItem.Name.StartsWith($folder.Name + "\") } | Remove-AzStorageBlob
+                Get-AzStorageContainer -Context $storageContext -Name $folder.Name | Get-AzStorageBlob | Where-Object { $PSItem.Name.StartsWith($folder.Name + '\') } | Remove-AzStorageBlob
             }
 
             foreach ($file in Get-ChildItem $folder.FullName -Recurse -File)

@@ -1,12 +1,12 @@
 ﻿<#
 .Synopsis
-   Resets and sets up an Orchard Core application.
+    Resets and sets up an Orchard Core application.
 
 .DESCRIPTION
-   Resets an Orchard Core application to its blank state even if it's running, then runs its setup with the given parameters. Note that for the setup to work you'll need to configure the app to accept unauthenticated API requests for the duration of the setup; you can do this with Setup Extensions: https://github.com/Lombiq/Setup-Extensions#logged-in-user-authentication-for-api-requests.
+    Resets an Orchard Core application to its blank state even if it's running, then runs its setup with the given parameters. Note that for the setup to work you'll need to configure the app to accept unauthenticated API requests for the duration of the setup; you can do this with Setup Extensions: https://github.com/Lombiq/Setup-Extensions#logged-in-user-authentication-for-api-requests.
 
 .EXAMPLE
-   Reset-OrchardCoreApp -WebProjectPath "." -SetupSiteName "FancyWebsite" -SetupRecipeName "FancyWebsite.DevelopmentSetup"
+    Reset-OrchardCoreApp -WebProjectPath "." -SetupSiteName "FancyWebsite" -SetupRecipeName "FancyWebsite.DevelopmentSetup"
 #>
 
 
@@ -24,47 +24,44 @@ function Reset-OrchardCoreApp
         'PSAvoidUsingConvertToSecureStringWithPlainText',
         '',
         Justification = 'Same.')]
-    [CmdletBinding(DefaultParameterSetName = "FileDB")]
+    [CmdletBinding(DefaultParameterSetName = 'FileDB')]
     Param
     (
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)]
         [string] $WebProjectPath,
 
-        [string] $SetupSiteName = "Orchard Core",
-        [string] $SetupTenantName = "Default",
-        [string] $SetupRecipeName = "Blog",
-        [string] $SetupUserName = "admin",
-        [string] $SetupPassword = "Password1!",
-        [string] $SetupEmail = "admin@localhost",
-
+        [string] $SetupSiteName = 'Orchard Core',
+        [string] $SetupTenantName = 'Default',
+        [string] $SetupRecipeName = 'Blog',
+        [string] $SetupUserName = 'admin',
+        [string] $SetupPassword = 'Password1!',
+        [string] $SetupEmail = 'admin@localhost',
 
         [int] $Port = 5000,
 
+        [Parameter(ParameterSetName = 'ServerDB', Mandatory)]
+        [string] [ValidateSet('SqlConnection')] $SetupDatabaseProvider = 'Sqlite',
 
-        [Parameter(ParameterSetName = "ServerDB", Mandatory)]
-        [string] [ValidateSet("SqlConnection")] $SetupDatabaseProvider = "Sqlite",
+        [Parameter(ParameterSetName = 'ServerDB')]
+        [string] $SetupDatabaseTablePrefix = '',
 
-        [Parameter(ParameterSetName = "ServerDB")]
-        [string] $SetupDatabaseTablePrefix = "",
+        [Parameter(ParameterSetName = 'ServerDB')]
+        [string] $SetupDatabaseServerName = '.',
 
-        [Parameter(ParameterSetName = "ServerDB")]
-        [string] $SetupDatabaseServerName = ".",
+        [Parameter(ParameterSetName = 'ServerDB')]
+        [string] $SetupDatabaseName = 'OrchardCore',
 
-        [Parameter(ParameterSetName = "ServerDB")]
-        [string] $SetupDatabaseName = "OrchardCore",
+        [Parameter(ParameterSetName = 'ServerDB')]
+        [string] $SetupDatabaseSqlUser = 'sa',
 
-        [Parameter(ParameterSetName = "ServerDB")]
-        [string] $SetupDatabaseSqlUser = "sa",
-
-        [Parameter(ParameterSetName = "ServerDB")]
+        [Parameter(ParameterSetName = 'ServerDB')]
         [string] $SetupDatabaseSqlPassword = $null,
 
-        [Parameter(ParameterSetName = "ServerDB")]
+        [Parameter(ParameterSetName = 'ServerDB')]
         [switch] $Force,
 
-        [Parameter(ParameterSetName = "ServerDB")]
+        [Parameter(ParameterSetName = 'ServerDB')]
         [switch] $SuffixDatabaseNameWithFolderName,
-
 
         [switch] $Rebuild,
         [switch] $KeepAlive,
@@ -77,7 +74,7 @@ function Reset-OrchardCoreApp
 
         if (Test-Path -Path $WebProjectPath -PathType Leaf)
         {
-            $webProjectDllPath = $WebProjectPath;
+            $webProjectDllPath = $WebProjectPath
             $siteName = (Get-Item $WebProjectPath).BaseName
             $WebProjectPath = (Get-Item $WebProjectPath).DirectoryName
         }
@@ -100,7 +97,7 @@ function Reset-OrchardCoreApp
 
         if ($siteHostProcesses.Count -gt 0)
         {
-            Write-Verbose "Terminating application host process: $($siteHostProcesses -join ", ")"
+            Write-Verbose "Terminating application host process: $($siteHostProcesses -join ', ')"
             Stop-Process $siteHostProcesses
 
             Start-Sleep 1
@@ -123,16 +120,16 @@ function Reset-OrchardCoreApp
 
         # Rebuilding the application if the "Rebuild" switch is present or the Web Project DLL is not found.
 
-        $buildRequired = $false;
+        $buildRequired = $false
         if ($Rebuild.IsPresent)
         {
-            Write-Verbose "Rebuild switch active!"
+            Write-Verbose 'Rebuild switch active!'
 
             $buildRequired = $true
         }
         elseif ([string]::IsNullOrEmpty($webProjectDllPath) -or -not (Test-Path $webProjectDllPath -PathType Leaf))
         {
-            Write-Verbose "Web Project DLL not found, build is required!"
+            Write-Verbose 'Web Project DLL not found, build is required!'
 
             $buildRequired = $true
         }
@@ -164,16 +161,16 @@ function Reset-OrchardCoreApp
 
         # Validating and setting up database server connection.
 
-        $SetupDatabaseConnectionString = ""
-        if ($PSCmdlet.ParameterSetName -eq "ServerDB")
+        $SetupDatabaseConnectionString = ''
+        if ($PSCmdlet.ParameterSetName -eq 'ServerDB')
         {
             if ($SuffixDatabaseNameWithFolderName.IsPresent)
             {
                 $solutionPath = (Get-Location).Path
 
-                while (-not [string]::IsNullOrEmpty($solutionPath) -and -not (Test-Path (Join-Path $solutionPath "*.sln")))
+                while (-not [string]::IsNullOrEmpty($solutionPath) -and -not (Test-Path (Join-Path $solutionPath '*.sln')))
                 {
-                    $solutionPath = Split-Path $solutionPath -Parent;
+                    $solutionPath = Split-Path $solutionPath -Parent
                 }
 
                 if ([string]::IsNullOrEmpty($solutionPath))
@@ -183,7 +180,7 @@ function Reset-OrchardCoreApp
 
                 $solutionFolder = Split-Path $solutionPath -Leaf
 
-                $SetupDatabaseName = $SetupDatabaseName + "_" + $solutionFolder
+                $SetupDatabaseName = $SetupDatabaseName + '_' + $solutionFolder
             }
 
             Write-Verbose "Using the following database name: `"$SetupDatabaseName`"."
@@ -191,7 +188,7 @@ function Reset-OrchardCoreApp
             $newSqlServerDatabaseParameters = @{
                 SqlServerName = $SetupDatabaseServerName
                 DatabaseName = $SetupDatabaseName
-                ErrorAction = "Stop"
+                ErrorAction = 'Stop'
                 UserName = $SetupDatabaseSqlUser
                 Password = (ConvertTo-SecureString $SetupDatabaseSqlPassword -AsPlainText -Force)
                 Force = $Force
@@ -214,7 +211,7 @@ function Reset-OrchardCoreApp
 
             $Security = if (-not $SetupDatabaseSqlPassword)
             {
-                "Integrated Security=True"
+                'Integrated Security=True'
             }
             else
             {
@@ -231,7 +228,7 @@ function Reset-OrchardCoreApp
         # If not found (or the URL is not found in the settings), and the $Port parameter is set to <=0 then using a random one on localhost instead.
 
         $launchSettingsFilePath = $("$WebProjectPath\Properties\launchSettings.json")
-        $environmentSetting = "Development"
+        $environmentSetting = 'Development'
 
         if ($Port -le 0)
         {
@@ -248,9 +245,9 @@ function Reset-OrchardCoreApp
 
             if (-not [string]::IsNullOrEmpty($applicationUrlSetting))
             {
-                $applicationUrlsFromSetting = $applicationUrlSetting -split ";"
+                $applicationUrlsFromSetting = $applicationUrlSetting -split ';'
 
-                $applicationUrlFromSetting = $applicationUrlsFromSetting | Where-Object { $PSItem.StartsWith("http://") }
+                $applicationUrlFromSetting = $applicationUrlsFromSetting | Where-Object { $PSItem.StartsWith('http://') }
 
                 if (-not [string]::IsNullOrEmpty($applicationUrlFromSetting))
                 {
@@ -262,7 +259,7 @@ function Reset-OrchardCoreApp
 
             if ([string]::IsNullOrEmpty($environmentSetting))
             {
-                $environmentSetting = "Development"
+                $environmentSetting = 'Development'
             }
         }
 
@@ -276,14 +273,14 @@ function Reset-OrchardCoreApp
 
         $processParameters = @{
             WorkingDirectory = $WebProjectPath
-            FilePath = "dotnet"
+            FilePath = 'dotnet'
             ArgumentList = @(
                 "$($webProjectDllFile.FullName)"
                 "--urls $applicationUrl"
                 "--environment $environmentSetting"
-                "--webroot wwwroot"
-                "--AuthorizeOrchardApiRequests true"
-            ) -join " "
+                '--webroot wwwroot'
+                '--AuthorizeOrchardApiRequests true'
+            ) -join ' '
         }
         $applicationProcess = Start-Process @processParameters -PassThru
 
@@ -318,7 +315,7 @@ function Reset-OrchardCoreApp
 
         # Running setup.
 
-        Write-Verbose "Application started, attempting to run setup!"
+        Write-Verbose 'Application started, attempting to run setup!'
 
         $tenantSetupSettings = @{
             SiteName = $SetupSiteName
@@ -332,7 +329,7 @@ function Reset-OrchardCoreApp
             Name = $SetupTenantName
         }
 
-        $setupRequest = Invoke-WebRequest -Method Post -Uri "$applicationUrl/api/tenants/setup" -Body (ConvertTo-Json($tenantSetupSettings)) -ContentType "application/json" -UseBasicParsing
+        $setupRequest = Invoke-WebRequest -Method Post -Uri "$applicationUrl/api/tenants/setup" -Body (ConvertTo-Json($tenantSetupSettings)) -ContentType 'application/json' -UseBasicParsing
 
         if ($setupRequest.StatusCode -ne 200)
         {
@@ -341,7 +338,7 @@ function Reset-OrchardCoreApp
             throw "Setup failed with status code $($setupRequest.StatusCode)!"
         }
 
-        Write-Verbose "Setup successful!"
+        Write-Verbose 'Setup successful!'
 
 
 
@@ -349,7 +346,7 @@ function Reset-OrchardCoreApp
 
         if (-not $KeepAlive.IsPresent)
         {
-            Write-Verbose "Keep Alive not requested, shutting down application host process!"
+            Write-Verbose 'Keep Alive not requested, shutting down application host process!'
 
             Stop-Process $applicationProcess
         }
@@ -393,5 +390,5 @@ function GetWebProjectDllPath([string] $WebProjectPath)
         return $webProjectDllPath.Substring(2)
     }
 
-    return "";
+    return ''
 }

@@ -13,7 +13,7 @@
 function Start-Azurite
 {
     [CmdletBinding()]
-    [Alias("saazu")]
+    [Alias('saazu')]
     Param ()
 
     Process
