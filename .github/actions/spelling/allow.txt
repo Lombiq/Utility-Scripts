@@ -1,0 +1,4 @@
+cmdlets
+enableextensions
+Rekt
+setlocal
