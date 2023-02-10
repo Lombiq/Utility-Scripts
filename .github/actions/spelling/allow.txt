@@ -1,4 +1,3 @@
-cmdlets
 enableextensions
 Rekt
 setlocal
