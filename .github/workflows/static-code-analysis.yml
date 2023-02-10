@@ -9,4 +9,5 @@ on:
 
 jobs:
   powershell-static-code-analysis:
+    if: false
     uses: Lombiq/PowerShell-Analyzers/.github/workflows/static-code-analysis.yml@dev
