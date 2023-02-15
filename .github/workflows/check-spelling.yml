@@ -12,6 +12,5 @@ jobs:
     name: Check Spelling
     uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@issue/OSOE-523
     with:
-      spell-check-this: Lombiq/GitHub-Actions@issue/OSOE-523
       additional-dictionaries: |
         lombiq-lgha:Lombiq.common.txt
