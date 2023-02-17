@@ -1,3 +1,0 @@
-enableextensions
-Rekt
-setlocal
