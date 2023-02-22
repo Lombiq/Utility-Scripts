@@ -11,6 +11,3 @@ jobs:
   check-spelling:
     name: Check Spelling
     uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@issue/OSOE-523
-    with:
-      additional-dictionaries: |
-        lombiq-lgha:Lombiq.common.txt
