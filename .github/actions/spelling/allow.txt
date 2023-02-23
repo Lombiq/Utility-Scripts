@@ -1,0 +1,3 @@
+enableextensions
+Rekt
+setlocal
