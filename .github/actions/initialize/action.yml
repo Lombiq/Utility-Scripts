@@ -14,7 +14,7 @@ runs:
         $destinationPath = ($env:PSModulePath -split [IO.Path]::PathSeparator)[0]
         foreach ($modulePath in (Get-ChildItem $sourcePath -Recurse -Include "*.psm1"))
         {
-          New-Item -ItemType Directory -Path $destinationPath -Name $modulePath.Directory.Name
+          New-Item -ItemType Directory -Path $destinationPath -Name $modulePath.Directory.Name -Force
           Copy-Item $modulePath -Destination (Join-Path -Path $destinationPath -ChildPath $modulePath.Directory.Name)
         }
 
