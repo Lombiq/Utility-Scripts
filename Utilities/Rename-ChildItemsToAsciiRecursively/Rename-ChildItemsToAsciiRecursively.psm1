@@ -2,8 +2,8 @@
 {
     Param
     (
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, Position = 0)]
-        [string] $Path
+        [Parameter(ValueFromPipelineByPropertyName = $true, Position = 0)]
+        [string] $Path = (Get-Location).Path
     )
 
     Process
