@@ -8,8 +8,10 @@
 
     Process
     {
+        $pathLength = $Path.Length + 1
+
         Get-ChildItem $Path -Directory -Recurse | ForEach-Object {
-            $asciiName = [System.Text.Encoding]::ASCII.GetString([System.Text.Encoding]::ASCII.GetBytes($PSItem.Name)).Replace('?', '_')
+            $asciiName = Get-AsciiName($PSItem.Name)
 
             if ($PSItem.Name -eq $asciiName) { return }
 
@@ -21,25 +23,32 @@
 
                 # Then delete the current folder.
                 Remove-Item $PSItem.FullName
-            }
-            else
-            {
-                Write-Verbose "Renaming `"$($_.FullName)`" to `"$asciiName`"."
-                $PSItem | Rename-Item -NewName $asciiName
 
-                New-Object PSObject -Property @{ Original = $PSItem.FullName; Renamed = $asciiName }
+                return
             }
+
+            Write-Verbose "Renaming '$($PSItem.FullName)' to '$asciiName'."
+
+            $PSItem | Rename-Item -NewName $asciiName
+
+            New-Object PSObject -Property @{ Original = $PSItem.FullName.Substring($pathLength); Renamed = $asciiName }
         }
 
         Get-ChildItem $Path -File -Recurse | ForEach-Object {
-            $asciiName = [System.Text.Encoding]::ASCII.GetString([System.Text.Encoding]::ASCII.GetBytes($PSItem.Name)).Replace('?', '_')
+            $asciiName = Get-AsciiName($PSItem.Name)
 
             if ($PSItem.Name -eq $asciiName) { return }
 
-            Write-Verbose "Renaming `"$($_.FullName)`" to `"$asciiName`"."
+            Write-Verbose "Renaming '$($PSItem.FullName)' to '$asciiName'."
+
             $PSItem | Rename-Item -NewName $asciiName
 
-            New-Object PSObject -Property @{ Original = $PSItem.FullName; Renamed = $asciiName }
+            New-Object PSObject -Property @{ Original = $PSItem.FullName.Substring($pathLength); Renamed = $asciiName }
         }
     }
+}
+
+function Get-AsciiName([string] $name)
+{
+    return [System.Text.Encoding]::ASCII.GetString([System.Text.Encoding]::ASCII.GetBytes($name)).Replace('?', '_')
 }
