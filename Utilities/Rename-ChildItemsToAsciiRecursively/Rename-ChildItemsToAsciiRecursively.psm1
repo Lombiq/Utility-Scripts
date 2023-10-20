@@ -18,6 +18,8 @@
             # If there's already a folder with the new name of the current one.
             if (Test-Path (Join-Path $PSItem.Parent.FullName $asciiName))
             {
+                Write-Verbose "Moving the contents of '$($PSItem.FullName)' to '$asciiName'."
+
                 # Move the contents of the current folder to the other one with the new name.
                 Get-ChildItem $PSItem.FullName -Recurse | Move-Item -Destination (Join-Path $PSItem.Parent.FullName $asciiName)
 
