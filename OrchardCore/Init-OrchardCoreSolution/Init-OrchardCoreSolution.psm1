@@ -5,6 +5,7 @@
 
 function Init-OrchardCoreSolution
 {
+    [Diagnostics.CodeAnalysis.SuppressMessage('PSUseApprovedVerbs', '', Justification = 'Necessary for backwards compatibility.')]
     [CmdletBinding()]
     Param
     (
@@ -20,7 +21,8 @@ function Init-OrchardCoreSolution
 
     Process
     {
-        $warningMessage = 'Warning: "Init-OrchardCoreSolution" is the old and deprecated name of this module. ' +
+        $warningMessage = 
+            'Warning: "Init-OrchardCoreSolution" is the old and deprecated name of this module. ' +
             'Use "Initialize-OrchardCoreSolution" instead.'
         Write-Warning $warningMessage
 
