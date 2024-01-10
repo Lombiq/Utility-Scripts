@@ -21,12 +21,7 @@ function Init-OrchardCoreSolution
 
     Process
     {
-        $warningMessage =
-            'Warning: "Init-OrchardCoreSolution" is the old and deprecated name of this module. ' +
-            'Use "Initialize-OrchardCoreSolution" instead.'
-        
-        Write-Warning $warningMessage
-
+        Write-Warning 'Warning: "Init-OrchardCoreSolution" is the deprecated name of this module. Use "Initialize-OrchardCoreSolution" instead.'
         Initialize-OrchardCoreSolution -Path $Path -Name $Name -ModuleName $ModuleName -ThemeName $ThemeName -NuGetSource $NuGetSource
     }
 }
