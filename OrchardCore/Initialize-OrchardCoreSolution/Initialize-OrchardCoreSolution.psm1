@@ -13,7 +13,7 @@
 function Initialize-OrchardCoreSolution
 {
     [CmdletBinding()]
-    [alias('Init-OrchardCoreSolution')]
+    [alias('Init-OrchardCoreSolution', 'Initialize-OrchardCore')]
     Param
     (
         [string] $Path = (Get-Location).Path,
@@ -28,9 +28,9 @@ function Initialize-OrchardCoreSolution
 
     Process
     {
-        if ($MyInvocation.InvocationName -eq 'Init-OrchardCoreSolution')
+        if ($MyInvocation.InvocationName -ne 'Initialize-OrchardCoreSolution')
         {
-            Write-Warning '"Init-OrchardCoreSolution" is the deprecated name of this module. Use "Initialize-OrchardCoreSolution" instead.'
+            Write-Warning 'You''re using the deprecated name of this module. Use "Initialize-OrchardCoreSolution" instead.'
         }
 
         if ([string]::IsNullOrEmpty($NuGetSource))

@@ -5,5 +5,5 @@
     Author = 'Lombiq Technologies Ltd. (https://lombiq.com)'
     CompanyName = 'Lombiq Technologies Ltd.'
     VariablesToExport = '*'
-    AliasesToExport = @('Init-OrchardCoreSolution')
+    AliasesToExport = @('Init-OrchardCoreSolution', 'Initialize-OrchardCore')
 }
