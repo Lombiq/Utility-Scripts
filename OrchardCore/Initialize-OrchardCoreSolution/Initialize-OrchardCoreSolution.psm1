@@ -28,6 +28,11 @@ function Initialize-OrchardCoreSolution
 
     Process
     {
+        if ($MyInvocation.InvocationName -eq 'Init-OrchardCoreSolution')
+        {
+            Write-Warning '"Init-OrchardCoreSolution" is the deprecated name of this module. Use "Initialize-OrchardCoreSolution" instead.'
+        }
+
         if ([string]::IsNullOrEmpty($NuGetSource))
         {
             dotnet new install OrchardCore.ProjectTemplates::1.7.0
