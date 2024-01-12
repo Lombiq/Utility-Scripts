@@ -13,7 +13,7 @@
 function Initialize-OrchardCoreSolution
 {
     [CmdletBinding()]
-    [alias('Init-OrchardCoreSolution')]
+    [alias('Init-OrchardCoreSolution', 'Initialize-OrchardCore')]
     Param
     (
         [string] $Path = (Get-Location).Path,
@@ -28,6 +28,11 @@ function Initialize-OrchardCoreSolution
 
     Process
     {
+        if ($MyInvocation.InvocationName -ne 'Initialize-OrchardCoreSolution')
+        {
+            Write-Warning 'You''re using the deprecated name of this module. Use "Initialize-OrchardCoreSolution" instead.'
+        }
+
         if ([string]::IsNullOrEmpty($NuGetSource))
         {
             dotnet new install OrchardCore.ProjectTemplates::1.7.0
