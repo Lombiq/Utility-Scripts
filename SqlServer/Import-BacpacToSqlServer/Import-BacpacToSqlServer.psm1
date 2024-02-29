@@ -160,9 +160,15 @@ function Import-BacpacToSqlServer
 
 
 
+        $parameters = @(
+            '/Action:Import',
+            "/TargetServerName:`"$DataSource`"",
+            "/TargetDatabaseName:`"$DatabaseName`"",
+            '/TargetTrustServerCertificate:True',
+            "/SourceFile:`"$BacpacPath`""
+        )
         # And now we get to actually importing the database after constructing a connection string with validated details.
-        $ConnectionString = "Data Source=$DataSource;Initial Catalog=$DatabaseName;Integrated Security=True;"
-        & "$sqlPackageExecutablePath" /Action:Import /SourceFile:"$BacpacPath" /TargetConnectionString:"$ConnectionString"
+        & "$sqlPackageExecutablePath" @parameters
 
 
 
