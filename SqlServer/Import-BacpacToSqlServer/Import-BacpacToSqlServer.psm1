@@ -129,13 +129,17 @@ function Import-BacpacToSqlServer
         {
             $connectionStringSegments = $ConnectionString.Split(';', [System.StringSplitOptions]::RemoveEmptyEntries)
 
-            $serverSegment = $connectionStringSegments | Where-Object { $PSItem.StartsWith('Data Source=') }
+            $serverSegment = $connectionStringSegments | Where-Object {
+                $PSItem.StartsWith('Data Source=') -or $PSItem.StartsWith('Server=')
+            }
             if (!([string]::IsNullOrEmpty($serverSegment)))
             {
                 $SqlServerName = $serverSegment.Split('=', [System.StringSplitOptions]::RemoveEmptyEntries)[1]
             }
 
-            $databaseSegment = $connectionStringSegments | Where-Object { $PSItem.StartsWith('Initial Catalog=') }
+            $databaseSegment = $connectionStringSegments | Where-Object {
+                $PSItem.StartsWith('Initial Catalog=') -or $PSItem.StartsWith('Database=')
+            }
             if (!([string]::IsNullOrEmpty($databaseSegment)))
             {
                 $DatabaseName = $databaseSegment.Split('=', [System.StringSplitOptions]::RemoveEmptyEntries)[1]
