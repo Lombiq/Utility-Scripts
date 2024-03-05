@@ -217,6 +217,7 @@ function Import-BacpacToSqlServer
             "/TargetServerName:`"$DataSource`"",
             "/TargetDatabaseName:`"$DatabaseName`"",
             '/TargetTrustServerCertificate:True',
+            '/TargetTimeout:0',
             "/SourceFile:`"$BacpacPath`""
         )
 
