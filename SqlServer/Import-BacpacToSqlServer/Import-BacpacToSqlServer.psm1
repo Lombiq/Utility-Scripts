@@ -27,7 +27,15 @@
 
 function Import-BacpacToSqlServer
 {
-    [CmdletBinding(DefaultParameterSetName = 'ByServerAndDatabaseName')]
+    [Diagnostics.CodeAnalysis.SuppressMessage(
+        'AvoidUsingUsernameAndPasswordParams',
+        '',
+        Justification = 'We need to pass the user name and password to SqlPackage.')]
+    [Diagnostics.CodeAnalysis.SuppressMessage(
+        'AvoidUsingPlainTextForPassword',
+        '',
+        Justification = 'SqlPackage needs the password as plain text.')]
+    [CmdletBinding(DefaultParameterSetName = 'ByConnectionParameters')]
     [Alias('ipbpss')]
     [OutputType([bool])]
     Param
@@ -35,12 +43,12 @@ function Import-BacpacToSqlServer
         [Parameter(HelpMessage = 'The path to the "SqlPackage" executable that performs the import process. When not' +
             ' defined, it will try to find the executable installed with the latest SQL Server.')]
         [Parameter(ParameterSetName = 'ByConnectionString')]
-        [Parameter(ParameterSetName = 'ByServerAndDatabaseName')]
+        [Parameter(ParameterSetName = 'ByConnectionParameters')]
         [string] $SqlPackageExecutablePath = '',
 
         [Parameter(Mandatory = $true, HelpMessage = 'The path to the .bacpac file to import.')]
         [Parameter(ParameterSetName = 'ByConnectionString')]
-        [Parameter(ParameterSetName = 'ByServerAndDatabaseName')]
+        [Parameter(ParameterSetName = 'ByConnectionParameters')]
         [string] $BacpacPath = $(throw 'You need to specify the path to the .bacpac file to import.'),
 
         [Parameter(HelpMessage = 'The connection string that defines the server and database to import the .bacpfile' +
@@ -50,13 +58,21 @@ function Import-BacpacToSqlServer
 
         [Parameter(HelpMessage = 'The name of the SQL Server instance that will host the imported database. If not' +
             ' defined, it will be determined from the system registry.')]
-        [Parameter(ParameterSetName = 'ByServerAndDatabaseName')]
+        [Parameter(ParameterSetName = 'ByConnectionParameters')]
         [string] $SqlServerName = '',
 
         [Parameter(HelpMessage = 'The name of the database that will be created for the imported .bacpac file. If not' +
             ' defined, it will be the name of the imported file.')]
-        [Parameter(ParameterSetName = 'ByServerAndDatabaseName')]
-        [string] $DatabaseName = ''
+        [Parameter(ParameterSetName = 'ByConnectionParameters')]
+        [string] $DatabaseName = '',
+
+        [Parameter(HelpMessage = 'The name of a user with the necessary access to the server to import a database.')]
+        [Parameter(ParameterSetName = 'ByConnectionParameters')]
+        [string] $Username = '',
+
+        [Parameter(HelpMessage = 'The password of a user with the necessary access to the server to import a database.')]
+        [Parameter(ParameterSetName = 'ByConnectionParameters')]
+        [string] $Password = ''
     )
 
     Process
@@ -124,6 +140,33 @@ function Import-BacpacToSqlServer
             {
                 $DatabaseName = $databaseSegment.Split('=', [System.StringSplitOptions]::RemoveEmptyEntries)[1]
             }
+
+            $UsernameSegment = $connectionStringSegments | Where-Object { $PSItem.StartsWith('User Id=') }
+            if (!([string]::IsNullOrEmpty($UsernameSegment)))
+            {
+                $Username = $UsernameSegment.Split('=', [System.StringSplitOptions]::RemoveEmptyEntries)[1]
+            }
+
+            $PasswordSegment = $connectionStringSegments | Where-Object { $PSItem.StartsWith('Password=') }
+            if (!([string]::IsNullOrEmpty($PasswordSegment)))
+            {
+                $Password = $PasswordSegment.Split('=', [System.StringSplitOptions]::RemoveEmptyEntries)[1]
+            }
+        }
+
+
+
+        # Validating parameters.
+        if ([string]::IsNullOrEmpty($DatabaseName))
+        {
+            $DatabaseName = $bacpacFile.BaseName
+        }
+
+        # If the DatabaseUserName parameter is defined, then DatabaseUserPassword needs to be defined as well and vice
+        # versa.
+        if ([string]::IsNullOrEmpty($Username) -xor [string]::IsNullOrEmpty($Password))
+        {
+            throw 'Either both or neither of the DatabaseUserName and DatabaseUserPassword parameters must be defined!'
         }
 
 
@@ -154,13 +197,7 @@ function Import-BacpacToSqlServer
         }
 
 
-
-        # Checking DatabaseName validity and handling if there's already a database with this name on the target server.
-        if ([string]::IsNullOrEmpty($DatabaseName))
-        {
-            $DatabaseName = $bacpacFile.BaseName
-        }
-
+        # Handling the case when there's already a database with this name on the target server.
         $databaseExists = Test-SqlServerDatabase -SqlServerName $DataSource -DatabaseName $DatabaseName
         if ($databaseExists)
         {
@@ -177,8 +214,14 @@ function Import-BacpacToSqlServer
             '/TargetTrustServerCertificate:True',
             "/SourceFile:`"$BacpacPath`""
         )
-        # And now we get to actually importing the database after constructing a connection string with validated
-        # details.
+
+        if (![string]::IsNullOrEmpty($Username) -and ![string]::IsNullOrEmpty($Password))
+        {
+            $parameters.Add("/TargetUser:`"$Username`"")
+            $parameters.Add("/TargetPassword:`"$Password`"")
+        }
+
+        # And now we get to actually importing the database after setting up all the necessary parameters.
         & "$sqlPackageExecutablePath" @parameters
 
 
