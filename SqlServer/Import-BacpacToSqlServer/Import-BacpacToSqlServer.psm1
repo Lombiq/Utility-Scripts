@@ -29,9 +29,11 @@ function Import-BacpacToSqlServer
 {
     [Diagnostics.CodeAnalysis.SuppressMessage(
         'PSAvoidUsingUsernameAndPasswordParams',
+        '',
         Justification = 'We need to pass the user name and password to SqlPackage.')]
     [Diagnostics.CodeAnalysis.SuppressMessage(
         'PSAvoidUsingPlainTextForPassword',
+        '',
         Justification = 'SqlPackage needs the password as plain text.')]
     [CmdletBinding(DefaultParameterSetName = 'ByConnectionParameters')]
     [Alias('ipbpss')]
