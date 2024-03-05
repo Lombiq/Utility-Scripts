@@ -85,8 +85,8 @@ function Import-BacpacToSqlServer
         {
             if (-not [string]::IsNullOrEmpty($SqlPackageExecutablePath))
             {
-                Write-Warning ("SQL Package executable for importing the database is not found at '$path'! " +
-                    'Trying to locate default SQL Package executables...')
+                Write-Warning ("SQL Package executable for importing the database is not found at '$path'!" +
+                    ' Trying to locate default SQL Package executables...')
             }
 
             $defaultSqlPackageExecutablePath = @(
@@ -108,7 +108,8 @@ function Import-BacpacToSqlServer
 
         if ([string]::IsNullOrEmpty($sqlPackageExecutablePath))
         {
-            throw 'No SQL Package executable found for importing the database!'
+            throw ('No SQL Package executable found for importing the database! You can download it from' +
+                ' "https://learn.microsoft.com/en-us/sql/tools/sqlpackage/sqlpackage-download"!')
         }
 
 
@@ -253,7 +254,8 @@ function Import-BacpacToSqlServer
                     " import process, a new database may have been created with the name '$DatabaseName'!")
             }
 
-            throw 'Importing the database failed!'
+            throw ('Importing the database failed! You might need to update SqlPackage to the latest version. You can' +
+                ' download it from "https://learn.microsoft.com/en-us/sql/tools/sqlpackage/sqlpackage-download"!')
         }
     }
 }
