@@ -1,21 +1,27 @@
 ﻿<#
 .Synopsis
-   Imports a .bacpac file to a database on a local SQL Server instance.
+    Imports a .bacpac file to a database on a local SQL Server instance.
 
 .DESCRIPTION
-   Imports a .bacpac file to a database on the default local SQL Server instance. Install the attached Import-BacpacToSqlServer.reg Registry file to add an "Import to SQL Server with PowerShell" right click context menu shortcut for .bacpac files.
+    Imports a .bacpac file to a database on the default local SQL Server instance. Install the attached
+    Import-BacpacToSqlServer.reg Registry file to add an "Import to SQL Server with PowerShell" right click context menu
+    shortcut for .bacpac files.
 
 .EXAMPLE
-   Import-BacpacToSqlServer -BacpacPath "C:\database.bacpac"
+    Import-BacpacToSqlServer -BacpacPath "C:\database.bacpac"
 
 .EXAMPLE
-   Import-BacpacToSqlServer -BacpacPath "C:\database.bacpac" -DatabaseName "BetterName"
+    Import-BacpacToSqlServer -BacpacPath "C:\database.bacpac" -DatabaseName "BetterName"
 
 .EXAMPLE
-   Import-BacpacToSqlServer -BacpacPath "C:\database.bacpac" -SqlServerName "LocalSqlServer" -DatabaseName "BetterName"
+    Import-BacpacToSqlServer -BacpacPath "C:\database.bacpac" -SqlServerName "LocalSqlServer" -DatabaseName "BetterName"
 
 .EXAMPLE
-   Import-BacpacToSqlServer -BacpacPath "C:\database.bacpac" -ConnectionString "Data Source=.\SQLEXPRESS;Initial Catalog=NiceDatabase;Integrated Security=True;"
+    $importParameters = @{
+        BacpacPath = 'C:\database.bacpac'
+        ConnectionString = 'Data Source=.\SQLEXPRESS;Initial Catalog=NiceDatabase;Integrated Security=True;'
+    }
+    Import-BacpacToSqlServer @importParameters
 #>
 
 
@@ -26,7 +32,8 @@ function Import-BacpacToSqlServer
     [OutputType([bool])]
     Param
     (
-        [Parameter(HelpMessage = "The path to the `"SqlPackage`" executable that performs the import process. When not defined, it will try to find the executable installed with the latest SQL Server.")]
+        [Parameter(HelpMessage = 'The path to the "SqlPackage" executable that performs the import process. When not' +
+            ' defined, it will try to find the executable installed with the latest SQL Server.')]
         [Parameter(ParameterSetName = 'ByConnectionString')]
         [Parameter(ParameterSetName = 'ByServerAndDatabaseName')]
         [string] $SqlPackageExecutablePath = '',
@@ -36,15 +43,18 @@ function Import-BacpacToSqlServer
         [Parameter(ParameterSetName = 'ByServerAndDatabaseName')]
         [string] $BacpacPath = $(throw 'You need to specify the path to the .bacpac file to import.'),
 
-        [Parameter(HelpMessage = "The connection string that defines the server and database to import the .bacpfile to. If not defined, it will be built using the `"SqlServerName`" and `"DatabaseName`" variables.")]
+        [Parameter(HelpMessage = 'The connection string that defines the server and database to import the .bacpfile' +
+            ' to. If not defined, it will be built using the "SqlServerName" and "DatabaseName" variables.')]
         [Parameter(Mandatory = $true, ParameterSetName = 'ByConnectionString')]
         [string] $ConnectionString = '',
 
-        [Parameter(HelpMessage = 'The name of the SQL Server instance that will host the imported database. If not defined, it will be determined from the system registry.')]
+        [Parameter(HelpMessage = 'The name of the SQL Server instance that will host the imported database. If not' +
+            ' defined, it will be determined from the system registry.')]
         [Parameter(ParameterSetName = 'ByServerAndDatabaseName')]
         [string] $SqlServerName = '',
 
-        [Parameter(HelpMessage = 'The name of the database that will be created for the imported .bacpac file. If not defined, it will be the name of the imported file.')]
+        [Parameter(HelpMessage = 'The name of the database that will be created for the imported .bacpac file. If not' +
+            ' defined, it will be the name of the imported file.')]
         [Parameter(ParameterSetName = 'ByServerAndDatabaseName')]
         [string] $DatabaseName = ''
     )
@@ -61,7 +71,7 @@ function Import-BacpacToSqlServer
         {
             if (-not [string]::IsNullOrEmpty($SqlPackageExecutablePath))
             {
-                Write-Warning ("SQL Package executable for importing the database is not found at `"$path`"! " +
+                Write-Warning ("SQL Package executable for importing the database is not found at '$path'! " +
                     'Trying to locate default SQL Package executables...')
             }
 
@@ -78,13 +88,13 @@ function Import-BacpacToSqlServer
             if ([string]::IsNullOrWhiteSpace($locatedPath))
             {
                 $sqlPackageExecutablePath = $defaultSqlPackageExecutablePath
-                Write-Verbose "SQL Package executable for importing the database found at `"$sqlPackageExecutablePath`"!"
+                Write-Verbose "SQL Package executable for importing the database found at '$sqlPackageExecutablePath'!"
             }
         }
 
         if ([string]::IsNullOrEmpty($sqlPackageExecutablePath))
         {
-            throw ('No SQL Package executable found for importing the database!')
+            throw 'No SQL Package executable found for importing the database!'
         }
 
 
@@ -93,7 +103,7 @@ function Import-BacpacToSqlServer
         $bacpacFile = Get-Item $BacpacPath
         if ($null -eq $bacpacFile -or !($bacpacFile -is [System.IO.FileInfo]) -or !($bacpacFile.Extension -eq '.bacpac'))
         {
-            throw ("The .bacpac file is not found at `"$BacpacPath`"!")
+            throw "The .bacpac file is not found at '$BacpacPath'!"
         }
 
 
@@ -134,12 +144,12 @@ function Import-BacpacToSqlServer
 
         if (!(Test-SqlServer $DataSource))
         {
-            Write-Warning ("Could not find SQL Server at `"$DataSource`"!")
+            Write-Warning "Could not find SQL Server at '$DataSource'!"
             $DataSource = 'localhost'
 
             if (!(Test-SqlServer $DataSource))
             {
-                throw ('Could not find any SQL Server instances!')
+                throw 'Could not find any SQL Server instances!'
             }
         }
 
@@ -167,7 +177,8 @@ function Import-BacpacToSqlServer
             '/TargetTrustServerCertificate:True',
             "/SourceFile:`"$BacpacPath`""
         )
-        # And now we get to actually importing the database after constructing a connection string with validated details.
+        # And now we get to actually importing the database after constructing a connection string with validated
+        # details.
         & "$sqlPackageExecutablePath" @parameters
 
 
@@ -175,7 +186,8 @@ function Import-BacpacToSqlServer
         # Importing the database was successful.
         if ($LASTEXITCODE -eq 0)
         {
-            # If there was a database with an identical name on the target server, we'll swap it with the one we've just imported.
+            # If there was a database with an identical name on the target server, we'll swap it with the one we've just
+            # imported.
             if ($databaseExists)
             {
                 $server = New-Object ('Microsoft.SqlServer.Management.Smo.Server') $DataSource
@@ -183,7 +195,8 @@ function Import-BacpacToSqlServer
                 $server.Databases[$originalDatabaseName].Drop()
                 $server.Databases[$DatabaseName].Rename($originalDatabaseName)
 
-                Write-Warning ("The original database with the name `"$originalDatabaseName`" has been deleted and the imported one has been renamed to use that name.")
+                Write-Warning ("The original database with the name '$originalDatabaseName' has been deleted and the" +
+                    ' imported one has been renamed to use that name.')
             }
         }
         # Importing the database failed.
@@ -191,10 +204,11 @@ function Import-BacpacToSqlServer
         {
             if ($databaseExists)
             {
-                Write-Warning ("The database `"$originalDatabaseName`" remains intact and depending on the error in the import process, a new database may have been created with the name `"$DatabaseName`"!")
+                Write-Warning ("The database '$originalDatabaseName' remains intact and depending on the error in the" +
+                    " import process, a new database may have been created with the name '$DatabaseName'!")
             }
 
-            throw ('Importing the database failed!')
+            throw 'Importing the database failed!'
         }
     }
 }
