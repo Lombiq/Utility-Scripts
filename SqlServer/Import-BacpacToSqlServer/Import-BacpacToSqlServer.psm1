@@ -171,7 +171,7 @@ function Import-BacpacToSqlServer
         # versa.
         if ([string]::IsNullOrEmpty($Username) -xor [string]::IsNullOrEmpty($Password))
         {
-            throw 'Either both or neither of the DatabaseUserName and DatabaseUserPassword parameters must be defined!'
+            throw 'Either both DatabaseUserName and DatabaseUserPassword parameters must be defined or neither of them!'
         }
 
 
