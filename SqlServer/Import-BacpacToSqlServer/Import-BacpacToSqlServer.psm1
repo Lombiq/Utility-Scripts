@@ -135,7 +135,7 @@ function Import-BacpacToSqlServer
             }
             if (!([string]::IsNullOrEmpty($serverSegment)))
             {
-                $SqlServerName = $serverSegment.Split('=', [System.StringSplitOptions]::RemoveEmptyEntries)[1]
+                $SqlServerName = $serverSegment.Split('=', 2, [System.StringSplitOptions]::RemoveEmptyEntries)[1]
             }
 
             $databaseSegment = $connectionStringSegments | Where-Object {
@@ -143,19 +143,19 @@ function Import-BacpacToSqlServer
             }
             if (!([string]::IsNullOrEmpty($databaseSegment)))
             {
-                $DatabaseName = $databaseSegment.Split('=', [System.StringSplitOptions]::RemoveEmptyEntries)[1]
+                $DatabaseName = $databaseSegment.Split('=', 2, [System.StringSplitOptions]::RemoveEmptyEntries)[1]
             }
 
             $UsernameSegment = $connectionStringSegments | Where-Object { $PSItem.StartsWith('User Id=') }
             if (!([string]::IsNullOrEmpty($UsernameSegment)))
             {
-                $Username = $UsernameSegment.Split('=', [System.StringSplitOptions]::RemoveEmptyEntries)[1]
+                $Username = $UsernameSegment.Split('=', 2, [System.StringSplitOptions]::RemoveEmptyEntries)[1]
             }
 
             $PasswordSegment = $connectionStringSegments | Where-Object { $PSItem.StartsWith('Password=') }
             if (!([string]::IsNullOrEmpty($PasswordSegment)))
             {
-                $Password = $PasswordSegment.Split('=', [System.StringSplitOptions]::RemoveEmptyEntries)[1]
+                $Password = $PasswordSegment.Split('=', 2, [System.StringSplitOptions]::RemoveEmptyEntries)[1]
             }
         }
 
