@@ -35,6 +35,10 @@ function Import-BacpacToSqlServer
         'PSAvoidUsingPlainTextForPassword',
         '',
         Justification = 'SqlPackage needs the password as plain text.')]
+    [Diagnostics.CodeAnalysis.SuppressMessage(
+        'PSAvoidUsingConvertToSecureStringWithPlainText',
+        '',
+        Justification = 'We need to convert the plain text password to SecureString and pass it to Test-SqlServer.')]
     [CmdletBinding(DefaultParameterSetName = 'ByConnectionParameters')]
     [Alias('ipbpss')]
     [OutputType([bool])]
@@ -176,26 +180,25 @@ function Import-BacpacToSqlServer
 
 
 
-        # Checking the validity of the SqlServerName variable.
         [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.Smo') | Out-Null
-        $DataSource = ''
 
         # SqlServerName is not defined, so let's try to find one.
         if ([string]::IsNullOrEmpty($SqlServerName))
         {
-            $DataSource = ".\$(Get-DefaultSqlServerName)"
-        }
-        else
-        {
-            $DataSource = ".\$SqlServerName"
+            $SqlServerName = ".\$(Get-DefaultSqlServerName)"
         }
 
-        if (!(Test-SqlServer $DataSource))
+        $securePassword = $null
+        if (![string]::IsNullOrEmpty($Password))
         {
-            Write-Warning "Could not find SQL Server at '$DataSource'!"
-            $DataSource = 'localhost'
+            $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
+        }
+        if (!(Test-SqlServer $SqlServerName $Username $securePassword))
+        {
+            Write-Warning "Could not find SQL Server at '$SqlServerName'!"
+            $SqlServerName = 'localhost'
 
-            if (!(Test-SqlServer $DataSource))
+            if (!(Test-SqlServer $SqlServerName))
             {
                 throw 'Could not find any SQL Server instances!'
             }
@@ -203,7 +206,7 @@ function Import-BacpacToSqlServer
 
 
         # Handling the case when there's already a database with this name on the target server.
-        $databaseExists = Test-SqlServerDatabase -SqlServerName $DataSource -DatabaseName $DatabaseName
+        $databaseExists = Test-SqlServerDatabase -SqlServerName $SqlServerName -DatabaseName $DatabaseName -UserName $Username -Password $securePassword
         if ($databaseExists)
         {
             $originalDatabaseName = $DatabaseName
@@ -212,9 +215,9 @@ function Import-BacpacToSqlServer
 
 
 
-        $parameters = @(
+        [Collections.ArrayList] $parameters = @(
             '/Action:Import',
-            "/TargetServerName:`"$DataSource`"",
+            "/TargetServerName:`"$SqlServerName`"",
             "/TargetDatabaseName:`"$DatabaseName`"",
             '/TargetTrustServerCertificate:True',
             '/TargetTimeout:0',
@@ -223,8 +226,8 @@ function Import-BacpacToSqlServer
 
         if (![string]::IsNullOrEmpty($Username) -and ![string]::IsNullOrEmpty($Password))
         {
-            $parameters.Add("/TargetUser:`"$Username`"")
-            $parameters.Add("/TargetPassword:`"$Password`"")
+            $parameters += "/TargetUser:`"$Username`""
+            $parameters += "/TargetPassword:`"$Password`""
         }
 
         # And now we get to actually importing the database after setting up all the necessary parameters.
@@ -239,7 +242,7 @@ function Import-BacpacToSqlServer
             # imported.
             if ($databaseExists)
             {
-                $server = New-Object ('Microsoft.SqlServer.Management.Smo.Server') $DataSource
+                $server = New-Object ('Microsoft.SqlServer.Management.Smo.Server') (New-SqlServerConnection $SqlServerName $UserName $securePassword)
                 $server.KillAllProcesses($originalDatabaseName)
                 $server.Databases[$originalDatabaseName].Drop()
                 $server.Databases[$DatabaseName].Rename($originalDatabaseName)
