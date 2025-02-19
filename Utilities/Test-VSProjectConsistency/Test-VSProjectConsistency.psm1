@@ -83,7 +83,7 @@ function Test-VSProjectConsistency
         # If the path is a file but not a csproj, then return an error.
         if (-not $isPathContainer -and -not $isPathCsproj)
         {
-            Write-Error ('The specified parth is not a folder or a visual studio project file!')
+            Write-Error ('The specified path is not a folder or a visual studio project file!')
             return
         }
 
