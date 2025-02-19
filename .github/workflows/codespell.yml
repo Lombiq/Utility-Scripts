@@ -1,0 +1,13 @@
+name: Codespell
+
+# Runs for PRs opened for any branch, and pushes to the dev branch.
+on:
+  pull_request:
+  push:
+    branches:
+      - dev
+
+jobs:
+  codespell:
+    name: Codespell
+    uses: Lombiq/GitHub-Actions/.github/workflows/codespell.yml@dev

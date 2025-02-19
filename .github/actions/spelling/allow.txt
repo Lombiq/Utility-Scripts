@@ -1,4 +1,0 @@
-enableextensions
-notlike
-Rekt
-setlocal
