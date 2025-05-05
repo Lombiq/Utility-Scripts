@@ -35,11 +35,11 @@ function Initialize-OrchardCoreSolution
 
         if ([string]::IsNullOrEmpty($NuGetSource))
         {
-            dotnet new install OrchardCore.ProjectTemplates::2.1.2
+            dotnet new install OrchardCore.ProjectTemplates::2.1.7
         }
         else
         {
-            dotnet new install OrchardCore.ProjectTemplates::2.1.2 --nuget-source $NuGetSource
+            dotnet new install OrchardCore.ProjectTemplates::2.1.7 --nuget-source $NuGetSource
         }
 
         dotnet new occms -o "$Path/src/$Name.Web"
