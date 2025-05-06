@@ -19,14 +19,14 @@ function Reload-Module
         Justification = 'Use distinctive name to avoid confusion with existing cmdlets such as Import-Module.')]
     [CmdletBinding()]
     [Alias('rlm')]
-    Param
+    param
     (
         # The path to a folder where PowerShell modules should be reloaded.
         [Parameter(ValueFromPipelineByPropertyName = $true,
             Position = 0)]
         $Path = $PSScriptRoot
     )
-    Process
+    process
     {
         if (Test-Path($Path) -PathType Container)
         {

@@ -14,7 +14,7 @@ function Reset-AppDataFolder
 {
     [CmdletBinding()]
     [Alias('rsad')]
-    Param
+    param
     (
         [Parameter(
             Mandatory = $true,
@@ -26,7 +26,7 @@ function Reset-AppDataFolder
         [switch] $KeepLogFiles
     )
 
-    Process
+    process
     {
         if (-not (Test-Path $Path))
         {

@@ -42,7 +42,7 @@ function Import-BacpacToSqlServer
     [CmdletBinding(DefaultParameterSetName = 'ByConnectionParameters')]
     [Alias('ipbpss')]
     [OutputType([bool])]
-    Param
+    param
     (
         [Parameter(HelpMessage = 'The path to the "SqlPackage" executable that performs the import process. When not' +
             ' defined, it will try to find the executable installed with the latest SQL Server.')]
@@ -79,7 +79,7 @@ function Import-BacpacToSqlServer
         [string] $Password = ''
     )
 
-    Process
+    process
     {
         # Setting up SQL Package executable path.
         $finalSqlPackageExecutablePath = ''

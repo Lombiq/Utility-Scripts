@@ -25,7 +25,7 @@ function Reset-OrchardCoreApp
         '',
         Justification = 'Same.')]
     [CmdletBinding(DefaultParameterSetName = 'FileDB')]
-    Param
+    param
     (
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)]
         [string] $WebProjectPath,
@@ -68,7 +68,7 @@ function Reset-OrchardCoreApp
         [switch] $Pause
     )
 
-    Process
+    process
     {
         # Checking if the Web Project Path is valid and extracting the name of the Web Project.
 

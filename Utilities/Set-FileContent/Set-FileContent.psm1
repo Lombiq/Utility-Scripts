@@ -14,7 +14,7 @@ function Set-FileContent
 {
     [CmdletBinding()]
     [Alias('sfc')]
-    Param
+    param
     (
         [Parameter(Mandatory = $true, HelpMessage = 'The path to the file in which the matching string should be replaced.')]
         [string] $FilePath,
@@ -26,7 +26,7 @@ function Set-FileContent
         [string] $ReplaceWith
     )
 
-    Process
+    process
     {
         if (-not (Test-Path $FilePath -PathType Leaf))
         {

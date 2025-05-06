@@ -10,7 +10,7 @@
 function Remove-FtpDirectory
 {
     [CmdletBinding()]
-    Param
+    param
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
@@ -28,7 +28,7 @@ function Remove-FtpDirectory
         [securestring] $Password
     )
 
-    Process
+    process
     {
         try
         {

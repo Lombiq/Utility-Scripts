@@ -12,7 +12,7 @@ function Get-FtpFileTransferProgress
         [System.Object] $TransferEvent
     )
 
-    Process
+    process
     {
         if ($null -ne $script:lastFileName -and $script:lastFileName -ne $TransferEvent.FileName)
         {
@@ -40,7 +40,7 @@ function Get-FtpFile
 {
     [CmdletBinding()]
     [Alias('gff')]
-    Param
+    param
     (
         # The path of a folder that contains "WinSCPnet.dll" and "WinSCPnet.exe".
         [Parameter(
@@ -71,7 +71,7 @@ function Get-FtpFile
         $script:lastFileName = ''
         $script:lastFileProgress = ''
     }
-    Process
+    process
     {
         $sessionOptions = New-Object WinSCP.SessionOptions -Property @{
             Protocol = [WinSCP.Protocol]::Ftp

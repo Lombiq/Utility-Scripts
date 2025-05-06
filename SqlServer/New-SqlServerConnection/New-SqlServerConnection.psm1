@@ -8,7 +8,7 @@
 function New-SqlServerConnection
 {
     [CmdletBinding()]
-    Param
+    param
     (
         [Parameter(Mandatory = $true)]
         [string] $ServerName,
@@ -18,7 +18,7 @@ function New-SqlServerConnection
         [SecureString] $Password = $null
     )
 
-    Process
+    process
     {
         if (-not $UserName -or -not $Password)
         {

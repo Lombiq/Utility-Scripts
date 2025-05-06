@@ -16,13 +16,13 @@ function Copy-ToAzureDevelopmentStorage
     [CmdletBinding()]
     [Alias()]
     [OutputType([int])]
-    Param
+    param
     (
         [Parameter(Mandatory = $true, HelpMessage = 'The path to the folder to copy the content from to the Development Storage. The first level of subfolders will be handled as Storage Containers.')]
         [string] $Path
     )
 
-    Process
+    process
     {
         if (-not (Test-Path $Path))
         {

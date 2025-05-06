@@ -1,12 +1,12 @@
 ﻿function Rename-ChildItemsToAsciiRecursively
 {
-    Param
+    param
     (
         [Parameter(ValueFromPipelineByPropertyName = $true, Position = 0)]
         [string] $Path = (Get-Location).Path
     )
 
-    Process
+    process
     {
         $pathLength = $Path.Length + 1
 

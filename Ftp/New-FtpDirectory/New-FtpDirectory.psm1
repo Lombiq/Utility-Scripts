@@ -10,7 +10,7 @@
 function New-FtpDirectory
 {
     [CmdletBinding()]
-    Param
+    param
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
@@ -32,7 +32,7 @@ function New-FtpDirectory
         [string] $LocalFolderPath
     )
 
-    Process
+    process
     {
         $credentials = New-Object System.Net.NetworkCredential($User, $Password)
 

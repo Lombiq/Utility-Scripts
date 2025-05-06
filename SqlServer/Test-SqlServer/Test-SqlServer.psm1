@@ -11,7 +11,7 @@ function Test-SqlServer
     [CmdletBinding()]
     [Alias('tss')]
     [OutputType([bool])]
-    Param
+    param
     (
         [Parameter(Mandatory = $true)]
         [string] $ServerName,
@@ -21,7 +21,7 @@ function Test-SqlServer
         [SecureString] $Password = $null
     )
 
-    Process
+    process
     {
         $connection = New-SqlServerConnection $ServerName $UserName $Password
 

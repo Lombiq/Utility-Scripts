@@ -11,7 +11,7 @@ function Test-SqlServerDatabase
     [CmdletBinding()]
     [Alias('tssd')]
     [OutputType([bool])]
-    Param
+    param
     (
         [Parameter(Mandatory = $true)]
         [string] $SqlServerName,
@@ -24,7 +24,7 @@ function Test-SqlServerDatabase
         [SecureString] $Password = $null
     )
 
-    Process
+    process
     {
         if (-not (Test-SqlServer $SqlServerName $UserName $Password))
         {

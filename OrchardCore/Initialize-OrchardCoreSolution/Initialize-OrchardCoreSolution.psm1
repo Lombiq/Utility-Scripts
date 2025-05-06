@@ -14,7 +14,7 @@ function Initialize-OrchardCoreSolution
 {
     [CmdletBinding()]
     [alias('Init-OrchardCoreSolution', 'Initialize-OrchardCore')]
-    Param
+    param
     (
         [string] $Path = (Get-Location).Path,
 
@@ -26,7 +26,7 @@ function Initialize-OrchardCoreSolution
         [string] $NuGetSource
     )
 
-    Process
+    process
     {
         if ($MyInvocation.InvocationName -ne 'Initialize-OrchardCoreSolution')
         {

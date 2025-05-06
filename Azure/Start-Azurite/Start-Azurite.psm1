@@ -14,9 +14,9 @@ function Start-Azurite
 {
     [CmdletBinding()]
     [Alias('saazu')]
-    Param ()
+    param ()
 
-    Process
+    process
     {
         [bool] $azuriteProcessExists = Get-ProcessId -Name node -CommandLine azurite
         $azuriteJobState = (Get-Job AzuriteNodeJS -ErrorAction SilentlyContinue).State

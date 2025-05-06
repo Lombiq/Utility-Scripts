@@ -11,9 +11,9 @@ function Get-DefaultSqlServerName
     [CmdletBinding()]
     [Alias('gdssm')]
     [OutputType([string])]
-    Param()
+    param()
 
-    Process
+    process
     {
         $serverServices = Get-CimInstance win32_Service |
             Where-Object { $PSItem.Name -match 'MSSQL' -and $PSItem.PathName -match 'sqlservr.exe' }

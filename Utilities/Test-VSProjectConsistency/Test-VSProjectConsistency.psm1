@@ -56,7 +56,7 @@
 function Test-VSProjectConsistency
 {
     [CmdletBinding()]
-    Param
+    param
     (
         # The path to a folder or a Visual Studio project file to check. The default path is the current execution path.
         [string]
@@ -69,7 +69,7 @@ function Test-VSProjectConsistency
         $AdditionalFileExtensions
     )
 
-    Process
+    process
     {
         # If the path is invalid, then return an error.
         if (-not (Test-Path $Path))

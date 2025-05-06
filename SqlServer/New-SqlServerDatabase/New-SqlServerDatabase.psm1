@@ -11,7 +11,7 @@ function New-SqlServerDatabase
     [CmdletBinding()]
     [Alias('tssd')]
     [OutputType([bool])]
-    Param
+    param
     (
         [Parameter(Mandatory = $true)]
         [string] $SqlServerName,
@@ -26,7 +26,7 @@ function New-SqlServerDatabase
         [SecureString] $Password = $null
     )
 
-    Process
+    process
     {
         $serverConnection = New-SqlServerConnection $SqlServerName $UserName $Password
         $server = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server -ArgumentList $serverConnection

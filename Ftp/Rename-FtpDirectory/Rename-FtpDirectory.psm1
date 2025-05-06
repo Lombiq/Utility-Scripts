@@ -10,7 +10,7 @@
 function Rename-FtpDirectory
 {
     [CmdletBinding()]
-    Param
+    param
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
@@ -37,7 +37,7 @@ function Rename-FtpDirectory
         [string] $DestinationFolder
     )
 
-    Process
+    process
     {
         $folderToRenamePath = "$Url/$SourceFolder"
         $ftpFolderPath = "$Url/$DestinationFolder"

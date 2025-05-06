@@ -11,7 +11,7 @@
 function Get-ProcessId
 {
     [CmdletBinding()]
-    Param
+    param
     (
         [Parameter(Mandatory = $true)]
         [string] $Name,
@@ -19,7 +19,7 @@ function Get-ProcessId
         [string] $CommandLine
     )
 
-    Process
+    process
     {
         if ([string]::IsNullOrEmpty($Name))
         {

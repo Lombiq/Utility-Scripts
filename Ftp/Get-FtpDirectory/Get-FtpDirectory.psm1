@@ -10,7 +10,7 @@
 function Get-FtpDirectory
 {
     [CmdletBinding()]
-    Param
+    param
     (
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
@@ -32,7 +32,7 @@ function Get-FtpDirectory
         [string] $LocalPath
     )
 
-    Process
+    process
     {
         try
         {
