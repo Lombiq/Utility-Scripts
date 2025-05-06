@@ -22,9 +22,10 @@ As of writing this document [SQL Server in Docker doesn't support Windows authen
 
 ## Installing the PowerShell modules
 
-1. Set the PowerShell script execution policy to Unrestricted in order to use any of the scripts. To achieve this run the `Set-ExecutionPolicy Unrestricted` command.
-2. Run the `AddPathToPSModulePath.ps1` script (you need admin privileges) to add the root of the repository to the `PSModulePath` environment variable. This will make PowerShell recognize this folder as one of the folders that contain PS modules. You only need to run this once - after that any changes made to these modules will be picked up automatically when a new PS console is opened. **NOTE**: It may be required to restart the PowerShell console, so do that as well.
-3. Enjoy!
+1. Open a PowerShell (or Windows PowerShell) console. Under Windows, open it with "Run as Administrator".
+2. Run the `Set-ExecutionPolicy Unrestricted` command to set the PowerShell script execution policy to Unrestricted in order to use any of the scripts
+3. Run the `AddPathToPSModulePath.ps1` script to add the root of the repository to the `PSModulePath` environment variable. This will make PowerShell recognize this folder as one of the folders that contain PS modules. You only need to run this once - after that any changes made to these modules will be picked up automatically when a new PS console is opened. **NOTE**: It may be required to restart the PowerShell console, so do that as well.
+4. Enjoy!
 
 
 ## Overview of all the included scripts
