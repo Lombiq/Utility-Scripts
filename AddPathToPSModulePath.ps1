@@ -10,7 +10,7 @@
    .\AddPathToPSModulePath.ps1 -Path "C:\MyPowerShellScripts"
 #>
 
-Param
+param
 (
     # The path to a folder that should be added to the list of paths containing PS modules. If not specified, the current path of this script will be added.
     [string]

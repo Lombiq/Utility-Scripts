@@ -64,7 +64,7 @@ function Get-FtpFile
         [string] $DownloadDestinationPath
     )
 
-    Begin
+    begin
     {
         [Reflection.Assembly]::LoadFrom("\\$WinSCPPath\WinSCPnet.dll") | Out-Null
 
