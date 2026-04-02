@@ -44,7 +44,7 @@ function Initialize-OrchardCoreSolution
 
         dotnet new occms --output "$Path/src/$Name.Web"
 
-        dotnet new sln --output "$Path" --name "$Name"
+        dotnet new sln --output "$Path" --name "$Name" --format slnx
         dotnet sln "$Path/$Name.sln" add "$Path/src/$Name.Web/$Name.Web.csproj"
 
         if (-not [string]::IsNullOrEmpty($ModuleName))
