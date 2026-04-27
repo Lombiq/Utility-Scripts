@@ -58,7 +58,7 @@ function Initialize-OrchardCoreSolution
         {
             dotnet new octheme --name "$ThemeName" --output "$Path/src/Themes/$ThemeName"
             dotnet add "$Path/src/$Name.Web/$Name.Web.csproj" reference "$Path/src/Themes/$ThemeName/$ThemeName.csproj"
-            dotnet sln "$Path/$Name.sln" add "$Path/src/Themes/$ThemeName/$ThemeName.csproj"
+            dotnet sln "$Path/$Name.slnx" add "$Path/src/Themes/$ThemeName/$ThemeName.csproj"
         }
 
         Copy-Item "$PSScriptRoot\.gitignore.template" -Destination "$Path\.gitignore"
