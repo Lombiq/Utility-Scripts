@@ -51,7 +51,7 @@ function Initialize-OrchardCoreSolution
         {
             dotnet new ocmodulecms --name "$ModuleName" --output "$Path/src/Modules/$ModuleName"
             dotnet add "$Path/src/$Name.Web/$Name.Web.csproj" reference "$Path/src/Modules/$ModuleName/$ModuleName.csproj"
-            dotnet sln "$Path/$Name.sln" add "$Path/src/Modules/$ModuleName/$ModuleName.csproj"
+            dotnet sln "$Path/$Name.slnx" add "$Path/src/Modules/$ModuleName/$ModuleName.csproj"
         }
 
         if (-not [string]::IsNullOrEmpty($ThemeName))
