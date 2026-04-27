@@ -157,7 +157,10 @@ function Reset-OrchardCoreApp
 
         Write-Verbose "Compiled Web Project DLL found at `"$webProjectDllPath`"!"
 
-
+        function Test-NotJoinedPath($Directory, $File)
+        {
+            -not (Test-Path (Join-Path $Directory $File))
+        }
 
         # Validating and setting up database server connection.
 
@@ -168,14 +171,16 @@ function Reset-OrchardCoreApp
             {
                 $solutionPath = (Get-Location).Path
 
-                while (-not [string]::IsNullOrEmpty($solutionPath) -and -not (Test-Path (Join-Path $solutionPath '*.sln')))
+                while (-not [string]::IsNullOrEmpty($solutionPath) -and
+                    (Test-NotJoinedPath -Directory $solutionPath -File '*.sln') -and
+                    (Test-NotJoinedPath -Directory $solutionPath -File '*.slnx'))
                 {
                     $solutionPath = Split-Path $solutionPath -Parent
                 }
 
                 if ([string]::IsNullOrEmpty($solutionPath))
                 {
-                    throw ("No solution folder was found to create the database name suffix. Put this script into a folder where there or in a parent folder there is the app's .sln file.")
+                    throw ("No solution folder was found to create the database name suffix. Put this script into a folder where there or in a parent folder there is the app's .sln or .slnx file.")
                 }
 
                 $solutionFolder = Split-Path $solutionPath -Leaf
