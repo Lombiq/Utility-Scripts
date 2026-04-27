@@ -39,7 +39,7 @@ function Reset-OrchardCoreApp
 
         [int] $Port = 5000,
 
-        [Parameter(ParameterSetName = 'ServerDB', Mandatory)]
+        [Parameter(ParameterSetName = 'ServerDB')]
         [string] [ValidateSet('SqlConnection')] $SetupDatabaseProvider = 'Sqlite',
 
         [Parameter(ParameterSetName = 'ServerDB')]
